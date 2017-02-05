@@ -1,0 +1,44 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Kontur.GameStats.Server.Extensions
+{
+    public static class ReflectionExtensions
+    {
+        public static ConcurrentDictionary<MethodInfo, Attribute> _attributesCache = new ConcurrentDictionary<MethodInfo, Attribute>();
+        public static bool TryGetAtribute<T>(this MethodInfo methodInfo, out T attribute) where T: Attribute
+        {
+            var attr = GetAttribute<T>(methodInfo);
+            if (attr != null)
+            {
+                attribute = attr;
+                return true;
+            }
+            else
+            {
+                attribute = null;
+                return false;
+            }
+        }
+
+        public static bool HasAttribute<T>(this MethodInfo methodInfo) where T:Attribute
+        {
+            return GetAttribute<T>(methodInfo) != null;
+        }
+
+        public static T GetAttribute<T>(this MethodInfo methodInfo) where T: Attribute
+        {
+            return methodInfo.GetCustomAttribute(typeof(T), false) as T;
+        }
+
+        public static List<MethodInfo> GetMethodsWithAttribute<T>(this Type type) where T: Attribute
+        {
+            return type.GetMethods().Where(m => HasAttribute<T>(m)).ToList();
+        }
+    }
+}
