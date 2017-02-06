@@ -15,7 +15,6 @@ namespace Kontur.GameStats.Server
     {
         private readonly HttpListener listener;
         private readonly IObservable<RequestContext> stream;
-        private ServicesContainer _servicesContainer;
 
         public StatServer(string url)
         {
@@ -23,7 +22,6 @@ namespace Kontur.GameStats.Server
             listener.Prefixes.Add(url);
             listener.Start();
             stream = ObservableHttpContext();
-            _servicesContainer = new ServicesContainer();
         }
 
         private IObservable<RequestContext> ObservableHttpContext()
@@ -48,11 +46,8 @@ namespace Kontur.GameStats.Server
 
         public void HandleRequests()
         {
-            this.Subscribe(async =>
-            {
-                var a1 = async.Request.InputStream.ReadBytes(async.Request.ContentLength).Subscribe(a => Encoding.UTF8.GetString(a));
-                var b2 = a1;
-            });
+            var handlers = ServicesContainer.Current.GetHandlers();
+            handlers.ForEach(h => h.Subscribe(this));
         }
     }
 }

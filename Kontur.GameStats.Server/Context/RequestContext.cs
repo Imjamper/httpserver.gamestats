@@ -1,4 +1,5 @@
-﻿using Kontur.GameStats.Server.Extensions;
+﻿using Kontur.GameStats.Server.Enums;
+using Kontur.GameStats.Server.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace Kontur.GameStats.Server.Context
             var mapRequest = new Request
             {
                 Headers = request.Headers.ToDictionary(),
-                HttpMethod = request.HttpMethod,
+                HttpMethod = request.HttpMethod.FromString(),
                 InputStream = request.InputStream,
                 RawUrl = request.RawUrl
             };

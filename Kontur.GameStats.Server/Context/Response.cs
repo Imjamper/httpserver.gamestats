@@ -35,7 +35,6 @@ namespace Kontur.GameStats.Server.Context
         public EmptyResponse(int statusCode = 204)
         {
             StatusCode = statusCode;
-
         }
     }
 }

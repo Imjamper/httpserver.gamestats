@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kontur.GameStats.Server.Enums;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Kontur.GameStats.Server.Context
 {
     public class Request
     {
-        public string HttpMethod { get; set; }
+        public MethodType HttpMethod { get; set; }
         public IDictionary<string, IEnumerable<string>> Headers { get; set; }
         public Stream InputStream { get; set; }
         public string RawUrl { get; set; }

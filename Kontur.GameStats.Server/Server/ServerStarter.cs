@@ -42,6 +42,7 @@ namespace Kontur.GameStats.Server.Server
 
                 listeners.Dispose();
                 publisher.Dispose();*/
+                Console.WriteLine("Server started. For terminate press any key...");
                 Console.ReadLine();
             }
         }

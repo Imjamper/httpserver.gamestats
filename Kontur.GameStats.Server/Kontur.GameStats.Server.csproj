@@ -69,8 +69,11 @@
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="HttpServices\HttpHandler.cs" />
+    <Compile Include="HttpServices\IHttpHandler.cs" />
     <Compile Include="HttpServices\IHttpService.cs" />
     <Compile Include="HttpServices\MethodStoreItem.cs" />
+    <Compile Include="HttpServices\PutHttpHandler.cs" />
     <Compile Include="HttpServices\ServersService.cs" />
     <Compile Include="HttpServices\ServicesContainer.cs" />
     <Compile Include="Server\ServerStarter.cs" />
