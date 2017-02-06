@@ -6,17 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using Kontur.GameStats.Server.Extensions;
 using Kontur.GameStats.Server.Attributes;
+using Kontur.GameStats.Server.Enums;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
     public class ServicesContainer
     {
-        private List<MethodStoreItem> _methodsItem = new List<MethodStoreItem>();
+        private List<MethodInfoItem> _methods = new List<MethodInfoItem>();
         private List<HttpHandler> _handlers = new List<HttpHandler>();
         private static ServicesContainer _currentContainer = new ServicesContainer();
-        public List<MethodStoreItem> Methods
+        public List<MethodInfoItem> Methods
         {
-            get { return _methodsItem; }
+            get { return _methods; }
         }
 
         public ServicesContainer()
@@ -42,7 +43,7 @@ namespace Kontur.GameStats.Server.HttpServices
                 foreach (var method in methods)
                 {
                     var attribute = method.GetAttribute<HttpOperationAttribute>();
-                    _methodsItem.Add(new MethodStoreItem(attribute.Url, method, attribute.MethodType));
+                    _methods.Add(new MethodInfoItem(attribute.Url, method, attribute.MethodType));
                 }
             }
 
@@ -54,13 +55,20 @@ namespace Kontur.GameStats.Server.HttpServices
                 .Where(p => httpHandlerType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToList();
             foreach (var handlerType in handlerTypes)
             {
-                _handlers.Add(Activator.CreateInstance(handlerType, false) as HttpHandler);
+                var handlerInstance = Activator.CreateInstance(handlerType) as HttpHandler;
+                handlerInstance.SetContainer(this);
+                _handlers.Add(handlerInstance);
             }
         }
 
         public List<HttpHandler> GetHandlers()
         {
             return _handlers;
+        }
+
+        public MethodInfoItem GetMethod(string name, MethodType methodType)
+        {
+            return _methods.FirstOrDefault(m => m.MethodType == methodType && m.Name == name);
         }
     }
 }

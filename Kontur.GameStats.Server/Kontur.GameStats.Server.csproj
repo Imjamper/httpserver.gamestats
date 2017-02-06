@@ -37,6 +37,10 @@
       <HintPath>..\packages\FluentCommandLineParser.1.4.3\lib\net35\FluentCommandLineParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Reactive.Core, Version=3.0.1000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
@@ -69,13 +73,16 @@
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="HttpServices\GetHttpHandler.cs" />
     <Compile Include="HttpServices\HttpHandler.cs" />
     <Compile Include="HttpServices\IHttpHandler.cs" />
     <Compile Include="HttpServices\IHttpService.cs" />
-    <Compile Include="HttpServices\MethodStoreItem.cs" />
+    <Compile Include="HttpServices\MethodInfoItem.cs" />
     <Compile Include="HttpServices\PutHttpHandler.cs" />
     <Compile Include="HttpServices\ServersService.cs" />
     <Compile Include="HttpServices\ServicesContainer.cs" />
+    <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Server\ServerStarter.cs" />
     <Compile Include="Server\Configuration.cs" />
     <Compile Include="Server\StatServer.cs" />

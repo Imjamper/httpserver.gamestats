@@ -18,12 +18,19 @@ namespace HttpClient
         public MainForm()
         {
             InitializeComponent();
+            methodTypecb.SelectedIndex = 0;
+            urlcb.SelectedIndex = 0;
         }
 
         private async void startbtn_Click(object sender, EventArgs e)
         {
-            var response = await DownloadPage(addresstb.Text);
-            responsetb.Text = response;
+            var url = urlcb.Items[urlcb.SelectedIndex] != null ? urlcb.Items[urlcb.SelectedIndex].ToString() : String.Empty;
+            if(!String.IsNullOrEmpty(url))
+            {
+                var response = await DownloadPage(url);
+                if (response != null)
+                    responsetb.Text = response;
+            }
         }
 
         private async Task<string> DownloadPage(string url)
@@ -31,46 +38,40 @@ namespace HttpClient
             using (var client = new System.Net.Http.HttpClient())
             {
                 var httpContent = new StringContent(bodytb.Text, Encoding.UTF8, "application/json");
-                using (var r = await client.PutAsync(new Uri(url, UriKind.Absolute), httpContent))
+                var methodType = methodTypecb.Items[methodTypecb.SelectedIndex] != null ? methodTypecb.Items[methodTypecb.SelectedIndex].ToString() : String.Empty;
+                if(!String.IsNullOrEmpty(methodType))
                 {
-                    string result = await r.Content.ReadAsStringAsync();
-                    return result;
+                    switch (methodType)
+                    {
+                        case "PUT":
+                            using (var r = await client.PutAsync(new Uri(url, UriKind.Absolute), httpContent))
+                            {
+                                string result = await r.Content.ReadAsStringAsync();
+                                return result;
+                            };
+                        case "GET":
+                            using (var r = await client.GetAsync(new Uri(url, UriKind.Absolute)))
+                            {
+                                string result = await r.Content.ReadAsStringAsync();
+                                return result;
+                            };
+                        case "POST":
+                            using (var r = await client.PostAsync(new Uri(url, UriKind.Absolute), httpContent))
+                            {
+                                string result = await r.Content.ReadAsStringAsync();
+                                return result;
+                            };
+                        case "DELETE":
+                            using (var r = await client.DeleteAsync(new Uri(url, UriKind.Absolute)))
+                            {
+                                string result = await r.Content.ReadAsStringAsync();
+                                return result;
+                            };
+                        default: return null;
+                    }
                 }
+                return null;
             }
-        }
-
-        /// <summary>
-        /// The set of characters that are unreserved in RFC 2396 but are NOT unreserved in RFC 3986.
-        /// </summary>
-        private static readonly string[] UriRfc3986CharsToEscape = new[] { "!", "*", "'", "(", ")", "+" };
-
-        /// <summary>
-        /// Escapes a string according to the URI data string rules given in RFC 3986.
-        /// </summary>
-        /// <param name="value">The value to escape.</param>
-        /// <returns>The escaped value.</returns>
-        /// <remarks>
-        /// The <see cref="Uri.EscapeDataString"/> method is <i>supposed</i> to take on
-        /// RFC 3986 behavior if certain elements are present in a .config file.  Even if this
-        /// actually worked (which in my experiments it <i>doesn't</i>), we can't rely on every
-        /// host actually having this configuration element present.
-        /// </remarks>
-        internal static string EscapeUriDataStringRfc3986(string value)
-        {
-            // Start with RFC 2396 escaping by calling the .NET method to do the work.
-            // This MAY sometimes exhibit RFC 3986 behavior (according to the documentation).
-            // If it does, the escaping we do that follows it will be a no-op since the
-            // characters we search for to replace can't possibly exist in the string.
-            StringBuilder escaped = new StringBuilder(Uri.EscapeDataString(value));
-
-            // Upgrade the escaping to RFC 3986, if necessary.
-            for (int i = 0; i < UriRfc3986CharsToEscape.Length; i++)
-            {
-                escaped.Replace(UriRfc3986CharsToEscape[i], Uri.HexEscape(UriRfc3986CharsToEscape[i][0]));
-            }
-
-            // Return the fully-RFC3986-escaped string.
-            return escaped.ToString();
         }
     }
 }

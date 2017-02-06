@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kontur.GameStats.Server.Context;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,15 @@ namespace Kontur.GameStats.Server.Extensions
         public static List<MethodInfo> GetMethodsWithAttribute<T>(this Type type) where T: Attribute
         {
             return type.GetMethods().Where(m => HasAttribute<T>(m)).ToList();
+        }
+
+        public static T Invoke<T>(this MethodInfo methodInfo, object[] parameters, object obj = null) where T : Response
+        {
+            object instance;
+            if (obj == null)
+                instance = Activator.CreateInstance(methodInfo.DeclaringType);
+            else instance = obj;
+            return methodInfo.Invoke(instance, parameters) as T;
         }
     }
 }

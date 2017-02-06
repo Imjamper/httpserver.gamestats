@@ -11,7 +11,13 @@ namespace Kontur.GameStats.Server.HttpServices
     public interface IHttpHandler
     {
         MethodType MethodType { get; set; }
+
         void Subscribe(StatServer server);
+
         void ProcessRequest(RequestContext requestContext);
+
+        IObservable<MethodInfoItem> GetMethod(RequestContext requestContext);
+
+        void SetContainer(ServicesContainer servicesContainer);
     }
 }

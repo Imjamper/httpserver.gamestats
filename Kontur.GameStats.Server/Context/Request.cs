@@ -16,7 +16,20 @@ namespace Kontur.GameStats.Server.Context
         public string RawUrl { get; set; }
         public int ContentLength
         {
-            get { return int.Parse(Headers["Content-Length"].First()); }
+            get
+            {
+                int length = 0;
+                IEnumerable<string> contentLengthString;
+                if (Headers.TryGetValue("Content-Length", out contentLengthString))
+                {
+                    var firstValue = contentLengthString.FirstOrDefault();
+                    if (firstValue != null)
+                    {
+                        int.TryParse(firstValue, out length);
+                    }
+                }
+                return length;
+            }
         }
     }
 }

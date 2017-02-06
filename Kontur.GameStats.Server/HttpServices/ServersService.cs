@@ -1,4 +1,6 @@
 ﻿using Kontur.GameStats.Server.Attributes;
+using Kontur.GameStats.Server.Context;
+using Kontur.GameStats.Server.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,9 +20,27 @@ namespace Kontur.GameStats.Server.HttpServices
         /// Advertise запрос от игрового сервера
         /// </summary>
         [PutOperation("/servers/<endpoint>/info")]
-        public void Info()
+        public EmptyResponse PutInfo(string endpoint, ServerInfo body)
         {
+            return new EmptyResponse();
+        }
 
+        /// <summary>
+        /// Получить информацию о сервере
+        /// </summary>
+        [GetOperation("/servers/<endpoint>/info")]
+        public ServerInfo GetInfo(string endpoint)
+        {
+            return new ServerInfo() { GameModes = new List<string> { "DM", "Single" }, Name = "] My P3rfect Server[" };
+        }
+
+        /// <summary>
+        /// Получить информацию о серверах
+        /// </summary>
+        [GetOperation("/servers/info")]
+        public StringResponse GetInfo()
+        {
+            return new StringResponse("Информация о сервере");
         }
     }
 }
