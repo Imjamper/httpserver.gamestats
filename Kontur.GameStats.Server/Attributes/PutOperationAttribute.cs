@@ -13,7 +13,7 @@ namespace Kontur.GameStats.Server.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class PutOperationAttribute : HttpOperationAttribute
     {
-        public PutOperationAttribute(string url) : base(url)
+        public PutOperationAttribute(string name, string url) : base(name, url)
         {
             MethodType = MethodType.PUT;
         }

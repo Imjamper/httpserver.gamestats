@@ -20,14 +20,14 @@ namespace Kontur.GameStats.Server.HttpServices
 
         }
 
-        public MethodInfoItem(string url, MethodInfo methodInfo, MethodType methodType)
+        public MethodInfoItem(string name, string url, MethodInfo methodInfo, MethodType methodType)
         {
             Url = url;
             MethodInfo = methodInfo;
             MethodType = methodType;
             ParametersNames = new Dictionary<string, int>();
             MapParametersName();
-            Name = Url.GetMethodName();
+            Name = name;
         }
 
         public string Url { get; set; }

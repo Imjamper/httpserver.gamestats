@@ -19,8 +19,17 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Advertise запрос от игрового сервера
         /// </summary>
-        [PutOperation("/servers/<endpoint>/info")]
+        [PutOperation("info", "/servers/<endpoint>/info")]
         public EmptyResponse PutInfo(string endpoint, ServerInfo body)
+        {
+            return new EmptyResponse();
+        }
+
+        /// <summary>
+        /// Получение информации о завершенном матче
+        /// </summary>
+        [PutOperation("matches", "/servers/<endpoint>/matches/<timestamp>")]
+        public EmptyResponse PutMatches(string endpoint, string timestamp, MatchInfo body)
         {
             return new EmptyResponse();
         }
@@ -28,8 +37,8 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Получить информацию о сервере
         /// </summary>
-        [GetOperation("/servers/<endpoint>/info")]
-        public ServerInfo GetInfo(string endpoint)
+        [GetOperation("info", "/servers/<endpoint>/info")]
+        public ServerInfo GetServerInfo(string endpoint)
         {
             return new ServerInfo() { GameModes = new List<string> { "DM", "Single" }, Name = "] My P3rfect Server[" };
         }
@@ -37,8 +46,8 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Получить информацию о серверах
         /// </summary>
-        [GetOperation("/servers/info")]
-        public AllServersInfo GetInfo()
+        [GetOperation("info", "/servers/info")]
+        public AllServersInfo GetAllServersInfo()
         {
             var model = new AllServersInfo();
             model.ServersInfo.Add(new ServerInfo() { GameModes = new List<string> { "DM", "Single" }, Name = "] My P3rfect Server[" });

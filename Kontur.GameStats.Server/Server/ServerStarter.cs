@@ -23,7 +23,6 @@ namespace Kontur.GameStats.Server.Server
         {
             using (var server = new StatServer(_config.Prefix))
             {
-                server.HandleRequests();
                 Console.WriteLine("Server started. For terminate press any key...");
                 Console.ReadLine();
             }

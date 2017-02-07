@@ -87,6 +87,9 @@
     <Compile Include="HttpServices\ServersService.cs" />
     <Compile Include="HttpServices\ServicesContainer.cs" />
     <Compile Include="Models\AllServersInfo.cs" />
+    <Compile Include="Models\Endpoint.cs" />
+    <Compile Include="Models\MatchInfo.cs" />
+    <Compile Include="Models\ScoreBoard.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="Server\ServerStarter.cs" />
     <Compile Include="Server\Configuration.cs" />

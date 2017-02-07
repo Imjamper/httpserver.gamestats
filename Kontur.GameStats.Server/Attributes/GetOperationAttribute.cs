@@ -13,7 +13,7 @@ namespace Kontur.GameStats.Server.Attributes
     [AttributeUsage(AttributeTargets.Method)]
     public class GetOperationAttribute : HttpOperationAttribute
     {
-        public GetOperationAttribute(string url) : base(url)
+        public GetOperationAttribute(string name, string url) : base(name, url)
         {
             MethodType = MethodType.GET;
         }

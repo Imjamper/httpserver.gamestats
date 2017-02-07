@@ -43,7 +43,7 @@ namespace Kontur.GameStats.Server.HttpServices
                 foreach (var method in methods)
                 {
                     var attribute = method.GetAttribute<HttpOperationAttribute>();
-                    _methods.Add(new MethodInfoItem(attribute.Url, method, attribute.MethodType));
+                    _methods.Add(new MethodInfoItem(attribute.Name, attribute.Url, method, attribute.MethodType));
                 }
             }
 

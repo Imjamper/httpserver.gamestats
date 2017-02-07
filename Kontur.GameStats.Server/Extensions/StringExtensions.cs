@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kontur.GameStats.Server.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,7 +20,18 @@ namespace Kontur.GameStats.Server.Extensions
         {
             return url.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                 .ToList()
-                .LastOrDefault(a => !a.Contains("<"));
+                .LastOrDefault(s => !IsKnownParameter(s));
+        }
+
+        private static bool IsKnownParameter(string segment)
+        {
+            DateTime date;
+            if (DateTime.TryParse(segment, out date))
+                return true;
+            Endpoint endpoint;
+            if (Endpoint.TryParse(segment, out endpoint))
+                return true;
+            return false;
         }
 
         public static string GetValueByIndex(this string url, int index)

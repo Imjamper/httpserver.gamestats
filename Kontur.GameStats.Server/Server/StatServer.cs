@@ -23,12 +23,14 @@ namespace Kontur.GameStats.Server
             listener.Prefixes.Add(url);
             listener.Start();
             stream = ObservableHttpContext();
+            SubscribeHandlers();
         }
 
         private IObservable<RequestContext> ObservableHttpContext()
         {
             return Observable.Create<RequestContext>(obs => Observable.FromAsync(()=> listener.GetContextAsync())
-                                          .Select(c => new RequestContext(c.Request, c.Response)).ObserveOn(NewThreadScheduler.Default)
+                                          .Select(c => new RequestContext(c.Request, c.Response))
+                                          .ObserveOn(NewThreadScheduler.Default)
                                           .Subscribe(obs))
                              .Repeat()
                              .Retry()
@@ -45,7 +47,7 @@ namespace Kontur.GameStats.Server
             return stream.Subscribe(observer);
         }
 
-        public void HandleRequests()
+        private void SubscribeHandlers()
         {
             var handlers = ServicesContainer.Current.GetHandlers();
             handlers.ForEach(h => h.Subscribe(this));
