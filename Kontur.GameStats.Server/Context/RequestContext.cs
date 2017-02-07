@@ -42,6 +42,7 @@ namespace Kontur.GameStats.Server.Context
 
             listenerResponse.ContentType = response.Headers["Content-Type"];
             listenerResponse.StatusCode = response.StatusCode;
+            listenerResponse.ContentEncoding = Encoding.UTF8;
 
             using (var output = listenerResponse.OutputStream)
             {

@@ -24,7 +24,13 @@ namespace Kontur.GameStats.Server.HttpServices
         public virtual IObservable<MethodInfoItem> GetMethod(RequestContext requestContext)
         {
             var methodName = requestContext.Request.RawUrl.GetMethodName();
-            return Observable.FromAsync(() => { return Task.Run(() => { return _servicesContainer.GetMethod(methodName, MethodType); }); });
+            return Observable.FromAsync(() => 
+            {
+                return Task.Run(() => 
+                {
+                    return _servicesContainer.GetMethod(methodName, MethodType, requestContext.Request.RawUrl);
+                });
+            });
         }
 
         public virtual void ProcessRequest(RequestContext requestContext)

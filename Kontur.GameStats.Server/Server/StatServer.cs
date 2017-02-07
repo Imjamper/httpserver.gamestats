@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Kontur.GameStats.Server.Extensions;
 using System.Text;
+using System.Reactive.Concurrency;
 
 namespace Kontur.GameStats.Server
 {
@@ -26,8 +27,8 @@ namespace Kontur.GameStats.Server
 
         private IObservable<RequestContext> ObservableHttpContext()
         {
-            return Observable.Create<RequestContext>(obs =>Observable.FromAsyncPattern(listener.BeginGetContext, listener.EndGetContext)()
-                                          .Select(c => new RequestContext(c.Request, c.Response))
+            return Observable.Create<RequestContext>(obs => Observable.FromAsync(()=> listener.GetContextAsync())
+                                          .Select(c => new RequestContext(c.Request, c.Response)).ObserveOn(NewThreadScheduler.Default)
                                           .Subscribe(obs))
                              .Repeat()
                              .Retry()

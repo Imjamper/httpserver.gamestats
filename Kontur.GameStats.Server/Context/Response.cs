@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,26 +14,42 @@ namespace Kontur.GameStats.Server.Context
         {
             WriteStream = s => { };
             StatusCode = 200;
-            Headers = new Dictionary<string, string> { { "Content-Type", "text/html" } };
+            Headers = new Dictionary<string, string> { { "Content-Type", "application/json" } };
         }
 
+        [JsonIgnore]
         public int StatusCode { get; set; }
+        [JsonIgnore]
         public IDictionary<string, string> Headers { get; set; }
+        [JsonIgnore]
         public Action<Stream> WriteStream { get; set; }
     }
 
-    public class StringResponse : Response
+    public class JsonResponse : Response
     {
-        public StringResponse(string message)
+        public JsonResponse(string json) : base()
         {
-            var bytes = Encoding.UTF8.GetBytes(message);
+            var bytes = Encoding.UTF8.GetBytes(json);
             WriteStream = s => s.Write(bytes, 0, bytes.Length);
+        }
+
+        public JsonResponse()
+        {
+            WriteStream = WriteJson;
+        }
+
+        private void WriteJson(Stream stream)
+        {
+            var json = JsonConvert.SerializeObject(this);
+            var bytes = Encoding.UTF8.GetBytes(json);
+            Headers.Add("Content-Length", json.Length.ToString());
+            stream.WriteAsync(bytes, 0, bytes.Length);
         }
     }
 
     public class EmptyResponse : Response
     {
-        public EmptyResponse(int statusCode = 204)
+        public EmptyResponse(int statusCode = 404)
         {
             StatusCode = statusCode;
         }

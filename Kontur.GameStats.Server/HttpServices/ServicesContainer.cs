@@ -66,9 +66,14 @@ namespace Kontur.GameStats.Server.HttpServices
             return _handlers;
         }
 
-        public MethodInfoItem GetMethod(string name, MethodType methodType)
+        public MethodInfoItem GetMethod(string name, MethodType methodType, string rawUrl)
         {
-            return _methods.FirstOrDefault(m => m.MethodType == methodType && m.Name == name);
+            var methods = _methods.Where(m => m.MethodType == methodType && m.Name == name).ToList();
+            if (methods.Count > 1)
+            {
+               return methods.FirstOrDefault(a => a.Url.CompareUrlBySegments(rawUrl));
+            }
+            else return methods.FirstOrDefault();
         }
     }
 }

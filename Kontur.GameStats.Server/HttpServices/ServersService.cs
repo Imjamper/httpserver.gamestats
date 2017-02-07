@@ -38,9 +38,12 @@ namespace Kontur.GameStats.Server.HttpServices
         /// Получить информацию о серверах
         /// </summary>
         [GetOperation("/servers/info")]
-        public StringResponse GetInfo()
+        public AllServersInfo GetInfo()
         {
-            return new StringResponse("Информация о сервере");
+            var model = new AllServersInfo();
+            model.ServersInfo.Add(new ServerInfo() { GameModes = new List<string> { "DM", "Single" }, Name = "] My P3rfect Server[" });
+            model.ServersInfo.Add(new ServerInfo() { GameModes = new List<string> { "DM1", "Single2" }, Name = "] My P3rfect Server 2[" });
+            return model;
         }
     }
 }

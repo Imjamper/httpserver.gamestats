@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kontur.GameStats.Server.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server.Models
 {
-    public class ServerInfo
+    public class ServerInfo : JsonResponse
     {
         public ServerInfo()
         {

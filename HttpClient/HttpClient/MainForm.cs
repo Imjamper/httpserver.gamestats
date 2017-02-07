@@ -47,24 +47,28 @@ namespace HttpClient
                             using (var r = await client.PutAsync(new Uri(url, UriKind.Absolute), httpContent))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
+                                result += "StatusCode: " + r.StatusCode.ToString();
                                 return result;
                             };
                         case "GET":
                             using (var r = await client.GetAsync(new Uri(url, UriKind.Absolute)))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
+                                result += "StatusCode: " + r.StatusCode.ToString();
                                 return result;
                             };
                         case "POST":
                             using (var r = await client.PostAsync(new Uri(url, UriKind.Absolute), httpContent))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
+                                result += "StatusCode: " + r.StatusCode.ToString();
                                 return result;
                             };
                         case "DELETE":
                             using (var r = await client.DeleteAsync(new Uri(url, UriKind.Absolute)))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
+                                result += "StatusCode: " + r.StatusCode.ToString();
                                 return result;
                             };
                         default: return null;

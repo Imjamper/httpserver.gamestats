@@ -13,11 +13,14 @@ namespace Kontur.GameStats.Server.Extensions
         public static IObservable<byte[]> ReadBytes(this Stream stream, int count)
         {
             var buffer = new byte[count];
-            return Observable.FromAsyncPattern((cb, state) => stream.BeginRead(buffer, 0, count, cb, state), ar =>
+            return Observable.FromAsync(() => 
             {
-                stream.EndRead(ar);
-                return buffer;
-            })();
+               return Task.Factory.StartNew(() =>
+               {
+                    var index = stream.ReadAsync(buffer, 0, count);
+                    return buffer;
+               });
+            });
         }
     }
 }
