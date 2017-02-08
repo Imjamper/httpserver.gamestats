@@ -49,7 +49,7 @@ namespace Kontur.GameStats.Server
 
         private void SubscribeHandlers()
         {
-            var handlers = ServicesContainer.Current.GetHandlers();
+            var handlers = ComponentContainer.Current.GetHandlers();
             handlers.ForEach(h => h.Subscribe(this));
         }
     }

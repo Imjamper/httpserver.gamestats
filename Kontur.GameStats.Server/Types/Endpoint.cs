@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.Types
 {
     public class Endpoint
     {
@@ -52,7 +52,7 @@ namespace Kontur.GameStats.Server.Models
 
         public override string ToString()
         {
-            return $"Host-Port";
+            return $"{Host}-{Port}";
         }
     }
 }

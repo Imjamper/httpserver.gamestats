@@ -1,4 +1,5 @@
 ﻿using Kontur.GameStats.Server.Enums;
+using Kontur.GameStats.Server.Types;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,7 @@ namespace Kontur.GameStats.Server.Context
         public IDictionary<string, IEnumerable<string>> Headers { get; set; }
         public Stream InputStream { get; set; }
         public string RawUrl { get; set; }
+        public List<UrlParameter> Parameters { get; set; }
         public int ContentLength
         {
             get

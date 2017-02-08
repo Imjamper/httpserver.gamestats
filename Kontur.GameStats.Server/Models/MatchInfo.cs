@@ -11,7 +11,7 @@ namespace Kontur.GameStats.Server.Models
     {
         public MatchInfo()
         {
-
+            ScoreBoard = new List<PlayerScore>();
         }
 
         public string Map { get; set; }

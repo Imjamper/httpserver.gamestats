@@ -13,20 +13,19 @@ using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
-    public class MethodInfoItem
+    public class HttpMethodInfo
     {
-        public MethodInfoItem()
+        public HttpMethodInfo()
         {
 
         }
 
-        public MethodInfoItem(string name, string url, MethodInfo methodInfo, MethodType methodType)
+        public HttpMethodInfo(string name, string url, MethodInfo methodInfo, MethodType methodType)
         {
             Url = url;
             MethodInfo = methodInfo;
             MethodType = methodType;
             ParametersNames = new Dictionary<string, int>();
-            MapParametersName();
             Name = name;
         }
 
@@ -50,40 +49,23 @@ namespace Kontur.GameStats.Server.HttpServices
                     foreach (var parameter in MethodInfo.GetParameters().ToList())
                     {
                         object value = null;
-                        if (parameter.Name == "body")
+                        if (typeof(JsonResponse).IsAssignableFrom(parameter.ParameterType))
                         {
                             var json = Encoding.UTF8.GetString(a);
                             value = JsonConvert.DeserializeObject(json, parameter.ParameterType);
-                            values[index] = value;
                         }
                         else
                         {
-                            int indexInPath;
-                            if (ParametersNames.TryGetValue(parameter.Name, out indexInPath))
-                            {
-                                value = requestContext.Request.RawUrl.GetValueByIndex(indexInPath);
-                                values[index] = value;
-                            }
+                            var urlParameter = requestContext.Request.Parameters.FirstOrDefault(p => p.Type == parameter.ParameterType);
+                            if (urlParameter != null && urlParameter.Value != null)
+                                value = urlParameter.Value;
                         }
-                        
+                        values[index] = value;
                         index++;
                     }
                     var response = MethodInfo.Invoke<Response>(values);
                     requestContext.Respond(response);
                 });
-        }
-
-        private void MapParametersName()
-        {
-            var regex = new Regex(@"(?<=\<)(.*?)(?=\>)");
-            var groups = regex.Match(Url).Groups;
-            foreach (Group group in groups)
-            {
-                if (!ParametersNames.ContainsKey(group.Value))
-                {
-                    ParametersNames.Add(group.Value, Url.GetIndexInUrl(group.Value));
-                }
-            }
         }
     }
 }

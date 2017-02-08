@@ -12,12 +12,12 @@ namespace Kontur.GameStats.Server.HttpServices
     {
         MethodType MethodType { get; set; }
 
-        void Subscribe(StatServer server);
+        void Subscribe(IObservable<RequestContext> observableContext);
 
         void ProcessRequest(RequestContext requestContext);
 
-        IObservable<MethodInfoItem> GetMethod(RequestContext requestContext);
+        IObservable<HttpMethodInfo> GetMethod(RequestContext requestContext);
 
-        void SetContainer(ServicesContainer servicesContainer);
+        void SetContainer(ComponentContainer servicesContainer);
     }
 }

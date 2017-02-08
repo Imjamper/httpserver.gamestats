@@ -14,22 +14,22 @@ namespace Kontur.GameStats.Server.HttpServices
     public abstract class HttpHandler : IHttpHandler
     {
         protected StatServer _server;
-        protected ServicesContainer _servicesContainer;
+        protected ComponentContainer _servicesContainer;
         public MethodType MethodType { get; set; }
 
-        public void Subscribe(StatServer server)
+        public void Subscribe(IObservable<RequestContext> observableContext)
         {
-            server.Where(a => a.Request.HttpMethod == MethodType).Subscribe(async => ProcessRequest(async));
+            observableContext.Where(a => a.Request.HttpMethod == MethodType).Subscribe(async => ProcessRequest(async));
         }
 
-        public virtual IObservable<MethodInfoItem> GetMethod(RequestContext requestContext)
+        public virtual IObservable<HttpMethodInfo> GetMethod(RequestContext requestContext)
         {
             var methodName = requestContext.Request.RawUrl.GetMethodName();
             return Observable.FromAsync(() => 
             {
                 return Task.Run(() => 
                 {
-                    return _servicesContainer.GetMethod(methodName, MethodType, requestContext.Request.RawUrl);
+                    return _servicesContainer.GetMethod(methodName, MethodType, requestContext.Request.Parameters);
                 });
             });
         }
@@ -39,7 +39,7 @@ namespace Kontur.GameStats.Server.HttpServices
             var method = GetMethod(requestContext).Subscribe(m => m.Invoke(requestContext));
         }
 
-        public void SetContainer(ServicesContainer servicesContainer)
+        public void SetContainer(ComponentContainer servicesContainer)
         {
             _servicesContainer = servicesContainer;
         }

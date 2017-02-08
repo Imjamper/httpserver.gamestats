@@ -7,25 +7,27 @@ using System.Threading.Tasks;
 using Kontur.GameStats.Server.Extensions;
 using Kontur.GameStats.Server.Attributes;
 using Kontur.GameStats.Server.Enums;
+using Kontur.GameStats.Server.Types;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
-    public class ServicesContainer
+    public class ComponentContainer
     {
-        private List<MethodInfoItem> _methods = new List<MethodInfoItem>();
+        private List<HttpMethodInfo> _methods = new List<HttpMethodInfo>();
         private List<HttpHandler> _handlers = new List<HttpHandler>();
-        private static ServicesContainer _currentContainer = new ServicesContainer();
-        public List<MethodInfoItem> Methods
+        private List<KnownTypeParser> _urlParsers = new List<KnownTypeParser>();
+        private static ComponentContainer _currentContainer = new ComponentContainer();
+        public List<HttpMethodInfo> Methods
         {
             get { return _methods; }
         }
 
-        public ServicesContainer()
+        public ComponentContainer()
         {
             Initialize();
         }
 
-        public static ServicesContainer Current
+        public static ComponentContainer Current
         {
             get { return _currentContainer; }
         }
@@ -43,7 +45,7 @@ namespace Kontur.GameStats.Server.HttpServices
                 foreach (var method in methods)
                 {
                     var attribute = method.GetAttribute<HttpOperationAttribute>();
-                    _methods.Add(new MethodInfoItem(attribute.Name, attribute.Url, method, attribute.MethodType));
+                    _methods.Add(new HttpMethodInfo(attribute.Name, attribute.Url, method, attribute.MethodType));
                 }
             }
 
@@ -59,6 +61,17 @@ namespace Kontur.GameStats.Server.HttpServices
                 handlerInstance.SetContainer(this);
                 _handlers.Add(handlerInstance);
             }
+
+            var descriptorInterface = typeof(IKnownTypeParser);
+
+            var descriptorsTypes = GetType()
+                .Assembly
+                .GetTypes()
+                .Where(p => descriptorInterface.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToList();
+            foreach (var descriptorType in descriptorsTypes)
+            {
+                _urlParsers.Add(Activator.CreateInstance(descriptorType) as KnownTypeParser);
+            }
         }
 
         public List<HttpHandler> GetHandlers()
@@ -66,12 +79,17 @@ namespace Kontur.GameStats.Server.HttpServices
             return _handlers;
         }
 
-        public MethodInfoItem GetMethod(string name, MethodType methodType, string rawUrl)
+        public List<KnownTypeParser> GetParsers()
+        {
+            return _urlParsers;
+        }
+
+        public HttpMethodInfo GetMethod(string name, MethodType methodType, List<UrlParameter> urlParameters)
         {
             var methods = _methods.Where(m => m.MethodType == methodType && m.Name == name).ToList();
             if (methods.Count > 1)
             {
-               return methods.FirstOrDefault(a => a.Url.CompareUrlBySegments(rawUrl));
+               return methods.FirstOrDefault(a => a.MethodInfo.CompareByParams(urlParameters));
             }
             else return methods.FirstOrDefault();
         }

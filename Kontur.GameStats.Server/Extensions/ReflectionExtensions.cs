@@ -1,4 +1,5 @@
 ﻿using Kontur.GameStats.Server.Context;
+using Kontur.GameStats.Server.Types;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,7 +12,6 @@ namespace Kontur.GameStats.Server.Extensions
 {
     public static class ReflectionExtensions
     {
-        public static ConcurrentDictionary<MethodInfo, Attribute> _attributesCache = new ConcurrentDictionary<MethodInfo, Attribute>();
         public static bool TryGetAtribute<T>(this MethodInfo methodInfo, out T attribute) where T: Attribute
         {
             var attr = GetAttribute<T>(methodInfo);
@@ -49,6 +49,23 @@ namespace Kontur.GameStats.Server.Extensions
                 instance = Activator.CreateInstance(methodInfo.DeclaringType);
             else instance = obj;
             return methodInfo.Invoke(instance, parameters) as T;
+        }
+
+        public static bool CompareByParams(this MethodInfo method, List<UrlParameter> urlParameters)
+        {
+            var methodParameters = method.GetParameters().Where(p => !typeof(JsonResponse).IsAssignableFrom(p.ParameterType)).ToList();
+            if (urlParameters.Count != methodParameters.Count)
+                return false;
+
+            for (int index = 0; index <= methodParameters.Count - 1; index++)
+            {
+                var methodParameter = methodParameters.ElementAt(index);
+                var urlParameter = urlParameters.ElementAtOrDefault(index);
+                if ((methodParameter == null || urlParameter == null) || methodParameter.ParameterType != urlParameter.Type)
+                    return false;
+            }
+
+            return true;
         }
     }
 }
