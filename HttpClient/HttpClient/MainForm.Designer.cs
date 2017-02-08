@@ -92,7 +92,7 @@
             "http://localhost:8080/servers/localhost-9999/matches/2017-01-22T15:17:00Z",
             "http://localhost:8080/servers/info",
             "http://localhost:8080/servers/localhost-9999/stats",
-            "http://localhost:8080/players/Player1/stats",
+            "http://localhost:8080/players/\">> Sniper Heaven <</stats",
             "http://localhost:8080/reports/recent-matches[/2]",
             "http://localhost:8080/reports/best-players[/2]",
             "http://localhost:8080/reports/popular-servers[/2]"});
@@ -102,7 +102,7 @@
             "http://localhost:8080/servers/localhost-9999/matches/2017-01-22T15:17:00Z",
             "http://localhost:8080/servers/info",
             "http://localhost:8080/servers/localhost-9999/stats",
-            "http://localhost:8080/players/Player1/stats",
+            "http://localhost:8080/players/\">> Sniper Heaven <</stats",
             "http://localhost:8080/reports/recent-matches[/2]",
             "http://localhost:8080/reports/best-players[/2]",
             "http://localhost:8080/reports/popular-servers[/2]"});

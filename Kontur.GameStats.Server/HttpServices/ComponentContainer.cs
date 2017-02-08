@@ -13,14 +13,10 @@ namespace Kontur.GameStats.Server.HttpServices
 {
     public class ComponentContainer
     {
-        private List<HttpMethodInfo> _methods = new List<HttpMethodInfo>();
+        private List<HttpServiceInfo> _httpServices = new List<HttpServiceInfo>();
         private List<HttpHandler> _handlers = new List<HttpHandler>();
         private List<KnownTypeParser> _urlParsers = new List<KnownTypeParser>();
         private static ComponentContainer _currentContainer = new ComponentContainer();
-        public List<HttpMethodInfo> Methods
-        {
-            get { return _methods; }
-        }
 
         public ComponentContainer()
         {
@@ -41,12 +37,14 @@ namespace Kontur.GameStats.Server.HttpServices
                 .Where(p => httpServiceType.IsAssignableFrom(p) && p.IsClass);
             foreach (var service in services)
             {
+                string serviceName = String.Empty;
+                var httpServiceAttribute = service.GetAttribute<HttpServiceAttribute>();
+                if (httpServiceAttribute != null)
+                    serviceName = httpServiceAttribute.Name;
+                else serviceName = service.Name.Replace("Service", String.Empty).ToLower();   
                 var methods = service.GetMethodsWithAttribute<HttpOperationAttribute>();
-                foreach (var method in methods)
-                {
-                    var attribute = method.GetAttribute<HttpOperationAttribute>();
-                    _methods.Add(new HttpMethodInfo(attribute.Name, attribute.Url, method, attribute.MethodType));
-                }
+                var serviceInfo = new HttpServiceInfo(serviceName, methods);
+                _httpServices.Add(serviceInfo);
             }
 
             var httpHandlerType = typeof(HttpHandler);
@@ -84,14 +82,11 @@ namespace Kontur.GameStats.Server.HttpServices
             return _urlParsers;
         }
 
-        public HttpMethodInfo GetMethod(string name, MethodType methodType, List<UrlParameter> urlParameters)
+        public HttpServiceInfo GetService(string serviceName)
         {
-            var methods = _methods.Where(m => m.MethodType == methodType && m.Name == name).ToList();
-            if (methods.Count > 1)
-            {
-               return methods.FirstOrDefault(a => a.MethodInfo.CompareByParams(urlParameters));
-            }
-            else return methods.FirstOrDefault();
+            return _httpServices.FirstOrDefault(a => a.Name == serviceName);
         }
+
+        
     }
 }

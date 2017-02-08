@@ -21,7 +21,7 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Advertise запрос от игрового сервера
         /// </summary>
-        [PutOperation("info", "/servers/<endpoint>/info")]
+        [PutOperation("info", "/<endpoint>/info")]
         public EmptyResponse PutInfo(Endpoint endpoint, ServerInfo body)
         {
             return new EmptyResponse();
@@ -30,7 +30,7 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Запись информации о завершенном матче
         /// </summary>
-        [PutOperation("matches", "/servers/<endpoint>/matches/<timestamp>")]
+        [PutOperation("matches", "/<endpoint>/matches/<timestamp>")]
         public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTime? timestamp, MatchInfo body)
         {
             return new EmptyResponse();
@@ -39,7 +39,7 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Получить информацию о сервере
         /// </summary>
-        [GetOperation("info", "/servers/<endpoint>/info")]
+        [GetOperation("info", "/<endpoint>/info")]
         public ServerInfo GetServerInfo(Endpoint endpoint)
         {
             return new ServerInfo() { GameModes = new List<string> { "DM", "Single" }, Name = "] My P3rfect Server[" };
@@ -48,7 +48,7 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Получить информацию о серверах
         /// </summary>
-        [GetOperation("info", "/servers/info")]
+        [GetOperation("info", "/info")]
         public AllServersInfo GetAllServersInfo()
         {
             var model = new AllServersInfo();
@@ -60,7 +60,7 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Получение информации о завершенном матче
         /// </summary>
-        [GetOperation("matches", "/servers/<endpoint>/matches/<timestamp>")]
+        [GetOperation("matches", "/<endpoint>/matches/<timestamp>")]
         public MatchInfo GetMatchInfo(Endpoint endpoint, DateTime? timestamp)
         {
             var model = new MatchInfo();
@@ -77,7 +77,7 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Получение статистики о играх на сервере
         /// </summary>
-        [GetOperation("stats", "/servers/<endpoint>/stats")]
+        [GetOperation("stats", "/<endpoint>/stats")]
         public ServerStatsInfo GetServerStats(Endpoint endpoint)
         {
             var model = new ServerStatsInfo();

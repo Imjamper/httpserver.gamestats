@@ -20,15 +20,14 @@ namespace Kontur.GameStats.Server.Context
             Request = MapRequest(request);
         }
 
-        private static Request MapRequest(HttpListenerRequest request)
+        private Request MapRequest(HttpListenerRequest request)
         {
             var mapRequest = new Request
             {
                 Headers = request.Headers.ToDictionary(),
                 HttpMethod = request.HttpMethod.FromString(),
                 InputStream = request.InputStream,
-                RawUrl = request.RawUrl,
-                Parameters = UrlParser.Parse(request.RawUrl)
+                RawUrl = request.RawUrl
             };
             return mapRequest;
         }

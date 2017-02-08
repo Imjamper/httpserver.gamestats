@@ -11,6 +11,11 @@ namespace Kontur.GameStats.Server.Context
 {
     public class Request
     {
+        public Request()
+        {
+            Parameters = new List<UrlParameter>();
+        }
+
         public MethodType HttpMethod { get; set; }
         public IDictionary<string, IEnumerable<string>> Headers { get; set; }
         public Stream InputStream { get; set; }

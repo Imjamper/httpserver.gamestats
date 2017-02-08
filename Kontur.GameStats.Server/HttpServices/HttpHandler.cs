@@ -1,6 +1,7 @@
 ﻿using Kontur.GameStats.Server.Context;
 using Kontur.GameStats.Server.Enums;
 using Kontur.GameStats.Server.Extensions;
+using Kontur.GameStats.Server.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,19 +25,32 @@ namespace Kontur.GameStats.Server.HttpServices
 
         public virtual IObservable<HttpMethodInfo> GetMethod(RequestContext requestContext)
         {
-            var methodName = requestContext.Request.RawUrl.GetMethodName();
             return Observable.FromAsync(() => 
             {
                 return Task.Run(() => 
                 {
-                    return _servicesContainer.GetMethod(methodName, MethodType, requestContext.Request.Parameters);
+                    var serviceName = requestContext.Request.RawUrl.GetServiceName();
+                    var service = _servicesContainer.GetService(serviceName);
+                    if (service != null)
+                    {
+                        var url = Uri.UnescapeDataString(requestContext.Request.RawUrl);
+                        var methodName = service.MethodNames.FirstOrDefault(a => url.Exclude(serviceName).Contains(a));
+                        if (!String.IsNullOrEmpty(methodName))
+                        {
+                            var urlParameters = UrlParser.Parse(url, methodName, serviceName);
+                            requestContext.Request.Parameters.AddRange(urlParameters);
+                            return service.GetMethod(MethodType, urlParameters);
+                        }
+                        return null;
+                    }
+                    else return null;
                 });
             });
         }
 
         public virtual void ProcessRequest(RequestContext requestContext)
         {
-            var method = GetMethod(requestContext).Subscribe(m => m.Invoke(requestContext));
+            GetMethod(requestContext).Where(method => method != null).Subscribe(m => m.Invoke(requestContext));
         }
 
         public void SetContainer(ComponentContainer servicesContainer)

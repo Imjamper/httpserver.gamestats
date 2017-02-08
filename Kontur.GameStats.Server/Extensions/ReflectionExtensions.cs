@@ -27,14 +27,39 @@ namespace Kontur.GameStats.Server.Extensions
             }
         }
 
-        public static bool HasAttribute<T>(this MethodInfo methodInfo) where T:Attribute
+        public static bool HasAttribute<T>(this MethodInfo methodInfo) where T : Attribute
         {
             return GetAttribute<T>(methodInfo) != null;
         }
 
-        public static T GetAttribute<T>(this MethodInfo methodInfo) where T: Attribute
+        public static T GetAttribute<T>(this MethodInfo methodInfo) where T : Attribute
         {
             return methodInfo.GetCustomAttribute(typeof(T), false) as T;
+        }
+
+        public static bool HasAttribute<T>(this Type type) where T:Attribute
+        {
+            return GetAttribute<T>(type) != null;
+        }
+
+        public static T GetAttribute<T>(this Type type) where T: Attribute
+        {
+            return type.GetCustomAttribute(typeof(T), false) as T;
+        }
+
+        public static bool TryGetAtribute<T>(this Type type, out T attribute) where T : Attribute
+        {
+            var attr = GetAttribute<T>(type);
+            if (attr != null)
+            {
+                attribute = attr;
+                return true;
+            }
+            else
+            {
+                attribute = null;
+                return false;
+            }
         }
 
         public static List<MethodInfo> GetMethodsWithAttribute<T>(this Type type) where T: Attribute

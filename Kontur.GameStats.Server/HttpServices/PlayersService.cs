@@ -19,7 +19,7 @@ namespace Kontur.GameStats.Server.HttpServices
         /// <summary>
         /// Получить статистику игрока
         /// </summary>
-        [GetOperation("stats", "/players/<name>/stats")]
+        [GetOperation("stats", "/<name>/stats")]
         public PlayerStats GetPlayerStats(string name)
         {
             var model = new PlayerStats();
