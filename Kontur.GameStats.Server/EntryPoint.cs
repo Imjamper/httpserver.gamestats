@@ -1,6 +1,6 @@
 ﻿using System;
 using Fclp;
-using Kontur.GameStats.Server.Server;
+using GL.HttpServer.Server;
 
 namespace Kontur.GameStats.Server
 {

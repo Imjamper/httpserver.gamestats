@@ -1,25 +1,18 @@
-﻿using Kontur.GameStats.Server.Attributes;
-using Kontur.GameStats.Server.Context;
-using Kontur.GameStats.Server.Models;
-using Kontur.GameStats.Server.Types;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GL.HttpServer.Attributes;
+using GL.HttpServer.Context;
+using GL.HttpServer.HttpServices;
+using GL.HttpServer.Types;
+using Kontur.GameStats.Server.Models;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
     [HttpService("servers")]
     public class ServersService : IHttpService
     {
-        public ServersService()
-        {
-
-        }
-
         /// <summary>
-        /// Advertise запрос от игрового сервера
+        ///     Advertise запрос от игрового сервера
         /// </summary>
         [PutOperation("info", "/<endpoint>/info")]
         public EmptyResponse PutInfo(Endpoint endpoint, ServerInfo body)
@@ -28,7 +21,7 @@ namespace Kontur.GameStats.Server.HttpServices
         }
 
         /// <summary>
-        /// Запись информации о завершенном матче
+        ///     Запись информации о завершенном матче
         /// </summary>
         [PutOperation("matches", "/<endpoint>/matches/<timestamp>")]
         public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTime? timestamp, MatchInfo body)
@@ -37,28 +30,36 @@ namespace Kontur.GameStats.Server.HttpServices
         }
 
         /// <summary>
-        /// Получить информацию о сервере
+        ///     Получить информацию о сервере
         /// </summary>
         [GetOperation("info", "/<endpoint>/info")]
         public ServerInfo GetServerInfo(Endpoint endpoint)
         {
-            return new ServerInfo() { GameModes = new List<string> { "DM", "Single" }, Name = "] My P3rfect Server[" };
+            return new ServerInfo {GameModes = new List<string> {"DM", "Single"}, Name = "] My P3rfect Server["};
         }
 
         /// <summary>
-        /// Получить информацию о серверах
+        ///     Получить информацию о серверах
         /// </summary>
         [GetOperation("info", "/info")]
         public AllServersInfo GetAllServersInfo()
         {
             var model = new AllServersInfo();
-            model.ServersInfo.Add(new ServerInfo() { GameModes = new List<string> { "DM", "Single" }, Name = "] My P3rfect Server[" });
-            model.ServersInfo.Add(new ServerInfo() { GameModes = new List<string> { "DM1", "Single2" }, Name = "] My P3rfect Server 2[" });
+            model.ServersInfo.Add(new ServerInfo
+            {
+                GameModes = new List<string> {"DM", "Single"},
+                Name = "] My P3rfect Server["
+            });
+            model.ServersInfo.Add(new ServerInfo
+            {
+                GameModes = new List<string> {"DM1", "Single2"},
+                Name = "] My P3rfect Server 2["
+            });
             return model;
         }
 
         /// <summary>
-        /// Получение информации о завершенном матче
+        ///     Получение информации о завершенном матче
         /// </summary>
         [GetOperation("matches", "/<endpoint>/matches/<timestamp>")]
         public MatchInfo GetMatchInfo(Endpoint endpoint, DateTime? timestamp)
@@ -69,13 +70,13 @@ namespace Kontur.GameStats.Server.HttpServices
             model.FragLimit = 20;
             model.TimeLimit = 20;
             model.TimeElapsed = 12.345678;
-            model.ScoreBoard.Add(new PlayerScore() { Name = "Player1", Deaths = 2, Kills = 10, Frags = 14 });
-            model.ScoreBoard.Add(new PlayerScore() { Name = "Player2", Deaths = 21, Kills = 4, Frags = 3 });
+            model.ScoreBoard.Add(new PlayerScore {Name = "Player1", Deaths = 2, Kills = 10, Frags = 14});
+            model.ScoreBoard.Add(new PlayerScore {Name = "Player2", Deaths = 21, Kills = 4, Frags = 3});
             return model;
         }
 
         /// <summary>
-        /// Получение статистики о играх на сервере
+        ///     Получение статистики о играх на сервере
         /// </summary>
         [GetOperation("stats", "/<endpoint>/stats")]
         public ServerStatsInfo GetServerStats(Endpoint endpoint)

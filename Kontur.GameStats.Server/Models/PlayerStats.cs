@@ -1,19 +1,10 @@
-﻿using Kontur.GameStats.Server.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using GL.HttpServer.Context;
 
 namespace Kontur.GameStats.Server.Models
 {
     public class PlayerStats : JsonResponse
     {
-        public PlayerStats()
-        {
-
-        }
-
         public int TotalMatchesPlayed { get; set; }
         public int TotalMatchesWon { get; set; }
         public string FavoriteServer { get; set; }

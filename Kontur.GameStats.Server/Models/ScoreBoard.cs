@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kontur.GameStats.Server.Models
+﻿namespace Kontur.GameStats.Server.Models
 {
     public class PlayerScore
     {
-        public PlayerScore()
-        {
-            
-        }
-
         public string Name { get; set; }
 
         public int Frags { get; set; }
