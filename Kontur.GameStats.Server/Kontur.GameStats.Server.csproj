@@ -42,14 +42,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HttpServices\PlayersService.cs" />
+    <Compile Include="HttpServices\ReportsService.cs" />
     <Compile Include="HttpServices\ServersService.cs" />
     <Compile Include="Models\AllServersInfo.cs" />
     <Compile Include="Models\PlayerStats.cs" />
-    <Compile Include="Models\ServerStatsInfo.cs" />
+    <Compile Include="Models\RecentMatchesInfo.cs" />
+    <Compile Include="Models\FullServerInfo.cs" />
     <Compile Include="Models\MatchInfo.cs" />
     <Compile Include="Models\ScoreBoard.cs" />
     <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="EntryPoint.cs" />
+    <Compile Include="Models\ShortPlayerStats.cs" />
+    <Compile Include="Models\ShortServerInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

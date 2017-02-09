@@ -22,7 +22,7 @@ namespace GL.HttpServer.Context
         public IDictionary<string, string> Headers { get; set; }
 
         [JsonIgnore]
-        public Action<Stream> WriteStream { get; set; }
+        internal Action<Stream> WriteStream { get; set; }
     }
 
     public class JsonResponse : Response

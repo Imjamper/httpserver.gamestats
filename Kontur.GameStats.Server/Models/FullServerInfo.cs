@@ -3,9 +3,9 @@ using GL.HttpServer.Context;
 
 namespace Kontur.GameStats.Server.Models
 {
-    public class ServerStatsInfo : JsonResponse
+    public class FullServerInfo : ShortServerInfo
     {
-        public ServerStatsInfo()
+        public FullServerInfo()
         {
             Top5GameModes = new List<string>();
             Top5Maps = new List<string>();
@@ -14,8 +14,6 @@ namespace Kontur.GameStats.Server.Models
         public int TotalMatchesPlayed { get; set; }
 
         public int MaximumMatchesPerDay { get; set; }
-
-        public double AverageMatchesPerDay { get; set; }
 
         public int MaximumPopulation { get; set; }
 

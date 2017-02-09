@@ -79,9 +79,9 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Получение статистики о играх на сервере
         /// </summary>
         [GetOperation("stats", "/<endpoint>/stats")]
-        public ServerStatsInfo GetServerStats(Endpoint endpoint)
+        public FullServerInfo GetServerStats(Endpoint endpoint)
         {
-            var model = new ServerStatsInfo();
+            var model = new FullServerInfo();
             model.TotalMatchesPlayed = 100500;
             model.MaximumMatchesPerDay = 33;
             model.AverageMatchesPerDay = 24.456240;
