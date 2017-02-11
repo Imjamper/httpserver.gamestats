@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using GL.HttpServer.Context;
 using GL.HttpServer.Types;
+using System.Collections;
 
 namespace GL.HttpServer.Extensions
 {
@@ -58,13 +59,45 @@ namespace GL.HttpServer.Extensions
             return type.GetMethods().Where(m => HasAttribute<T>(m)).ToList();
         }
 
-        public static T Invoke<T>(this MethodInfo methodInfo, object[] parameters, object obj = null) where T : Response
+        public static bool HasAttribute<T>(this ParameterInfo parameter) where T : Attribute
+        {
+            return GetAttribute<T>(parameter) != null;
+        }
+
+        public static T GetAttribute<T>(this ParameterInfo parameter) where T : Attribute
+        {
+            return parameter.GetCustomAttribute(typeof(T), false) as T;
+        }
+
+        public static bool TryGetAtribute<T>(this ParameterInfo parameter, out T attribute) where T : Attribute
+        {
+            var attr = GetAttribute<T>(parameter);
+            if (attr != null)
+            {
+                attribute = attr;
+                return true;
+            }
+            attribute = null;
+            return false;
+        }
+
+        public static Response Invoke(this MethodInfo methodInfo, object[] parameters, object obj = null)
         {
             object instance;
             if (obj == null)
                 instance = Activator.CreateInstance(methodInfo.DeclaringType);
             else instance = obj;
-            return methodInfo.Invoke(instance, parameters) as T;
+            Response response = null;
+            try
+            {
+                response = methodInfo.Invoke(instance, parameters) as Response;
+            }
+            catch (Exception ex)
+            {
+                response = new ErrorResponse(ex.Message);
+            }
+
+            return response;
         }
 
         public static bool CompareByParams(this MethodInfo method, List<UrlParameter> urlParameters)

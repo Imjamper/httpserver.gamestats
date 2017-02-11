@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.HttpServices;
 using Kontur.GameStats.Server.Models;
+using GL.HttpServer.Context;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
@@ -10,7 +11,7 @@ namespace Kontur.GameStats.Server.HttpServices
     public class ReportsService : IHttpService
     {
         [GetOperation("recent-matches", "/recent-matches[/<count>]")]
-        public RecentMatchesInfo GetRecentMatches(int count)
+        public RecentMatchesInfo GetRecentMatches([Bind("[/{count}]")]int count)
         {
             var model = new RecentMatchesInfo();
             model.Server = "192.168.1.1-8080";
@@ -36,19 +37,19 @@ namespace Kontur.GameStats.Server.HttpServices
             return model;
         }
 
-        [GetOperation("recent-matches", "/recent-matches[/<count>]")]
-        public List<ShortPlayerStats> GetBestPlayers(int count)
+        [GetOperation("best-players", "/best-players[/<count>]")]
+        public JsonList<ShortPlayerStats> GetBestPlayers([Bind("[/{count}]")]int count)
         {
-            var model = new List<ShortPlayerStats>();
+            var model = new JsonList<ShortPlayerStats>();
             model.Add(new ShortPlayerStats {Name = "Player1", KillToDeathRatio = 12.123123 });
             model.Add(new ShortPlayerStats { Name = "Player11", KillToDeathRatio = 3.1123123432 });
             return model;
         }
 
         [GetOperation("popular-servers", "/popular-servers[/<count>]")]
-        public List<ShortServerInfo> GetPopularServers(int count)
+        public JsonList<ShortServerInfo> GetPopularServers([Bind("[/{count}]")]int count)
         {
-            var model = new List<ShortServerInfo>();
+            var model = new JsonList<ShortServerInfo>();
             model.Add(new ShortServerInfo() {Endpoint = "192.168.1.1-8080", Name = "MyServer1", AverageMatchesPerDay = 10.234234});
             model.Add(new ShortServerInfo() { Endpoint = "192.168.1.14-8080", Name = "MyServer14", AverageMatchesPerDay = 2392.354 });
             return model;

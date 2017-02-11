@@ -11,6 +11,7 @@
     <AssemblyName>GL.HttpServer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,10 +58,15 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\BindAttribute.cs" />
     <Compile Include="Attributes\GetOperationAttribute.cs" />
     <Compile Include="Attributes\HttpOperationAttribute.cs" />
     <Compile Include="Attributes\HttpServiceAttribute.cs" />
     <Compile Include="Attributes\PutOperationAttribute.cs" />
+    <Compile Include="Context\EmptyResponse.cs" />
+    <Compile Include="Context\ErrorResponse.cs" />
+    <Compile Include="Context\JsonList.T.cs" />
+    <Compile Include="Context\JsonResponse.cs" />
     <Compile Include="Context\Request.cs" />
     <Compile Include="Context\RequestContext.cs" />
     <Compile Include="Context\Response.cs" />
@@ -78,8 +84,10 @@
     <Compile Include="HttpServices\IHttpService.cs" />
     <Compile Include="HttpServices\PutHttpHandler.cs" />
     <Compile Include="Server\Configuration.cs" />
+    <Compile Include="Server\ServerEnviroment.cs" />
     <Compile Include="Server\ServerStarter.cs" />
-    <Compile Include="Server\StatServer.cs" />
+    <Compile Include="Server\HttpServer.cs" />
+    <Compile Include="Types\ParameterBindInfo.cs" />
     <Compile Include="Types\DateTimeParser.cs" />
     <Compile Include="Types\Endpoint.cs" />
     <Compile Include="Types\EndpointParser.cs" />

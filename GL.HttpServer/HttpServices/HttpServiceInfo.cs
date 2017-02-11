@@ -5,6 +5,8 @@ using GL.HttpServer.Attributes;
 using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
 using GL.HttpServer.Types;
+using System;
+using GL.HttpServer.Server;
 
 namespace GL.HttpServer.HttpServices
 {
@@ -17,9 +19,20 @@ namespace GL.HttpServer.HttpServices
             Name = name;
             foreach (var method in methods)
             {
-                var attribute = method.GetAttribute<HttpOperationAttribute>();
-                _methods.Add(new HttpMethodInfo(attribute.Name, attribute.Url, method, attribute.MethodType));
-                MethodNames.Add(attribute.Name);
+                var httpAttribute = method.GetAttribute<HttpOperationAttribute>();
+                var methodInfo = new HttpMethodInfo(httpAttribute.Name, httpAttribute.Url, method, httpAttribute.MethodType);
+                Console.WriteLine($"        {httpAttribute.MethodType.ToString("G")} {ServerEnviroment.Host}{name}{httpAttribute.Url}");
+                foreach (var parameter in method.GetParameters())
+                {
+                    var bindAttribute = parameter.GetAttribute<BindAttribute>();
+                    if (bindAttribute != null)
+                    {
+                        var parameterBindInfo = new ParameterBindInfo(bindAttribute.BindMask, parameter.Name, parameter.ParameterType);
+                        methodInfo.BindInfos.Add(parameterBindInfo);
+                    }
+                }
+                _methods.Add(methodInfo);
+                MethodNames.Add(httpAttribute.Name);
             }
         }
 
@@ -31,9 +44,14 @@ namespace GL.HttpServer.HttpServices
 
         public List<string> MethodNames { get; } = new List<string>();
 
-        public HttpMethodInfo GetMethod(MethodType methodType, List<UrlParameter> urlParameters)
+        public HttpMethodInfo GetMethod(MethodType methodType, string methodName, List<UrlParameter> urlParameters)
         {
-            return _methods.FirstOrDefault(a => a.MethodInfo.CompareByParams(urlParameters));
+            return _methods.FirstOrDefault(a => a.MethodInfo.CompareByParams(urlParameters) && a.MethodType == methodType && a.Name == methodName);
+        }
+
+        public List<HttpMethodInfo> GetMethods(MethodType methodType, string methodName)
+        {
+            return _methods.Where(a => a.Name == methodName && a.MethodType == methodType).ToList();
         }
     }
 }

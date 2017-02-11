@@ -6,6 +6,7 @@ namespace GL.HttpServer.HttpServices
 {
     public interface IHttpHandler
     {
+        ComponentContainer ComponentContainer { get;}
         MethodType MethodType { get; set; }
 
         void Subscribe(IObservable<RequestContext> observableContext);
@@ -13,7 +14,5 @@ namespace GL.HttpServer.HttpServices
         void ProcessRequest(RequestContext requestContext);
 
         IObservable<HttpMethodInfo> GetMethod(RequestContext requestContext);
-
-        void SetContainer(ComponentContainer servicesContainer);
     }
 }

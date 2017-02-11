@@ -4,8 +4,6 @@ namespace GL.HttpServer.Types
 {
     public class IntegerParser : KnownTypeParser<int?>
     {
-        private readonly Regex regex = new Regex("^[0-9]+$", RegexOptions.Compiled);
-
         public override bool CanParse(string input)
         {
             var value = 0;

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace GL.HttpServer.Context
 {
-    public class Response
+    public abstract class Response
     {
         public Response()
         {
@@ -23,35 +23,5 @@ namespace GL.HttpServer.Context
 
         [JsonIgnore]
         internal Action<Stream> WriteStream { get; set; }
-    }
-
-    public class JsonResponse : Response
-    {
-        public JsonResponse(string json)
-        {
-            var bytes = Encoding.UTF8.GetBytes(json);
-            WriteStream = s => s.Write(bytes, 0, bytes.Length);
-        }
-
-        public JsonResponse()
-        {
-            WriteStream = WriteJson;
-        }
-
-        private void WriteJson(Stream stream)
-        {
-            var json = JsonConvert.SerializeObject(this);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            Headers.Add("Content-Length", json.Length.ToString());
-            stream.WriteAsync(bytes, 0, bytes.Length);
-        }
-    }
-
-    public class EmptyResponse : Response
-    {
-        public EmptyResponse(int statusCode = 404)
-        {
-            StatusCode = statusCode;
-        }
     }
 }

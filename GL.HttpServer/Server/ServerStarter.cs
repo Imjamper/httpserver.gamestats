@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GL.HttpServer.HttpServices;
+using System;
 
 namespace GL.HttpServer.Server
 {
@@ -13,9 +14,11 @@ namespace GL.HttpServer.Server
 
         public void Start()
         {
-            using (var server = new StatServer(_config.Prefix))
+            ServerEnviroment.Host = _config.Prefix;
+            ComponentContainer.Current.Initialize();
+            using (var server = new HttpServer(_config.Prefix))
             {
-                Console.WriteLine("Server started. For terminate press any key...");
+                Console.WriteLine("The server is running. For turn off the server, press any key...");
                 Console.ReadLine();
             }
         }

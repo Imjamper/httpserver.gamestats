@@ -12,21 +12,33 @@ namespace GL.HttpServer.HttpServices
         private readonly List<HttpHandler> _handlers = new List<HttpHandler>();
         private readonly List<HttpServiceInfo> _httpServices = new List<HttpServiceInfo>();
         private readonly List<KnownTypeParser> _urlParsers = new List<KnownTypeParser>();
+        private static ComponentContainer _currentContainer;
 
         public ComponentContainer()
         {
-            Initialize();
         }
 
-        public static ComponentContainer Current { get; } = new ComponentContainer();
+        public static ComponentContainer Current
+        {
+            get
+            {
+                if (_currentContainer == null)
+                {
+                    _currentContainer = new ComponentContainer();
+                }
+                    
+                return _currentContainer;
+            }
+        }
 
         public void Initialize()
         {
             var httpServiceType = typeof(IHttpService);
-            var services = GetType()
-                .Assembly
-                .GetTypes()
+            var services = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
                 .Where(p => httpServiceType.IsAssignableFrom(p) && p.IsClass);
+            if (services.Count() > 0)
+                Console.WriteLine("The available methods of the server:");
             foreach (var service in services)
             {
                 var serviceName = string.Empty;
@@ -39,27 +51,27 @@ namespace GL.HttpServer.HttpServices
                 _httpServices.Add(serviceInfo);
             }
 
-            var httpHandlerType = typeof(HttpHandler);
+            var httpHandlerType = typeof(IHttpHandler);
 
-            var handlerTypes = GetType()
-                .Assembly
-                .GetTypes()
+            var handlerTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
                 .Where(p => httpHandlerType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToList();
             foreach (var handlerType in handlerTypes)
             {
                 var handlerInstance = Activator.CreateInstance(handlerType) as HttpHandler;
-                handlerInstance.SetContainer(this);
                 _handlers.Add(handlerInstance);
             }
 
             var descriptorInterface = typeof(IKnownTypeParser);
 
-            var descriptorsTypes = GetType()
-                .Assembly
-                .GetTypes()
+            var descriptorsTypes = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetTypes())
                 .Where(p => descriptorInterface.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToList();
             foreach (var descriptorType in descriptorsTypes)
-                _urlParsers.Add(Activator.CreateInstance(descriptorType) as KnownTypeParser);
+            {
+                var parser = Activator.CreateInstance(descriptorType) as KnownTypeParser;
+                _urlParsers.Add(parser);
+            }
         }
 
         public List<HttpHandler> GetHandlers()

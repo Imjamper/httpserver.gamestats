@@ -2,9 +2,13 @@
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System;
+using System.Reactive.Linq;
 using GL.HttpServer.Context;
 using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
+using Newtonsoft.Json;
+using GL.HttpServer.Types;
 
 namespace GL.HttpServer.HttpServices
 {
@@ -12,6 +16,7 @@ namespace GL.HttpServer.HttpServices
     {
         public HttpMethodInfo()
         {
+            BindInfos = new List<ParameterBindInfo>();
         }
 
         public HttpMethodInfo(string name, string url, MethodInfo methodInfo, MethodType methodType)
@@ -19,8 +24,8 @@ namespace GL.HttpServer.HttpServices
             Url = url;
             MethodInfo = methodInfo;
             MethodType = methodType;
-            ParametersNames = new Dictionary<string, int>();
             Name = name;
+            BindInfos = new List<ParameterBindInfo>();
         }
 
         public string Url { get; set; }
@@ -29,14 +34,14 @@ namespace GL.HttpServer.HttpServices
 
         public MethodType MethodType { get; set; }
 
-        public Dictionary<string, int> ParametersNames { get; set; }
-
         public MethodInfo MethodInfo { get; set; }
+
+        public List<ParameterBindInfo> BindInfos { get; set; }
 
         public void Invoke(RequestContext requestContext)
         {
             requestContext.Request.InputStream.ReadBytes(requestContext.Request.ContentLength)
-                .Subscribe(a =>
+                .Subscribe(bytes =>
                 {
                     var values = new object[MethodInfo.GetParameters().Length];
                     var index = 0;
@@ -45,20 +50,19 @@ namespace GL.HttpServer.HttpServices
                         object value = null;
                         if (typeof(JsonResponse).IsAssignableFrom(parameter.ParameterType))
                         {
-                            var json = Encoding.UTF8.GetString(a);
+                            var json = Encoding.UTF8.GetString(bytes);
                             value = JsonConvert.DeserializeObject(json, parameter.ParameterType);
                         }
                         else
                         {
-                            var urlParameter =
-                                requestContext.Request.Parameters.FirstOrDefault(p => p.Type == parameter.ParameterType);
+                            var urlParameter = requestContext.Request.Parameters.FirstOrDefault(p => p.Type == parameter.ParameterType);
                             if (urlParameter != null && urlParameter.Value != null)
                                 value = urlParameter.Value;
                         }
                         values[index] = value;
                         index++;
                     }
-                    var response = MethodInfo.Invoke<Response>(values);
+                    var response = MethodInfo.Invoke(values);
                     requestContext.Respond(response);
                 });
         }
