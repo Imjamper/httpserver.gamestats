@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="LiteDB, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.3.0.0\lib\net35\LiteDB.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -70,6 +74,7 @@
     <Compile Include="Context\Request.cs" />
     <Compile Include="Context\RequestContext.cs" />
     <Compile Include="Context\Response.cs" />
+    <Compile Include="Database\DbContext.cs" />
     <Compile Include="Enums\MethodType.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
@@ -83,10 +88,14 @@
     <Compile Include="HttpServices\IHttpHandler.cs" />
     <Compile Include="HttpServices\IHttpService.cs" />
     <Compile Include="HttpServices\PutHttpHandler.cs" />
-    <Compile Include="Server\Configuration.cs" />
-    <Compile Include="Server\ServerEnviroment.cs" />
-    <Compile Include="Server\ServerStarter.cs" />
-    <Compile Include="Server\HttpServer.cs" />
+    <Compile Include="Managers\EntityManager.cs" />
+    <Compile Include="Managers\IEntityManager.cs" />
+    <Compile Include="Models\Entity.cs" />
+    <Compile Include="Models\IEntity.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="ServerEnviroment.cs" />
+    <Compile Include="ServerStarter.cs" />
+    <Compile Include="HttpServer.cs" />
     <Compile Include="Types\ParameterBindInfo.cs" />
     <Compile Include="Types\DateTimeParser.cs" />
     <Compile Include="Types\Endpoint.cs" />

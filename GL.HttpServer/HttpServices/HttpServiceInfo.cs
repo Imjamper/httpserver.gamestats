@@ -6,7 +6,6 @@ using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
 using GL.HttpServer.Types;
 using System;
-using GL.HttpServer.Server;
 
 namespace GL.HttpServer.HttpServices
 {

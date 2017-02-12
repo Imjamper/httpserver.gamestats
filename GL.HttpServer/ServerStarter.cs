@@ -1,7 +1,7 @@
-﻿using GL.HttpServer.HttpServices;
-using System;
+﻿using System;
+using GL.HttpServer.HttpServices;
 
-namespace GL.HttpServer.Server
+namespace GL.HttpServer
 {
     public class ServerStarter
     {
@@ -15,6 +15,7 @@ namespace GL.HttpServer.Server
         public void Start()
         {
             ServerEnviroment.Host = _config.Prefix;
+            ServerEnviroment.ConnectionString = $"{AppDomain.CurrentDomain.BaseDirectory}/Database/LiteDB.db";
             ComponentContainer.Current.Initialize();
             using (var server = new HttpServer(_config.Prefix))
             {

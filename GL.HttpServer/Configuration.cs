@@ -1,4 +1,4 @@
-﻿namespace GL.HttpServer.Server
+﻿namespace GL.HttpServer
 {
     public class Configuration
     {

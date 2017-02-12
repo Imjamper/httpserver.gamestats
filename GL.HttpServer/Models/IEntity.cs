@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GL.HttpServer.Server
+namespace GL.HttpServer.Models
 {
-    public static class ServerEnviroment
+    public interface IEntity
     {
-        public static string Host { get; set; }
+        int Id { get; set; }
     }
 }

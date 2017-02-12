@@ -4,6 +4,8 @@ using GL.HttpServer.Attributes;
 using GL.HttpServer.Context;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Types;
+using Kontur.GameStats.Server;
+using Kontur.GameStats.Server.DTO;
 using Kontur.GameStats.Server.Models;
 
 namespace Kontur.GameStats.Server.HttpServices
@@ -17,6 +19,8 @@ namespace Kontur.GameStats.Server.HttpServices
         [PutOperation("info", "/<endpoint>/info")]
         public EmptyResponse PutInfo(Endpoint endpoint, ServerInfo body)
         {
+            var response = new EmptyResponse();
+            var model = new Models.Server();
             return new EmptyResponse();
         }
 
@@ -42,15 +46,15 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Получить информацию о серверах
         /// </summary>
         [GetOperation("info", "/info")]
-        public AllServersInfo GetAllServersInfo()
+        public JsonList<ServerInfo> GetAllServersInfo()
         {
-            var model = new AllServersInfo();
-            model.ServersInfo.Add(new ServerInfo
+            var model = new JsonList<ServerInfo>();
+            model.Add(new ServerInfo
             {
                 GameModes = new List<string> {"DM", "Single"},
                 Name = "] My P3rfect Server["
             });
-            model.ServersInfo.Add(new ServerInfo
+            model.Add(new ServerInfo
             {
                 GameModes = new List<string> {"DM1", "Single2"},
                 Name = "] My P3rfect Server 2["

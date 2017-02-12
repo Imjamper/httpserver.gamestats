@@ -1,39 +1,39 @@
 ﻿using System;
 using System.Net;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using GL.HttpServer.Context;
 using GL.HttpServer.HttpServices;
-using System.Reactive.Linq;
-using System.Reactive.Concurrency;
 
-namespace GL.HttpServer.Server
+namespace GL.HttpServer
 {
     public class HttpServer : IObservable<RequestContext>, IDisposable
     {
-        private readonly HttpListener listener;
-        private readonly IObservable<RequestContext> stream;
+        private readonly HttpListener _listener;
+        private readonly IObservable<RequestContext> _stream;
 
         public HttpServer(string url)
         {
-            listener = new HttpListener();
-            listener.Prefixes.Add(url);
-            listener.Start();
-            stream = ObservableHttpContext();
+            _listener = new HttpListener();
+            _listener.Prefixes.Add(url);
+            _listener.Start();
+            _stream = ObservableHttpContext();
             SubscribeHandlers();
         }
 
         public void Dispose()
         {
-            listener.Stop();
+            _listener.Stop();
         }
 
         public IDisposable Subscribe(IObserver<RequestContext> observer)
         {
-            return stream.Subscribe(observer);
+            return _stream.Subscribe(observer);
         }
 
         private IObservable<RequestContext> ObservableHttpContext()
         {
-            return Observable.Create<RequestContext>(obs => Observable.FromAsync(() => listener.GetContextAsync())
+            return Observable.Create<RequestContext>(obs => Observable.FromAsync(() => _listener.GetContextAsync())
                     .Select(c => new RequestContext(c.Request, c.Response))
                     .ObserveOn(ThreadPoolScheduler.Instance)
                     .Subscribe(obs))

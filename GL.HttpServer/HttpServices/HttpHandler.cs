@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using GL.HttpServer.Context;
 using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
-using GL.HttpServer.Server;
 using GL.HttpServer.Types;
 using System.Reactive.Linq;
 

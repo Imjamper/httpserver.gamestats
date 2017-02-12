@@ -4,10 +4,7 @@ namespace GL.HttpServer.Types
 {
     public abstract class KnownTypeParser<T> : KnownTypeParser, IKnownTypeParser<T>
     {
-        public override Type Type
-        {
-            get { return typeof(T); }
-        }
+        public override Type Type => typeof(T);
 
         public abstract T Parse(string input);
 
