@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using Kontur.GameStats.Server.Models;
 
-namespace Kontur.GameStats.Server.DTO
+namespace Kontur.GameStats.Server.Models
 {
-    public class FullServerInfo : ShortServerInfo
+    public class FullServerStats : ShortServerStats
     {
-        public FullServerInfo()
+        public FullServerStats()
         {
             Top5GameModes = new List<string>();
             Top5Maps = new List<string>();

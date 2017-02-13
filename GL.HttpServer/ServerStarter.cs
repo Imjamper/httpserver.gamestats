@@ -15,7 +15,7 @@ namespace GL.HttpServer
         public void Start()
         {
             ServerEnviroment.Host = _config.Prefix;
-            ServerEnviroment.ConnectionString = $"{AppDomain.CurrentDomain.BaseDirectory}/Database/LiteDB.db";
+            ServerEnviroment.ConnectionString = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\StatsServerDB";
             ComponentContainer.Current.Initialize();
             using (var server = new HttpServer(_config.Prefix))
             {

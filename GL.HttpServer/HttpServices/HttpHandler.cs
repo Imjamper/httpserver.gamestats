@@ -13,13 +13,7 @@ namespace GL.HttpServer.HttpServices
     {
         public MethodType MethodType { get; set; }
 
-        public ComponentContainer ComponentContainer
-        {
-            get
-            {
-                return ComponentContainer.Current;
-            }
-        }
+        public ComponentContainer ComponentContainer => ComponentContainer.Current;
 
         public void Subscribe(IObservable<RequestContext> observableContext)
         {

@@ -4,7 +4,6 @@ using GL.HttpServer.Attributes;
 using GL.HttpServer.HttpServices;
 using Kontur.GameStats.Server.Models;
 using GL.HttpServer.Context;
-using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
@@ -48,11 +47,11 @@ namespace Kontur.GameStats.Server.HttpServices
         }
 
         [GetOperation("popular-servers", "/popular-servers[/<count>]")]
-        public JsonList<ShortServerInfo> GetPopularServers([Bind("[/{count}]")]int count)
+        public JsonList<ShortServerStats> GetPopularServers([Bind("[/{count}]")]int count)
         {
-            var model = new JsonList<ShortServerInfo>();
-            model.Add(new ShortServerInfo() {Endpoint = "192.168.1.1-8080", Name = "MyServer1", AverageMatchesPerDay = 10.234234});
-            model.Add(new ShortServerInfo() { Endpoint = "192.168.1.14-8080", Name = "MyServer14", AverageMatchesPerDay = 2392.354 });
+            var model = new JsonList<ShortServerStats>();
+            model.Add(new ShortServerStats() {Endpoint = "192.168.1.1-8080", Name = "MyServer1", AverageMatchesPerDay = 10.234234});
+            model.Add(new ShortServerStats() { Endpoint = "192.168.1.14-8080", Name = "MyServer14", AverageMatchesPerDay = 2392.354 });
             return model;
         }
     }

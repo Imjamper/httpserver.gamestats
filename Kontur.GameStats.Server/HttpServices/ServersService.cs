@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Context;
 using GL.HttpServer.HttpServices;
+using GL.HttpServer.Managers;
 using GL.HttpServer.Types;
 using Kontur.GameStats.Server;
-using Kontur.GameStats.Server.DTO;
 using Kontur.GameStats.Server.Models;
 
 namespace Kontur.GameStats.Server.HttpServices
@@ -17,11 +18,24 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Advertise запрос от игрового сервера
         /// </summary>
         [PutOperation("info", "/<endpoint>/info")]
-        public EmptyResponse PutInfo(Endpoint endpoint, ServerInfo body)
+        public EmptyResponse PutServerInfo(Endpoint endpoint, ServerInfo body)
         {
-            var response = new EmptyResponse();
-            var model = new Models.Server();
-            return new EmptyResponse();
+            var manager = EntityManager<FullServerInfo>.Instance;
+            var existServer = manager.Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
+            var response = new EmptyResponse(200);
+            if (existServer != null)
+            {
+                existServer.Info = body;
+                manager.Update(existServer);
+            }
+            else
+            {
+                var fullInfo = new FullServerInfo();
+                fullInfo.Endpoint = endpoint.ToString();
+                fullInfo.Info = body;
+                manager.Add(fullInfo);
+            }
+            return response;
         }
 
         /// <summary>
@@ -39,26 +53,34 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("info", "/<endpoint>/info")]
         public ServerInfo GetServerInfo(Endpoint endpoint)
         {
-            return new ServerInfo {GameModes = new List<string> {"DM", "Single"}, Name = "] My P3rfect Server["};
+            var manager = EntityManager<FullServerInfo>.Instance;
+            var existServer = manager.Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
+            if (existServer?.Info != null)
+            {
+                return existServer.Info;
+            }
+            var response = new ServerInfo();
+            response.StatusCode = 404;
+            return response;
         }
 
         /// <summary>
         ///     Получить информацию о серверах
         /// </summary>
         [GetOperation("info", "/info")]
-        public JsonList<ServerInfo> GetAllServersInfo()
+        public JsonList<FullServerInfo> GetAllServersInfo()
         {
-            var model = new JsonList<ServerInfo>();
-            model.Add(new ServerInfo
+            var model = new JsonList<FullServerInfo>();
+            model.Add(new FullServerInfo()
             {
-                GameModes = new List<string> {"DM", "Single"},
-                Name = "] My P3rfect Server["
+                Info = new ServerInfo()
+                {
+                    GameModes = new List<string> { "DM", "Single" },
+                    Name = "] My P3rfect Server["
+                },
+                Endpoint = ""
             });
-            model.Add(new ServerInfo
-            {
-                GameModes = new List<string> {"DM1", "Single2"},
-                Name = "] My P3rfect Server 2["
-            });
+
             return model;
         }
 
@@ -83,9 +105,9 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Получение статистики о играх на сервере
         /// </summary>
         [GetOperation("stats", "/<endpoint>/stats")]
-        public FullServerInfo GetServerStats(Endpoint endpoint)
+        public FullServerStats GetServerStats(Endpoint endpoint)
         {
-            var model = new FullServerInfo();
+            var model = new FullServerStats();
             model.TotalMatchesPlayed = 100500;
             model.MaximumMatchesPerDay = 33;
             model.AverageMatchesPerDay = 24.456240;

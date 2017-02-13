@@ -25,6 +25,7 @@ namespace GL.HttpServer.Database
 
         public static void Initialize()
         {
+           
         }
     }
 }

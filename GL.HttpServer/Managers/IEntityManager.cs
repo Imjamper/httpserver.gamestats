@@ -14,6 +14,7 @@ namespace GL.HttpServer.Managers
     {
         void Add(IList<TEntity> items);
         void Add(TEntity item);
+        void Update(TEntity item);
         void Delete(TEntity item);
         void Delete(Expression<Func<TEntity, bool>> expression);
         void DeleteAll();

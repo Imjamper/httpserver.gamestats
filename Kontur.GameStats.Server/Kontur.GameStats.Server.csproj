@@ -12,6 +12,21 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,16 +64,16 @@
     <Compile Include="HttpServices\PlayersService.cs" />
     <Compile Include="HttpServices\ReportsService.cs" />
     <Compile Include="HttpServices\ServersService.cs" />
-    <Compile Include="DTO\PlayerStats.cs" />
-    <Compile Include="DTO\RecentMatchesInfo.cs" />
-    <Compile Include="DTO\FullServerInfo.cs" />
-    <Compile Include="DTO\MatchInfo.cs" />
-    <Compile Include="DTO\ScoreBoard.cs" />
-    <Compile Include="DTO\ServerInfo.cs" />
+    <Compile Include="Models\FullServerInfo.cs" />
+    <Compile Include="Models\PlayerStats.cs" />
+    <Compile Include="Models\RecentMatchesInfo.cs" />
+    <Compile Include="Models\FullServerStats.cs" />
+    <Compile Include="Models\MatchInfo.cs" />
+    <Compile Include="Models\ScoreBoard.cs" />
+    <Compile Include="Models\ServerInfo.cs" />
     <Compile Include="EntryPoint.cs" />
-    <Compile Include="DTO\ShortPlayerStats.cs" />
-    <Compile Include="DTO\ShortServerInfo.cs" />
-    <Compile Include="Models\Server.cs" />
+    <Compile Include="Models\ShortPlayerStats.cs" />
+    <Compile Include="Models\ShortServerInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +85,18 @@
       <Project>{607003d2-dc7b-4a42-b1ed-25114b0e7a3a}</Project>
       <Name>GL.HttpServer</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

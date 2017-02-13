@@ -92,7 +92,17 @@ namespace GL.HttpServer.Managers
 
         public DbContext GetDatabase()
         {
-            return new DbContext(ServerEnviroment.ConnectionString);
+            var path = $"{ServerEnviroment.ConnectionString}\\LiteDb.db";
+            return new DbContext(path);
+        }
+
+        public void Update(TEntity item)
+        {
+            using (var database = GetDatabase())
+            {
+                var entityCollection = database.GetCollection<TEntity>(typeof(TEntity).Name);
+                entityCollection.Update(item);
+            }
         }
     }
 }

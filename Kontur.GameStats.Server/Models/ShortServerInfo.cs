@@ -1,8 +1,8 @@
 ﻿using GL.HttpServer.Context;
 
-namespace Kontur.GameStats.Server.DTO
+namespace Kontur.GameStats.Server.Models
 {
-    public class ShortServerInfo : JsonResponse
+    public class ShortServerStats : JsonResponse
     {
         public double AverageMatchesPerDay { get; set; }
         public string Endpoint { get; set; }

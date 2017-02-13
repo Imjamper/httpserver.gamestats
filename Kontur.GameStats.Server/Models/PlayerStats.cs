@@ -1,7 +1,6 @@
 ﻿using System;
-using Kontur.GameStats.Server.Models;
 
-namespace Kontur.GameStats.Server.DTO
+namespace Kontur.GameStats.Server.Models
 {
     public class PlayerStats : ShortPlayerStats
     {

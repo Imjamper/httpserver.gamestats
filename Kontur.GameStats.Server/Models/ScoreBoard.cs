@@ -1,4 +1,4 @@
-﻿namespace Kontur.GameStats.Server.DTO
+﻿namespace Kontur.GameStats.Server.Models
 {
     public class PlayerScore
     {
