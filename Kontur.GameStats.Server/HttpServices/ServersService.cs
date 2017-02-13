@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Context;
+using GL.HttpServer.Extensions;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Managers;
 using GL.HttpServer.Types;
@@ -70,18 +71,8 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("info", "/info")]
         public JsonList<FullServerInfo> GetAllServersInfo()
         {
-            var model = new JsonList<FullServerInfo>();
-            model.Add(new FullServerInfo()
-            {
-                Info = new ServerInfo()
-                {
-                    GameModes = new List<string> { "DM", "Single" },
-                    Name = "] My P3rfect Server["
-                },
-                Endpoint = ""
-            });
-
-            return model;
+            var manager = EntityManager<FullServerInfo>.Instance;
+            return manager.FindAll().ToJsonList();
         }
 
         /// <summary>

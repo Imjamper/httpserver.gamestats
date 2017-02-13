@@ -18,13 +18,33 @@ namespace HttpClient
         public MainForm()
         {
             InitializeComponent();
-            methodTypecb.SelectedIndex = 0;
-            urlcb.SelectedIndex = 0;
+            InitCombobox();
+        }
+
+        private void InitCombobox()
+        {
+            urlcb.Items.Add(new Item("http://localhost:8080/servers/localhost-9999/info", 1));
+            urlcb.Items.Add(new Item("http://localhost:8080/servers/localhost-9999/matches/2017-01-22T15:17:00Z", 2));
+            urlcb.Items.Add(new Item("http://localhost:8080/servers/info", 3));
+            urlcb.Items.Add(new Item("http://localhost:8080/servers/localhost-9999/stats", 4));
+            urlcb.Items.Add(new Item("http://localhost:8080/players/\" >> Sniper Heaven <</stats", 5));
+            urlcb.Items.Add(new Item("http://localhost:8080/reports/recent-matches[/2]", 6));
+            urlcb.Items.Add(new Item("http://localhost:8080/reports/best-players[/2]", 7));
+            urlcb.Items.Add(new Item("http://localhost:8080/reports/popular-servers[/2]", 8));
+            urlcb.DisplayMember = "Name";
+            urlcb.ValueMember = "Id";
+
+            methodTypecb.Items.Add(new Item("PUT", 1));
+            methodTypecb.Items.Add(new Item("GET", 2));
+            methodTypecb.Items.Add(new Item("POST", 3));
+            methodTypecb.Items.Add(new Item("DELETE", 4));
+            methodTypecb.DisplayMember = "Name";
+            methodTypecb.ValueMember = "Id";
         }
 
         private async void startbtn_Click(object sender, EventArgs e)
         {
-            var url = urlcb.Items[urlcb.SelectedIndex] != null ? urlcb.Items[urlcb.SelectedIndex].ToString() : String.Empty;
+            var url = urlcb.Text;
             if(!String.IsNullOrEmpty(url))
             {
                 var response = await DownloadPage(url);
@@ -38,7 +58,7 @@ namespace HttpClient
             using (var client = new System.Net.Http.HttpClient())
             {
                 var httpContent = new StringContent(bodytb.Text, Encoding.UTF8, "application/json");
-                var methodType = methodTypecb.Items[methodTypecb.SelectedIndex] != null ? methodTypecb.Items[methodTypecb.SelectedIndex].ToString() : String.Empty;
+                var methodType = methodTypecb.Text;
                 if(!String.IsNullOrEmpty(methodType))
                 {
                     switch (methodType)
@@ -77,5 +97,18 @@ namespace HttpClient
                 return null;
             }
         }
+    }
+
+    public class Item
+    {
+        public Item(string name, int id)
+        {
+            Name = name;
+            Id = id;
+        }
+
+        public string Name { get; set; }
+
+        public int Id { get; set; }
     }
 }

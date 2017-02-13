@@ -69,17 +69,8 @@
             // 
             // methodTypecb
             // 
-            this.methodTypecb.AutoCompleteCustomSource.AddRange(new string[] {
-            "PUT",
-            "GET",
-            "POST",
-            "DELETE"});
+            this.methodTypecb.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.methodTypecb.FormattingEnabled = true;
-            this.methodTypecb.Items.AddRange(new object[] {
-            "PUT",
-            "GET",
-            "POST",
-            "DELETE"});
             this.methodTypecb.Location = new System.Drawing.Point(979, 16);
             this.methodTypecb.Name = "methodTypecb";
             this.methodTypecb.Size = new System.Drawing.Size(121, 24);
@@ -87,25 +78,7 @@
             // 
             // urlcb
             // 
-            this.urlcb.AutoCompleteCustomSource.AddRange(new string[] {
-            "http://localhost:8080/servers/localhost-9999/info ",
-            "http://localhost:8080/servers/localhost-9999/matches/2017-01-22T15:17:00Z",
-            "http://localhost:8080/servers/info",
-            "http://localhost:8080/servers/localhost-9999/stats",
-            "http://localhost:8080/players/\">> Sniper Heaven <</stats",
-            "http://localhost:8080/reports/recent-matches[/2]",
-            "http://localhost:8080/reports/best-players[/2]",
-            "http://localhost:8080/reports/popular-servers[/2]"});
             this.urlcb.FormattingEnabled = true;
-            this.urlcb.Items.AddRange(new object[] {
-            "http://localhost:8080/servers/localhost-9999/info ",
-            "http://localhost:8080/servers/localhost-9999/matches/2017-01-22T15:17:00Z",
-            "http://localhost:8080/servers/info",
-            "http://localhost:8080/servers/localhost-9999/stats",
-            "http://localhost:8080/players/\">> Sniper Heaven <</stats",
-            "http://localhost:8080/reports/recent-matches[/2]",
-            "http://localhost:8080/reports/best-players[/2]",
-            "http://localhost:8080/reports/popular-servers[/2]"});
             this.urlcb.Location = new System.Drawing.Point(17, 16);
             this.urlcb.Name = "urlcb";
             this.urlcb.Size = new System.Drawing.Size(956, 24);

@@ -22,5 +22,16 @@ namespace GL.HttpServer.Extensions
 
             return collection;
         }
+
+        public static JsonList<T> ToJsonList<T>(this IList<T> list)
+        {
+            var jsonList = new JsonList<T>();
+            foreach (var item in list)
+            {
+                jsonList.Add(item);
+            }
+
+            return jsonList;
+        }
     }
 }
