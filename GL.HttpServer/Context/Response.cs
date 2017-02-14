@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using GL.HttpServer.Models;
+using GL.HttpServer.Entities;
 using LiteDB;
 using Newtonsoft.Json;
 

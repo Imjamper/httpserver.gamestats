@@ -74,7 +74,9 @@
     <Compile Include="Context\Request.cs" />
     <Compile Include="Context\RequestContext.cs" />
     <Compile Include="Context\Response.cs" />
-    <Compile Include="Database\DbContext.cs" />
+    <Compile Include="Database\LiteDb.cs" />
+    <Compile Include="Database\ILiteUnitOfWork.cs" />
+    <Compile Include="Database\LiteUnitOfWork.cs" />
     <Compile Include="Enums\MethodType.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
@@ -88,10 +90,10 @@
     <Compile Include="HttpServices\IHttpHandler.cs" />
     <Compile Include="HttpServices\IHttpService.cs" />
     <Compile Include="HttpServices\PutHttpHandler.cs" />
-    <Compile Include="Managers\EntityManager.cs" />
-    <Compile Include="Managers\IEntityManager.cs" />
-    <Compile Include="Models\Entity.cs" />
-    <Compile Include="Models\IEntity.cs" />
+    <Compile Include="Managers\Repository.cs" />
+    <Compile Include="Managers\IRepository.TEntity.cs" />
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="ServerEnviroment.cs" />
     <Compile Include="ServerStarter.cs" />

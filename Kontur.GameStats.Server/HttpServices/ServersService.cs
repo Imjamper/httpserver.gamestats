@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Context;
+using GL.HttpServer.Database;
 using GL.HttpServer.Extensions;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Managers;
@@ -21,22 +22,27 @@ namespace Kontur.GameStats.Server.HttpServices
         [PutOperation("info", "/<endpoint>/info")]
         public EmptyResponse PutServerInfo(Endpoint endpoint, ServerInfo body)
         {
-            var manager = EntityManager<FullServerInfo>.Instance;
-            var existServer = manager.Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
-            var response = new EmptyResponse(200);
-            if (existServer != null)
+            using (var unit = new UnitOfWork())
             {
-                existServer.Info = body;
-                manager.Update(existServer);
+                if (unit.TransactionSaveChanges(u =>
+                {
+                    var existServer = u.Repository<FullServerInfo>().Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
+                    if (existServer != null)
+                    {
+                        existServer.Info = body;
+                        u.Repository<FullServerInfo>().Update(existServer);
+                    }
+                    else
+                    {
+                        var fullInfo = new FullServerInfo();
+                        fullInfo.Endpoint = endpoint.ToString();
+                        fullInfo.Info = body;
+                        u.Repository<FullServerInfo>().Add(fullInfo);
+                    }
+                }))
+                    return new EmptyResponse(200);
+                return new EmptyResponse(500);
             }
-            else
-            {
-                var fullInfo = new FullServerInfo();
-                fullInfo.Endpoint = endpoint.ToString();
-                fullInfo.Info = body;
-                manager.Add(fullInfo);
-            }
-            return response;
         }
 
         /// <summary>
@@ -54,15 +60,17 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("info", "/<endpoint>/info")]
         public ServerInfo GetServerInfo(Endpoint endpoint)
         {
-            var manager = EntityManager<FullServerInfo>.Instance;
-            var existServer = manager.Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
-            if (existServer?.Info != null)
+            using (var unit = new UnitOfWork())
             {
-                return existServer.Info;
+                var existServer = unit.Repository<FullServerInfo>().Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
+                if (existServer?.Info != null)
+                {
+                    return existServer.Info;
+                }
+                var response = new ServerInfo();
+                response.StatusCode = 404;
+                return response;
             }
-            var response = new ServerInfo();
-            response.StatusCode = 404;
-            return response;
         }
 
         /// <summary>
@@ -71,8 +79,10 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("info", "/info")]
         public JsonList<FullServerInfo> GetAllServersInfo()
         {
-            var manager = EntityManager<FullServerInfo>.Instance;
-            return manager.FindAll().ToJsonList();
+            using (var unit = new UnitOfWork())
+            {
+                return unit.Repository<FullServerInfo>().FindAll().ToJsonList();
+            }
         }
 
         /// <summary>
