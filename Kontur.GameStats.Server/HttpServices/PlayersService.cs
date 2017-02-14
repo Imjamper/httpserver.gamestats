@@ -1,6 +1,6 @@
 ﻿using GL.HttpServer.Attributes;
 using GL.HttpServer.HttpServices;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.HttpServices
 {

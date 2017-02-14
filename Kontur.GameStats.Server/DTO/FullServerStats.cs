@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.DTO
 {
     public class FullServerStats : ShortServerStats
     {

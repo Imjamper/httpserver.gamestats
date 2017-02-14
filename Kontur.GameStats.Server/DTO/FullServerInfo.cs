@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GL.HttpServer.Context;
+﻿using GL.HttpServer.Context;
 using LiteDB;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.DTO
 {
     public class FullServerInfo : JsonResponse
     {

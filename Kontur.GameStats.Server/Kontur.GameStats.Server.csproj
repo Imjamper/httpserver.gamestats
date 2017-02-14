@@ -61,19 +61,21 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Match.cs" />
+    <Compile Include="Entities\MatchResult.cs" />
     <Compile Include="HttpServices\PlayersService.cs" />
     <Compile Include="HttpServices\ReportsService.cs" />
     <Compile Include="HttpServices\ServersService.cs" />
-    <Compile Include="Models\FullServerInfo.cs" />
-    <Compile Include="Models\PlayerStats.cs" />
-    <Compile Include="Models\RecentMatchesInfo.cs" />
-    <Compile Include="Models\FullServerStats.cs" />
-    <Compile Include="Models\MatchInfo.cs" />
-    <Compile Include="Models\ScoreBoard.cs" />
-    <Compile Include="Models\ServerInfo.cs" />
+    <Compile Include="DTO\FullServerInfo.cs" />
+    <Compile Include="DTO\PlayerStats.cs" />
+    <Compile Include="DTO\RecentMatchesInfo.cs" />
+    <Compile Include="DTO\FullServerStats.cs" />
+    <Compile Include="DTO\MatchInfo.cs" />
+    <Compile Include="DTO\PlayerScore.cs" />
+    <Compile Include="DTO\ServerInfo.cs" />
     <Compile Include="EntryPoint.cs" />
-    <Compile Include="Models\ShortPlayerStats.cs" />
-    <Compile Include="Models\ShortServerInfo.cs" />
+    <Compile Include="DTO\ShortPlayerStats.cs" />
+    <Compile Include="DTO\ShortServerInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +100,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

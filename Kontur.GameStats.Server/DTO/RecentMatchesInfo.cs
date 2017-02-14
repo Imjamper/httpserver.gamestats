@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using GL.HttpServer.Context;
 
-namespace Kontur.GameStats.Server.Models
+namespace Kontur.GameStats.Server.DTO
 {
     public class RecentMatchesInfo : JsonResponse
     {

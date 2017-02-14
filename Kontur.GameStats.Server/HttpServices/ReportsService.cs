@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.HttpServices;
-using Kontur.GameStats.Server.Models;
 using GL.HttpServer.Context;
+using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.HttpServices
 {

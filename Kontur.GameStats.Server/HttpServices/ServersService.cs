@@ -9,7 +9,7 @@ using GL.HttpServer.HttpServices;
 using GL.HttpServer.Managers;
 using GL.HttpServer.Types;
 using Kontur.GameStats.Server;
-using Kontur.GameStats.Server.Models;
+using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
