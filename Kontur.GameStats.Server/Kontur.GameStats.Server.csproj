@@ -61,21 +61,24 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dto\MatchDto.cs" />
+    <Compile Include="Dto\ServerInfoDto.cs" />
     <Compile Include="Entities\Match.cs" />
     <Compile Include="Entities\MatchResult.cs" />
+    <Compile Include="Entities\PlayerScore.cs" />
+    <Compile Include="Entities\Server.cs" />
     <Compile Include="HttpServices\PlayersService.cs" />
     <Compile Include="HttpServices\ReportsService.cs" />
     <Compile Include="HttpServices\ServersService.cs" />
-    <Compile Include="DTO\FullServerInfo.cs" />
-    <Compile Include="DTO\PlayerStats.cs" />
-    <Compile Include="DTO\RecentMatchesInfo.cs" />
-    <Compile Include="DTO\FullServerStats.cs" />
-    <Compile Include="DTO\MatchInfo.cs" />
-    <Compile Include="DTO\PlayerScore.cs" />
-    <Compile Include="DTO\ServerInfo.cs" />
+    <Compile Include="Dto\ServerDto.cs" />
+    <Compile Include="Dto\PlayerStats.cs" />
+    <Compile Include="Dto\FullServerStats.cs" />
+    <Compile Include="Dto\MatchResultDto.cs" />
+    <Compile Include="Dto\PlayerScoreDto.cs" />
+    <Compile Include="Entities\ServerInfo.cs" />
     <Compile Include="EntryPoint.cs" />
-    <Compile Include="DTO\ShortPlayerStats.cs" />
-    <Compile Include="DTO\ShortServerInfo.cs" />
+    <Compile Include="Dto\ShortPlayerStats.cs" />
+    <Compile Include="Dto\ShortServerInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

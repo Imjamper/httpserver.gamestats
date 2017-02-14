@@ -1,6 +1,8 @@
-﻿namespace Kontur.GameStats.Server.DTO
+﻿using GL.HttpServer.Entities;
+
+namespace Kontur.GameStats.Server.Entities
 {
-    public class PlayerScore
+    public class PlayerScore : Entity
     {
         public string Name { get; set; }
 

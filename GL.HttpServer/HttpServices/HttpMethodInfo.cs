@@ -40,31 +40,28 @@ namespace GL.HttpServer.HttpServices
 
         public void Invoke(RequestContext requestContext)
         {
-            requestContext.Request.InputStream.ReadBytes(requestContext.Request.ContentLength)
-                .Subscribe(bytes =>
+            var bytes = requestContext.Request.InputStream.ReadAll(requestContext.Request.ContentLength);
+            var values = new object[MethodInfo.GetParameters().Length];
+            var index = 0;
+            foreach (var parameter in MethodInfo.GetParameters().ToList())
+            {
+                object value = null;
+                if (typeof(JsonResponse).IsAssignableFrom(parameter.ParameterType))
                 {
-                    var values = new object[MethodInfo.GetParameters().Length];
-                    var index = 0;
-                    foreach (var parameter in MethodInfo.GetParameters().ToList())
-                    {
-                        object value = null;
-                        if (typeof(JsonResponse).IsAssignableFrom(parameter.ParameterType))
-                        {
-                            var json = Encoding.UTF8.GetString(bytes);
-                            value = JsonConvert.DeserializeObject(json, parameter.ParameterType);
-                        }
-                        else
-                        {
-                            var urlParameter = requestContext.Request.Parameters.FirstOrDefault(p => p.Type == parameter.ParameterType);
-                            if (urlParameter != null && urlParameter.Value != null)
-                                value = urlParameter.Value;
-                        }
-                        values[index] = value;
-                        index++;
-                    }
-                    var response = MethodInfo.Invoke(values);
-                    requestContext.Respond(response);
-                });
+                    var json = Encoding.UTF8.GetString(bytes);
+                    value = JsonConvert.DeserializeObject(json, parameter.ParameterType);
+                }
+                else
+                {
+                    var urlParameter = requestContext.Request.Parameters.FirstOrDefault(p => p.Type == parameter.ParameterType);
+                    if (urlParameter?.Value != null)
+                        value = urlParameter.Value;
+                }
+                values[index] = value;
+                index++;
+            }
+            var response = MethodInfo.Invoke(values);
+            requestContext.Respond(response);
         }
     }
 }

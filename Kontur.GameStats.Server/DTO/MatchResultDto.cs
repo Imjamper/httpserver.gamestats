@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using GL.HttpServer.Context;
+using Kontur.GameStats.Server.DTO;
 
-namespace Kontur.GameStats.Server.DTO
+namespace Kontur.GameStats.Server.Dto
 {
-    public class MatchInfo : JsonResponse
+    public class MatchResultDto : JsonResponse
     {
-        public MatchInfo()
+        public MatchResultDto()
         {
-            ScoreBoard = new List<PlayerScore>();
+            ScoreBoard = new List<PlayerScoreDto>();
         }
 
         public string Map { get; set; }
@@ -15,6 +16,6 @@ namespace Kontur.GameStats.Server.DTO
         public int FragLimit { get; set; }
         public int TimeLimit { get; set; }
         public double TimeElapsed { get; set; }
-        public List<PlayerScore> ScoreBoard { get; set; }
+        public List<PlayerScoreDto> ScoreBoard { get; set; }
     }
 }

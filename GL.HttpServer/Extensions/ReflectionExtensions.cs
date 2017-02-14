@@ -27,9 +27,19 @@ namespace GL.HttpServer.Extensions
             return GetAttribute<T>(methodInfo) != null;
         }
 
+        public static bool HasAttribute<T>(this PropertyInfo propertyInfo) where T : Attribute
+        {
+            return GetAttribute<T>(propertyInfo) != null;
+        }
+
         public static T GetAttribute<T>(this MethodInfo methodInfo) where T : Attribute
         {
             return methodInfo.GetCustomAttribute(typeof(T), false) as T;
+        }
+
+        public static T GetAttribute<T>(this PropertyInfo propertyInfo) where T : Attribute
+        {
+            return propertyInfo.GetCustomAttribute(typeof(T), false) as T;
         }
 
         public static bool HasAttribute<T>(this Type type) where T : Attribute
@@ -56,7 +66,12 @@ namespace GL.HttpServer.Extensions
 
         public static List<MethodInfo> GetMethodsWithAttribute<T>(this Type type) where T : Attribute
         {
-            return type.GetMethods().Where(m => HasAttribute<T>(m)).ToList();
+            return type.GetMethods().Where(HasAttribute<T>).ToList();
+        }
+
+        public static List<PropertyInfo> GetPropertiesWithAttribute<T>(this Type type) where T : Attribute
+        {
+            return type.GetProperties().Where(HasAttribute<T>).ToList();
         }
 
         public static bool HasAttribute<T>(this ParameterInfo parameter) where T : Attribute

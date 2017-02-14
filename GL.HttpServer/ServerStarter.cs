@@ -1,5 +1,6 @@
 ﻿using System;
 using GL.HttpServer.HttpServices;
+using GL.HttpServer.Mapping;
 
 namespace GL.HttpServer
 {
@@ -16,6 +17,7 @@ namespace GL.HttpServer
         {
             ServerEnviroment.Host = _config.Prefix;
             ServerEnviroment.ConnectionString = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\StatsServerDB";
+            AutoProfileLoader.RegisterDomain();
             ComponentContainer.Current.Initialize();
             using (var server = new HttpServer(_config.Prefix))
             {

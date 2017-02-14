@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GL.HttpServer.Entities;
 using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.Entities
 {
-    public class MatchResult
+    public class MatchResult : Entity
     {
         public MatchResult()
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Context;
+using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.HttpServices
@@ -11,30 +12,23 @@ namespace Kontur.GameStats.Server.HttpServices
     public class ReportsService : IHttpService
     {
         [GetOperation("recent-matches", "/recent-matches[/<count>]")]
-        public RecentMatchesInfo GetRecentMatches([Bind("[/{count}]")]int count)
+        public JsonList<MatchDto> GetRecentMatches([Bind("[/{count}]")]int count)
         {
-            var model = new RecentMatchesInfo();
+            var model1 = new JsonList<MatchDto>();
+            var model = new MatchDto();
             model.Server = "192.168.1.1-8080";
             model.TimeStamp = DateTime.Now;
-            var model1 = new MatchInfo();
-            model1.Map = "DM-HelloWorld122";
-            model1.GameMode = "Single";
-            model1.FragLimit = 20;
-            model1.TimeLimit = 20;
-            model1.TimeElapsed = 12.345678;
-            model1.ScoreBoard.Add(new PlayerScore { Name = "Player16", Deaths = 2, Kills = 10, Frags = 14 });
-            model1.ScoreBoard.Add(new PlayerScore { Name = "Player22", Deaths = 21, Kills = 4, Frags = 3 });
-            model.Results.Add(model1);
-            var model2 = new MatchInfo();
-            model2.Map = "DM-HelloWorld";
-            model2.GameMode = "DM";
-            model2.FragLimit = 20;
-            model2.TimeLimit = 20;
-            model2.TimeElapsed = 12.345678;
-            model2.ScoreBoard.Add(new PlayerScore { Name = "Player188", Deaths = 2, Kills = 10, Frags = 14 });
-            model2.ScoreBoard.Add(new PlayerScore { Name = "Player233", Deaths = 21, Kills = 4, Frags = 3 });
-            model.Results.Add(model2);
-            return model;
+            var model12 = new MatchResultDto();
+            model12.Map = "DM-HelloWorld122";
+            model12.GameMode = "Single";
+            model12.FragLimit = 20;
+            model12.TimeLimit = 20;
+            model12.TimeElapsed = 12.345678;
+            model12.ScoreBoard.Add(new PlayerScoreDto { Name = "Player16", Deaths = 2, Kills = 10, Frags = 14 });
+            model12.ScoreBoard.Add(new PlayerScoreDto() { Name = "Player22", Deaths = 21, Kills = 4, Frags = 3 });
+            model.Results = model12;
+            model1.Add(model);
+            return model1;
         }
 
         [GetOperation("best-players", "/best-players[/<count>]")]

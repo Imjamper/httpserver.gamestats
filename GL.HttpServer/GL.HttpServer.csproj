@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=2.0.0.232, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.2.0.0\lib\net40-client\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="LiteDB, Version=3.0.0.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
       <HintPath>..\packages\LiteDB.3.0.0\lib\net35\LiteDB.dll</HintPath>
       <Private>True</Private>
@@ -66,6 +70,7 @@
     <Compile Include="Attributes\GetOperationAttribute.cs" />
     <Compile Include="Attributes\HttpOperationAttribute.cs" />
     <Compile Include="Attributes\HttpServiceAttribute.cs" />
+    <Compile Include="Attributes\MapsToAttribute.cs" />
     <Compile Include="Attributes\PutOperationAttribute.cs" />
     <Compile Include="Context\EmptyResponse.cs" />
     <Compile Include="Context\ErrorResponse.cs" />
@@ -77,8 +82,10 @@
     <Compile Include="Database\LiteDb.cs" />
     <Compile Include="Database\ILiteUnitOfWork.cs" />
     <Compile Include="Database\LiteUnitOfWork.cs" />
+    <Compile Include="Dto\IDto.cs" />
     <Compile Include="Enums\MethodType.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
+    <Compile Include="Extensions\EntityExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
@@ -95,6 +102,8 @@
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Configuration.cs" />
+    <Compile Include="Mapping\AutoProfileLoader.cs" />
+    <Compile Include="Mapping\MainProfile.cs" />
     <Compile Include="ServerEnviroment.cs" />
     <Compile Include="ServerStarter.cs" />
     <Compile Include="HttpServer.cs" />
