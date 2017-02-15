@@ -12,7 +12,6 @@ namespace Kontur.GameStats.Server.Dto
             Info = new ServerInfoDto();
         }
 
-        [BsonIndex(true)]
         public string Endpoint { get; set; }
         
         public ServerInfoDto Info { get; set; }

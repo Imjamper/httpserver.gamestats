@@ -72,7 +72,7 @@
     <Compile Include="HttpServices\ServersService.cs" />
     <Compile Include="Dto\ServerDto.cs" />
     <Compile Include="Dto\PlayerStats.cs" />
-    <Compile Include="Dto\FullServerStats.cs" />
+    <Compile Include="Dto\FullServerStatsDto.cs" />
     <Compile Include="Dto\MatchResultDto.cs" />
     <Compile Include="Dto\PlayerScoreDto.cs" />
     <Compile Include="Entities\ServerInfo.cs" />

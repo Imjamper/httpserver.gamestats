@@ -24,8 +24,7 @@ namespace GL.HttpServer.Managers
         {
             foreach (var entity in items)
             {
-                var entityCollection = UnitOfWork.Collection<TEntity>();
-                entityCollection.Insert(entity);
+                Collection.Insert(entity);
             }
         }
 
@@ -70,5 +69,9 @@ namespace GL.HttpServer.Managers
         }
 
         public LiteCollection<TEntity> Collection => UnitOfWork.Collection<TEntity>();
+        public TEntity FindOne(Expression<Func<TEntity, bool>> expression)
+        {
+            return Collection.FindOne(expression);
+        }
     }
 }

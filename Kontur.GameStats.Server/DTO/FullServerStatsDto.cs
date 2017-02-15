@@ -2,9 +2,9 @@
 
 namespace Kontur.GameStats.Server.DTO
 {
-    public class FullServerStats : ShortServerStats
+    public class FullServerStatsDto : ShortServerStats
     {
-        public FullServerStats()
+        public FullServerStatsDto()
         {
             Top5GameModes = new List<string>();
             Top5Maps = new List<string>();

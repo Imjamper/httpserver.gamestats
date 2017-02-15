@@ -12,6 +12,7 @@ using Kontur.GameStats.Server;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
 using Kontur.GameStats.Server.Entities;
+using Match = System.Text.RegularExpressions.Match;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
@@ -47,9 +48,24 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Запись информации о завершенном матче
         /// </summary>
         [PutOperation("matches", "/<endpoint>/matches/<timestamp>")]
-        public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTime? timestamp, MatchResultDto body)
+        public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTime timestamp, MatchResultDto body)
         {
-            return new EmptyResponse();
+            using (var unit = new UnitOfWork())
+            {
+                try
+                {
+                    var match = new Entities.Match();
+                    match.Server = endpoint.ToString();
+                    match.TimeStamp = timestamp;
+                    match.Results = body.ToEntity<MatchResult>();
+                    unit.Repository<Entities.Match>().Add(match);
+                    return new EmptyResponse(200);
+                }
+                catch
+                {
+                    return new EmptyResponse(500);
+                }
+            }
         }
 
         /// <summary>
@@ -60,14 +76,22 @@ namespace Kontur.GameStats.Server.HttpServices
         {
             using (var unit = new UnitOfWork())
             {
-                var existServer = unit.Repository<Entities.Server>().Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
-                if (existServer?.Info != null)
-                {
-                    return existServer.Info.ToDto<ServerInfoDto>();
-                }
                 var response = new ServerInfoDto();
-                response.StatusCode = 404;
-                return response;
+                try
+                {
+                    var existServer = unit.Repository<Entities.Server>().FindOne(a => a.Endpoint == endpoint.ToString());
+                    if (existServer?.Info != null)
+                    {
+                        return existServer.Info.ToDto<ServerInfoDto>();
+                    }
+                    response.StatusCode = 404;
+                    return response;
+                }
+                catch
+                {
+                    response.StatusCode = 500;
+                    return response;
+                }
             }
         }
 
@@ -88,39 +112,84 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Получение информации о завершенном матче
         /// </summary>
         [GetOperation("matches", "/<endpoint>/matches/<timestamp>")]
-        public MatchResultDto GetMatchInfo(Endpoint endpoint, DateTime? timestamp)
+        public MatchResultDto GetMatchInfo(Endpoint endpoint, DateTime timestamp)
         {
-            var model = new MatchResultDto();
-            model.Map = "DM-HelloWorld";
-            model.GameMode = "DM";
-            model.FragLimit = 20;
-            model.TimeLimit = 20;
-            model.TimeElapsed = 12.345678;
-            model.ScoreBoard.Add(new PlayerScoreDto() {Name = "Player1", Deaths = 2, Kills = 10, Frags = 14});
-            model.ScoreBoard.Add(new PlayerScoreDto() { Name = "Player2", Deaths = 21, Kills = 4, Frags = 3});
-            return model;
+            using (var unit = new UnitOfWork())
+            {
+                var response = new MatchResultDto();
+                try
+                {
+                    var match = unit.Repository<Entities.Match>()
+                        .FindOne(a => a.Server == endpoint.ToString() && a.TimeStamp == timestamp);
+                    if (match?.Results != null)
+                    {
+                        return match.Results.ToDto<MatchResultDto>();
+                    }
+                    response.StatusCode = 404;
+                    return response;
+                }
+                catch
+                {
+                    response.StatusCode = 500;
+                    return response;
+                }
+            }
         }
 
         /// <summary>
         ///     Получение статистики о играх на сервере
         /// </summary>
         [GetOperation("stats", "/<endpoint>/stats")]
-        public FullServerStats GetServerStats(Endpoint endpoint)
+        public FullServerStatsDto GetServerStats(Endpoint endpoint)
         {
-            var model = new FullServerStats();
-            model.TotalMatchesPlayed = 100500;
-            model.MaximumMatchesPerDay = 33;
-            model.AverageMatchesPerDay = 24.456240;
-            model.MaximumPopulation = 32;
-            model.AveragePopulation = 20.450000;
-            model.Top5GameModes.Add("DM");
-            model.Top5GameModes.Add("TDM");
-            model.Top5Maps.Add("DM-HelloWorld");
-            model.Top5Maps.Add("DM-1on1-Rose");
-            model.Top5Maps.Add("DM-Kitchen");
-            model.Top5Maps.Add("DM-Camper Paradise");
-            model.Top5Maps.Add("DM-Appalachian Wonderland");
-            return model;
+            using (var unit = new UnitOfWork())
+            {
+                var response = new FullServerStatsDto();
+                try
+                {
+                    var matches = unit.Repository<Entities.Match>().Find(a => a.Server == endpoint.ToString());
+                    if (matches.Count == 0)
+                        return response;
+                    response.TotalMatchesPlayed = matches.Count;
+
+                    var byDay = matches.GroupBy(match => match.TimeStamp.DayOfYear).ToList();
+                    response.MaximumMatchesPerDay = byDay.Max(a => a.ToList().Count);
+                    response.AveragePopulation = byDay.Average(a => a.ToList().Count);
+
+                    var playerScores = matches.ToDictionary(match => match.Server, match => match.Results.ScoreBoard);
+                    response.MaximumPopulation = playerScores.Max(a => a.Value.Count);
+                    response.AveragePopulation = playerScores.Average(a => a.Value.Count);
+
+                    var maps = matches.Select(match => match.Results.Map).ToList();
+                    var dictMaps = new Dictionary<string, int>();
+                    foreach (var map in maps)
+                    {
+                        if (dictMaps.ContainsKey(map))
+                            dictMaps[map]++;
+                        else dictMaps.Add(map, 1);
+                    }
+                    var orderMaps = dictMaps.OrderBy(a => a.Value).Select(a => a.Key);
+                    response.Top5Maps.AddRange(orderMaps);
+
+                    var gameModes = matches.Select(match => match.Results.GameMode).ToList();
+                    var dictModes = new Dictionary<string, int>();
+                    foreach (var mode in gameModes)
+                    {
+                        if (dictModes.ContainsKey(mode))
+                            dictModes[mode]++;
+                        else dictModes.Add(mode, 1);
+                    }
+                    var orderModes = dictMaps.OrderBy(a => a.Value).Select(a => a.Key);
+                    response.Top5GameModes.AddRange(orderModes);
+                    response.StatusCode = 404;
+                    return response;
+                }
+                catch
+                {
+                    response.StatusCode = 500;
+                    return response;
+                }
+            }
         }
     }
 }

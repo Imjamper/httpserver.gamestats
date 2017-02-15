@@ -19,6 +19,7 @@ namespace GL.HttpServer.Managers
         void Delete(TEntity item);
         void Delete(Expression<Func<TEntity, bool>> expression);
         IList<TEntity> Find(Expression<Func<TEntity, bool>> expression);
+        TEntity FindOne(Expression<Func<TEntity, bool>> expression);
         IList<TEntity> FindAll();
         TEntity LoadOrNull(int id);
         LiteCollection<TEntity> Collection { get; }
