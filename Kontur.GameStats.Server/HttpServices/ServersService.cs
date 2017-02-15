@@ -24,10 +24,6 @@ namespace Kontur.GameStats.Server.HttpServices
         [PutOperation("info", "/<endpoint>/info")]
         public EmptyResponse PutServerInfo(Endpoint endpoint, ServerInfoDto body)
         {
-            if (body == null || body.Name.IsNullOrEmpty())
-            {
-                return new EmptyResponse(500);
-            }
             using (var unit = new UnitOfWork())
             {
                 var existServer = unit.Repository<Entities.Server>().Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
@@ -83,8 +79,8 @@ namespace Kontur.GameStats.Server.HttpServices
         {
             using (var unit = new UnitOfWork())
             {
-                //return unit.Repository<Entities.Server>().FindAll().ToJsonList();
-                return new JsonList<ServerDto>();
+                var allServers = unit.Repository<Entities.Server>().FindAll();
+                return allServers.ToJsonList<ServerDto>();
             }
         }
 

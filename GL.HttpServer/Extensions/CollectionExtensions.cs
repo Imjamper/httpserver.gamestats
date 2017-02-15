@@ -1,7 +1,10 @@
-﻿using GL.HttpServer.Context;
+﻿using System.Collections;
+using GL.HttpServer.Context;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using GL.HttpServer.Dto;
+using GL.HttpServer.Entities;
 
 namespace GL.HttpServer.Extensions
 {
@@ -23,12 +26,13 @@ namespace GL.HttpServer.Extensions
             return collection;
         }
 
-        public static JsonList<T> ToJsonList<T>(this IList<T> list)
+        public static JsonList<T> ToJsonList<T>(this IEnumerable list) where T : IDto, new()
         {
             var jsonList = new JsonList<T>();
             foreach (var item in list)
             {
-                jsonList.Add(item);
+                var entity = item as IEntity;
+                jsonList.Add(entity.ToDto<T>());
             }
 
             return jsonList;
