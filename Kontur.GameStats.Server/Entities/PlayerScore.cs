@@ -1,7 +1,10 @@
-﻿using GL.HttpServer.Entities;
+﻿using GL.HttpServer.Attributes;
+using GL.HttpServer.Entities;
+using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.Entities
 {
+    [MapsTo(typeof(PlayerScoreDto))]
     public class PlayerScore : Entity
     {
         public string Name { get; set; }

@@ -48,7 +48,7 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Запись информации о завершенном матче
         /// </summary>
         [PutOperation("matches", "/<endpoint>/matches/<timestamp>")]
-        public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTime timestamp, MatchResultDto body)
+        public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTime? timestamp, MatchResultDto body)
         {
             using (var unit = new UnitOfWork())
             {
@@ -61,7 +61,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     unit.Repository<Entities.Match>().Add(match);
                     return new EmptyResponse(200);
                 }
-                catch
+                catch(Exception ex)
                 {
                     return new EmptyResponse(500);
                 }
@@ -151,8 +151,8 @@ namespace Kontur.GameStats.Server.HttpServices
                     if (matches.Count == 0)
                         return response;
                     response.TotalMatchesPlayed = matches.Count;
-
-                    var byDay = matches.GroupBy(match => match.TimeStamp.DayOfYear).ToList();
+                    
+                    var byDay = matches.GroupBy(match => match.TimeStamp.Value.DayOfYear).ToList();
                     response.MaximumMatchesPerDay = byDay.Max(a => a.ToList().Count);
                     response.AveragePopulation = byDay.Average(a => a.ToList().Count);
 

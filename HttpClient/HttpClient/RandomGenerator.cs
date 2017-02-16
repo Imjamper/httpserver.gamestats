@@ -57,18 +57,16 @@ namespace HttpClient
         public static ServerDto GetServer()
         {
             var server = new ServerDto();
-            server.Endpoint = $"localhost-{GetRandomInt()}";
+            server.Endpoint = $"localhost-{Random.Next(65535)}";
             var serverInfo = new ServerInfoDto();
             serverInfo.GameModes.AddRange(GetRandomModes());
             server.Info = serverInfo;
             return server;
         }
 
-        public static MatchDto GetMatch(string server)
+        public static MatchDto GetMatch()
         {
             var match = new MatchDto();
-            match.Server = server;
-            match.TimeStamp = DateTime.UtcNow;
             var matchInfo = new MatchResultDto();
             matchInfo.FragLimit = Random.Next(50);
             matchInfo.GameMode = GetRandomMode();

@@ -10,8 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Net.Http;
+using System.Timers;
 using System.Web;
+using Kontur.GameStats.Server.Dto;
 using Newtonsoft.Json;
+using Timer = System.Timers.Timer;
 
 namespace HttpClient
 {
@@ -21,6 +24,7 @@ namespace HttpClient
         private readonly BackgroundWorker _sendMatch = new BackgroundWorker();
         private static bool _isRunning;
         private System.Timers.Timer _timer;
+        private static ServerDto _serverDto;
         public MainForm()
         {
             InitializeComponent();
@@ -53,39 +57,55 @@ namespace HttpClient
             _sendMatch.RunWorkerCompleted += _sendMatch_RunWorkerCompleted;
             _sendMatch.DoWork += _sendMatch_DoWork;
             _sendMatch.WorkerSupportsCancellation = true;
+            _timer = new Timer();
             _timer.AutoReset = true;
-            _timer.Interval = 300000;
+            _timer.Interval = 500;
             _timer.Elapsed += _timer_Elapsed;
         }
 
         private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (_sendMatch.IsBusy) return;
+            var match = RandomGenerator.GetMatch();
+            _sendMatch.RunWorkerAsync(match);
         }
 
         private void _sendMatch_DoWork(object sender, DoWorkEventArgs e)
         {
-            
+            var match = e.Argument as MatchDto;
+            var date = DateTime.Now.ToUniversalTime()
+                         .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+            var url = $"http://localhost:8080/servers/{_serverDto.Endpoint}/matches/{date}";
+            var result = DownloadPage(url, JsonConvert.SerializeObject(match.Results), "PUT");
+            e.Result = result;
         }
 
         private void _sendMatch_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            
+            Invoke(new MethodInvoker(() =>
+            {
+                logstb.AppendText(@"Send match request: " + Environment.NewLine);
+                logstb.AppendText(e.Result + Environment.NewLine);
+            }));
         }
 
         private void _sendServerWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            var server = RandomGenerator.GetServer();
+            var server = e.Argument as ServerDto;
             var url = $"http://localhost:8080/servers/{server.Endpoint}/info";
-            var result = DownloadPage(url, JsonConvert.SerializeObject(server), "PUT");
+            var result = DownloadPage(url, JsonConvert.SerializeObject(server.Info), "PUT");
             e.Result = result;
         }
 
         private void _sendServerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            logstb.Text += @"Advertise server request: " + Environment.NewLine;
-            logstb.Text += e.Result.ToString() + Environment.NewLine;
-            _sendMatch.RunWorkerAsync();
+            Invoke(new MethodInvoker(() =>
+            {
+                logstb.AppendText(@"Advertise server request: " + Environment.NewLine);
+                logstb.AppendText(e.Result + Environment.NewLine);
+                _timer.Start();
+                _timer.Enabled = true;
+            }));
         }
 
         private async void startbtn_Click(object sender, EventArgs e)
@@ -153,12 +173,19 @@ namespace HttpClient
                     switch (methodType)
                     {
                         case "PUT":
-                            using (var r = client.PutAsync(new Uri(url, UriKind.Absolute), httpContent).GetAwaiter().GetResult())
+                            try
                             {
-                                string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                                result += "StatusCode: " + r.StatusCode + Environment.NewLine;
-                                return result;
-                            };
+                                using (var r = client.PutAsync(new Uri(url, UriKind.Absolute), httpContent).GetAwaiter().GetResult())
+                                {
+                                    string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                                    result += "StatusCode: " + r.StatusCode + Environment.NewLine;
+                                    return result;
+                                }
+                            }
+                            catch (HttpRequestException)
+                            {
+                                return @"Server is shout down";
+                            }
                         case "GET":
                             using (var r = client.GetAsync(new Uri(url, UriKind.Absolute)).GetAwaiter().GetResult())
                             {
@@ -191,7 +218,7 @@ namespace HttpClient
         {
             if (_isRunning)
             {
-                
+                _timer.Stop();
                 startbtn.Enabled = true;
                 urlcb.Enabled = true;
                 methodTypecb.Enabled = true;
@@ -203,12 +230,13 @@ namespace HttpClient
             }
             else
             {
-                
                 startbtn.Enabled = false;
                 urlcb.Enabled = false;
                 methodTypecb.Enabled = false;
                 runautobt.Text = @"Stop";
-                _sendServerWorker.RunWorkerAsync();
+                if (_serverDto == null)
+                    _serverDto = RandomGenerator.GetServer();
+                _sendServerWorker.RunWorkerAsync(_serverDto);
                 _isRunning = true;
             }
         }

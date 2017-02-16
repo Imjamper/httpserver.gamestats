@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GL.HttpServer.Attributes;
 using GL.HttpServer.Entities;
+using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.Entities
 {
+    [MapsTo(typeof(MatchResultDto))]
     public class MatchResult : Entity
     {
         public MatchResult()

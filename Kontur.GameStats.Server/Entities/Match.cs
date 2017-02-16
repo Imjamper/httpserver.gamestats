@@ -13,7 +13,7 @@ namespace Kontur.GameStats.Server.Entities
     public class Match : Entity
     {
         public string Server { get; set; }
-        public DateTime TimeStamp { get; set; }
+        public DateTime? TimeStamp { get; set; }
         public MatchResult Results { get; set; }
     }
 }
