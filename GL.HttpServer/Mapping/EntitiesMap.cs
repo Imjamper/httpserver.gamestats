@@ -9,9 +9,9 @@ using GL.HttpServer.Extensions;
 
 namespace GL.HttpServer.Mapping
 {
-    public class MainProfile : Profile
+    public class EntitiesMap : Profile
     {
-        public MainProfile()
+        public EntitiesMap()
         {
             var types =
                 AppDomain.CurrentDomain.GetAssemblies()

@@ -6,6 +6,7 @@ using GL.HttpServer.Context;
 using GL.HttpServer.Types;
 using System.Collections;
 using System.Diagnostics;
+using Serilog;
 
 namespace GL.HttpServer.Extensions
 {
@@ -110,6 +111,7 @@ namespace GL.HttpServer.Extensions
                 catch (Exception ex)
                 {
                     response = new ErrorResponse(ex.Message);
+                    Log.Error(ex, "HttpMethodInvokeException");
                 }
 
                 return response;

@@ -20,7 +20,7 @@ namespace GL.HttpServer.HttpServices
             {
                 var httpAttribute = method.GetAttribute<HttpOperationAttribute>();
                 var methodInfo = new HttpMethodInfo(httpAttribute.Name, httpAttribute.Url, method, httpAttribute.MethodType);
-                Console.WriteLine($"        {httpAttribute.MethodType.ToString("G")} {ServerEnviroment.Host}{name}{httpAttribute.Url}");
+                Console.WriteLine($"        {httpAttribute.MethodType:G} {ServerEnviroment.Host}{name}{httpAttribute.Url}");
                 foreach (var parameter in method.GetParameters())
                 {
                     var bindAttribute = parameter.GetAttribute<BindAttribute>();

@@ -31,7 +31,7 @@ namespace GL.HttpServer.Database
 
         public LiteDb() : base(ConnectionString)
         {
-
+            
         }
 
         public LiteDb(bool readOnly) : base(new FileDiskService(ConnectionString, new FileOptions {FileMode =FileMode.ReadOnly}), null, null, TimeSpan.FromMilliseconds(600), 10000)

@@ -9,7 +9,7 @@ namespace GL.HttpServer.Mapping
 {
     public static class AutoProfileLoader
     {
-        public static void RegisterDomain()
+        public static void Start()
         {
             RegisterProfiles(AppDomain.CurrentDomain.GetAssemblies());
         }
