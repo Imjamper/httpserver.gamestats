@@ -27,20 +27,27 @@ namespace Kontur.GameStats.Server.HttpServices
         {
             using (var unit = new UnitOfWork())
             {
-                var existServer = unit.Repository<Entities.Server>().Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
-                if (existServer != null)
+                try
                 {
-                    existServer.Info = body.ToEntity<ServerInfo>();
-                    unit.Repository<Entities.Server>().Update(existServer);
+                    var existServer = unit.Repository<Entities.Server>().Find(a => a.Endpoint == endpoint.ToString()).FirstOrDefault();
+                    if (existServer != null)
+                    {
+                        existServer.Info = body.ToEntity<ServerInfo>();
+                        unit.Repository<Entities.Server>().Update(existServer);
+                    }
+                    else
+                    {
+                        var fullInfo = new Entities.Server();
+                        fullInfo.Endpoint = endpoint.ToString();
+                        fullInfo.Info = body.ToEntity<ServerInfo>();
+                        unit.Repository<Entities.Server>().Add(fullInfo);
+                    }
+                    return new EmptyResponse(200);
                 }
-                else
+                catch (Exception)
                 {
-                    var fullInfo = new Entities.Server();
-                    fullInfo.Endpoint = endpoint.ToString();
-                    fullInfo.Info = body.ToEntity<ServerInfo>();
-                    unit.Repository<Entities.Server>().Add(fullInfo);
+                    return new EmptyResponse(500);
                 }
-                return new EmptyResponse(200);
             }
         }
 
@@ -61,7 +68,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     unit.Repository<Entities.Match>().Add(match);
                     return new EmptyResponse(200);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     return new EmptyResponse(500);
                 }
@@ -87,7 +94,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     response.StatusCode = 404;
                     return response;
                 }
-                catch
+                catch (Exception)
                 {
                     response.StatusCode = 500;
                     return response;
@@ -103,8 +110,18 @@ namespace Kontur.GameStats.Server.HttpServices
         {
             using (var unit = new UnitOfWork())
             {
-                var allServers = unit.Repository<Entities.Server>().FindAll();
-                return allServers.ToJsonList<ServerDto>();
+                var model = new JsonList<ServerDto>();
+                try
+                {
+                    var allServers = unit.Repository<Entities.Server>().FindAll();
+                    model = allServers.ToJsonList<ServerDto>();
+                    return model;
+                }
+                catch (Exception)
+                {
+                    model.StatusCode = 500;
+                    return model;
+                }
             }
         }
 
@@ -128,7 +145,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     response.StatusCode = 404;
                     return response;
                 }
-                catch
+                catch(Exception)
                 {
                     response.StatusCode = 500;
                     return response;
@@ -142,25 +159,30 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("stats", "/<endpoint>/stats")]
         public FullServerStatsDto GetServerStats(Endpoint endpoint)
         {
-            using (var unit = new UnitOfWork())
+            using (var unit = new UnitOfWork(true))
             {
                 var response = new FullServerStatsDto();
                 try
                 {
-                    var matches = unit.Repository<Entities.Match>().Find(a => a.Server == endpoint.ToString());
-                    if (matches.Count == 0)
+                    var server = unit.Repository<Entities.Server>().FindOne(a => a.Endpoint == endpoint.ToString());
+                    if (server == null)
+                    {
+                        response.StatusCode = 404;
                         return response;
+                    }
+                    response.Endpoint = endpoint.ToString();
+                    response.Name = server.Info.Name;
+                    var matches = unit.Repository<Entities.Match>().Find(a => a.Server == endpoint.ToString());
                     response.TotalMatchesPlayed = matches.Count;
                     
-                    var byDay = matches.GroupBy(match => match.TimeStamp.Value.DayOfYear).ToList();
+                    var byDay = matches.Where(a => a.TimeStamp != null).GroupBy(match => match.TimeStamp.Value.DayOfYear).ToList();
                     response.MaximumMatchesPerDay = byDay.Max(a => a.ToList().Count);
-                    response.AveragePopulation = byDay.Average(a => a.ToList().Count);
+                    response.AverageMatchesPerDay = byDay.Average(a => a.ToList().Count);
 
-                    var playerScores = matches.ToDictionary(match => match.Server, match => match.Results.ScoreBoard);
-                    response.MaximumPopulation = playerScores.Max(a => a.Value.Count);
-                    response.AveragePopulation = playerScores.Average(a => a.Value.Count);
+                    response.MaximumPopulation = matches.Max(a => a.Results.ScoreBoard.Count);
+                    response.AveragePopulation = matches.Average(a => a.Results.ScoreBoard.Count);
 
-                    var maps = matches.Select(match => match.Results.Map).ToList();
+                    var maps = matches.Where(a => a.Results != null).Select(match => match.Results.Map).ToList();
                     var dictMaps = new Dictionary<string, int>();
                     foreach (var map in maps)
                     {
@@ -168,10 +190,10 @@ namespace Kontur.GameStats.Server.HttpServices
                             dictMaps[map]++;
                         else dictMaps.Add(map, 1);
                     }
-                    var orderMaps = dictMaps.OrderBy(a => a.Value).Select(a => a.Key);
+                    var orderMaps = dictMaps.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
                     response.Top5Maps.AddRange(orderMaps);
 
-                    var gameModes = matches.Select(match => match.Results.GameMode).ToList();
+                    var gameModes = matches.Where(a => a.Results != null).Select(match => match.Results.GameMode).ToList();
                     var dictModes = new Dictionary<string, int>();
                     foreach (var mode in gameModes)
                     {
@@ -179,12 +201,11 @@ namespace Kontur.GameStats.Server.HttpServices
                             dictModes[mode]++;
                         else dictModes.Add(mode, 1);
                     }
-                    var orderModes = dictMaps.OrderBy(a => a.Value).Select(a => a.Key);
+                    var orderModes = dictModes.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
                     response.Top5GameModes.AddRange(orderModes);
-                    response.StatusCode = 404;
                     return response;
                 }
-                catch
+                catch(Exception ex)
                 {
                     response.StatusCode = 500;
                     return response;

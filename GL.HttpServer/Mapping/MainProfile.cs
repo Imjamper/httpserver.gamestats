@@ -11,7 +11,7 @@ namespace GL.HttpServer.Mapping
 {
     public class MainProfile : Profile
     {
-        protected override void Configure()
+        public MainProfile()
         {
             var types =
                 AppDomain.CurrentDomain.GetAssemblies()
@@ -26,7 +26,6 @@ namespace GL.HttpServer.Mapping
                     this.CreateMap(mapsToAttribute.MapsToType, type);
                 }
             }
-            base.Configure();
         }
     }
 }

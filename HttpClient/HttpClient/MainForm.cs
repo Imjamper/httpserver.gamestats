@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Net.Http;
 using System.Timers;
 using System.Web;
+using GL.HttpServer.Extensions;
 using Kontur.GameStats.Server.Dto;
 using Newtonsoft.Json;
 using Timer = System.Timers.Timer;
@@ -22,8 +23,10 @@ namespace HttpClient
     {
         private readonly BackgroundWorker _sendServerWorker = new BackgroundWorker();
         private readonly BackgroundWorker _sendMatch = new BackgroundWorker();
+        private readonly BackgroundWorker _reportsWorker = new BackgroundWorker();
         private static bool _isRunning;
         private System.Timers.Timer _timer;
+        private System.Timers.Timer _reportsTimer;
         private static ServerDto _serverDto;
         public MainForm()
         {
@@ -57,10 +60,40 @@ namespace HttpClient
             _sendMatch.RunWorkerCompleted += _sendMatch_RunWorkerCompleted;
             _sendMatch.DoWork += _sendMatch_DoWork;
             _sendMatch.WorkerSupportsCancellation = true;
+
+            _reportsWorker.RunWorkerCompleted += _reportsWorker_RunWorkerCompleted;
+            _reportsWorker.DoWork += _reportsWorker_DoWork;
+            _reportsWorker.WorkerSupportsCancellation = true;
+
             _timer = new Timer();
             _timer.AutoReset = true;
             _timer.Interval = 500;
             _timer.Elapsed += _timer_Elapsed;
+
+            _reportsTimer = new Timer();
+            _reportsTimer.AutoReset = true;
+            _reportsTimer.Interval = 2000;
+            _reportsTimer.Elapsed += _reportTimer_Elapsed;
+        }
+
+        private void _reportsWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var url = $"http://localhost:8080/servers/{_serverDto.Endpoint}/stats";
+            var result = DownloadPage(url, null, "GET");
+            e.Result = result;
+        }
+
+        private void _reportsWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            var response = e.Result as ClientResponse;
+            Invoke(new MethodInvoker(() =>
+            {
+                logstb.AppendText($"Get server stats: {response.StatusCode}");
+                if (!response.ErrorMessage.IsNullOrEmpty())
+                    logstb.AppendText($"Error: {response.ErrorMessage}");
+                logstb.AppendText(response.JsonString);
+                logstb.AppendText(Environment.NewLine);
+            }));
         }
 
         private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -68,6 +101,12 @@ namespace HttpClient
             if (_sendMatch.IsBusy) return;
             var match = RandomGenerator.GetMatch();
             _sendMatch.RunWorkerAsync(match);
+        }
+
+        private void _reportTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (_reportsWorker.IsBusy) return;
+            _reportsWorker.RunWorkerAsync();
         }
 
         private void _sendMatch_DoWork(object sender, DoWorkEventArgs e)
@@ -82,10 +121,13 @@ namespace HttpClient
 
         private void _sendMatch_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            var response = e.Result as ClientResponse;
             Invoke(new MethodInvoker(() =>
             {
-                logstb.AppendText(@"Send match request: " + Environment.NewLine);
-                logstb.AppendText(e.Result + Environment.NewLine);
+                logstb.AppendText($"Send match request: {response.StatusCode}" );
+                if (!response.ErrorMessage.IsNullOrEmpty())
+                    logstb.AppendText($"Error: {response.ErrorMessage}");
+                    logstb.AppendText(Environment.NewLine);
             }));
         }
 
@@ -99,12 +141,15 @@ namespace HttpClient
 
         private void _sendServerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            var response = e.Result as ClientResponse;
             Invoke(new MethodInvoker(() =>
             {
-                logstb.AppendText(@"Advertise server request: " + Environment.NewLine);
-                logstb.AppendText(e.Result + Environment.NewLine);
+                logstb.AppendText($"Advertise server request: {response.StatusCode}");
+                if (!response.ErrorMessage.IsNullOrEmpty())
+                    logstb.AppendText($"Error: {response.ErrorMessage}");
+                logstb.AppendText(Environment.NewLine);
                 _timer.Start();
-                _timer.Enabled = true;
+                _reportsTimer.Start();
             }));
         }
 
@@ -163,54 +208,71 @@ namespace HttpClient
             }
         }
 
-        private static string DownloadPage(string url, string json, string methodType)
+        private ClientResponse DownloadPage(string url, string json, string methodType)
         {
             using (var client = new System.Net.Http.HttpClient())
             {
-                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpContent httpContent = null;
+                if (!json.IsNullOrEmpty())
+                    httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = new ClientResponse();
                 if (!String.IsNullOrEmpty(methodType))
                 {
-                    switch (methodType)
+                    try
                     {
-                        case "PUT":
-                            try
-                            {
+                        switch (methodType)
+                        {
+                            case "PUT":
                                 using (var r = client.PutAsync(new Uri(url, UriKind.Absolute), httpContent).GetAwaiter().GetResult())
                                 {
                                     string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                                    result += "StatusCode: " + r.StatusCode + Environment.NewLine;
-                                    return result;
+                                    response.JsonString = result;
+                                    response.StatusCode = r.StatusCode.ToString();
+                                    break;
                                 }
-                            }
-                            catch (HttpRequestException)
-                            {
-                                return @"Server is shout down";
-                            }
-                        case "GET":
-                            using (var r = client.GetAsync(new Uri(url, UriKind.Absolute)).GetAwaiter().GetResult())
-                            {
-                                string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                                result += "StatusCode: " + r.StatusCode + Environment.NewLine;
-                                return result;
-                            };
-                        case "POST":
-                            using (var r = client.PostAsync(new Uri(url, UriKind.Absolute), httpContent).GetAwaiter().GetResult())
-                            {
-                                string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                                result += "StatusCode: " + r.StatusCode + Environment.NewLine;
-                                return result;
-                            };
-                        case "DELETE":
-                            using (var r = client.DeleteAsync(new Uri(url, UriKind.Absolute)).GetAwaiter().GetResult())
-                            {
-                                string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                                result += "StatusCode: " + r.StatusCode + Environment.NewLine;
-                                return result;
-                            };
-                        default: return null;
+                            case "GET":
+                                using (var r = client.GetAsync(new Uri(url, UriKind.Absolute)).GetAwaiter().GetResult())
+                                {
+                                    string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                                    response.JsonString = result;
+                                    response.StatusCode = r.StatusCode.ToString();
+                                    break;
+                                }
+                            case "POST":
+                                using (var r = client.PostAsync(new Uri(url, UriKind.Absolute), httpContent).GetAwaiter().GetResult())
+                                {
+                                    string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                                    response.JsonString = result;
+                                    response.StatusCode = r.StatusCode.ToString();
+                                    break;
+                                }
+                            case "DELETE":
+                                using (var r = client.DeleteAsync(new Uri(url, UriKind.Absolute)).GetAwaiter().GetResult())
+                                {
+                                    string result = r.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                                    response.JsonString = result;
+                                    response.StatusCode = r.StatusCode.ToString();
+                                    break;
+                                }
+                            default:
+                                response.StatusCode = @"888";
+                                break;
+                        }
+                    }
+                    catch (HttpRequestException)
+                    {
+                        response.ErrorMessage = @"Server is shout down";
+                        response.StatusCode = @"888";
+                        return response;
+                    }
+                    catch (Exception ex)
+                    {
+                        response.ErrorMessage = ex.Message;
+                        response.StatusCode = @"888";
+                        return response;
                     }
                 }
-                return null;
+                return response;
             }
         }
 
@@ -219,6 +281,7 @@ namespace HttpClient
             if (_isRunning)
             {
                 _timer.Stop();
+                _reportsTimer.Stop();
                 startbtn.Enabled = true;
                 urlcb.Enabled = true;
                 methodTypecb.Enabled = true;
@@ -227,6 +290,7 @@ namespace HttpClient
                     _sendServerWorker.CancelAsync();
                 if (_sendMatch.IsBusy)
                     _sendMatch.CancelAsync();
+                _isRunning = false;
             }
             else
             {

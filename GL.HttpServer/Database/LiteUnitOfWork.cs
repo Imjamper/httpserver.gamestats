@@ -12,18 +12,23 @@ namespace GL.HttpServer.Database
 {
     public class LiteUnitOfWork : ILiteUnitOfWork
     {
-        private readonly LiteDatabase _database;
+        private LiteDatabase _database;
         private Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
-        public LiteUnitOfWork(LiteDatabase context)
+        public LiteUnitOfWork()
         {
-            _database = context;
+            _database = LiteDb.ReadWrite;
+        }
+
+        public LiteUnitOfWork(bool readOnly)
+        {
+            _database = readOnly ? LiteDb.Read : LiteDb.ReadWrite;
         }
 
         public void Dispose()
         {
-            _database.Dispose();
             _repositories.Clear();
             _repositories = null;
+            GC.SuppressFinalize(this);
         }
 
         public void Transaction(Action<ILiteUnitOfWork> body)
@@ -82,14 +87,16 @@ namespace GL.HttpServer.Database
         }
     }
 
-    public class LiteUnitOfWork<TContext> : LiteUnitOfWork where TContext : LiteDatabase, new()
+    public class UnitOfWork : LiteUnitOfWork
     {
-        public LiteUnitOfWork() : base(new TContext())
+        public UnitOfWork() : base()
         {
-        }
-    }
 
-    public class UnitOfWork : LiteUnitOfWork<LiteDb>
-    {
+        }
+
+        public UnitOfWork(bool readOnly) : base(readOnly)
+        {
+
+        }
     }
 }

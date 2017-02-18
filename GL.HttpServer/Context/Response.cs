@@ -19,17 +19,14 @@ namespace GL.HttpServer.Context
         }
 
         [IgnoreMap]
-        [BsonIgnore]
         [JsonIgnore]
         public int StatusCode { get; set; }
 
         [IgnoreMap]
-        [BsonIgnore]
         [JsonIgnore]
         public IDictionary<string, string> Headers { get; set; }
 
         [IgnoreMap]
-        [BsonIgnore]
         [JsonIgnore]
         internal Action<Stream> WriteStream { get; set; }
     }

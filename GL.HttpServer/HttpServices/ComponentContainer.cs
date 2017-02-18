@@ -36,16 +36,13 @@ namespace GL.HttpServer.HttpServices
             var httpServiceType = typeof(IHttpService);
             var services = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(a => a.GetTypes())
-                .Where(p => httpServiceType.IsAssignableFrom(p) && p.IsClass);
-            if (services.Count() > 0)
+                .Where(p => httpServiceType.IsAssignableFrom(p) && p.IsClass).ToList();
+            if (services.Any())
                 Console.WriteLine("The available methods of the server:");
             foreach (var service in services)
             {
-                var serviceName = string.Empty;
                 var httpServiceAttribute = service.GetAttribute<HttpServiceAttribute>();
-                if (httpServiceAttribute != null)
-                    serviceName = httpServiceAttribute.Name;
-                else serviceName = service.Name.Replace("Service", string.Empty).ToLower();
+                var serviceName = httpServiceAttribute != null ? httpServiceAttribute.Name : service.Name.Replace("Service", string.Empty).ToLower();
                 var methods = service.GetMethodsWithAttribute<HttpOperationAttribute>();
                 var serviceInfo = new HttpServiceInfo(serviceName, methods);
                 _httpServices.Add(serviceInfo);

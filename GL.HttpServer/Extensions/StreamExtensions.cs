@@ -9,12 +9,16 @@ namespace GL.HttpServer.Extensions
     {
         public static byte[] ReadAll(this Stream stream, int count)
         {
-            var buffer = new byte[count];
-            return Task.Factory.StartNew(() =>
+            byte[] buffer = new byte[count];
+            using (MemoryStream ms = new MemoryStream())
             {
-                stream.ReadAsync(buffer, 0, count);
-                return buffer;
-            }).GetAwaiter().GetResult();
+                int read;
+                while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    ms.Write(buffer, 0, read);
+                }
+                return ms.ToArray();
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Reflection;
 using GL.HttpServer.Context;
 using GL.HttpServer.Types;
 using System.Collections;
+using System.Diagnostics;
 
 namespace GL.HttpServer.Extensions
 {
@@ -98,21 +99,22 @@ namespace GL.HttpServer.Extensions
 
         public static Response Invoke(this MethodInfo methodInfo, object[] parameters, object obj = null)
         {
-            object instance;
-            if (obj == null)
-                instance = Activator.CreateInstance(methodInfo.DeclaringType);
-            else instance = obj;
-            Response response = null;
-            try
+            if (methodInfo != null)
             {
-                response = methodInfo.Invoke(instance, parameters) as Response;
-            }
-            catch (Exception ex)
-            {
-                response = new ErrorResponse(ex.Message);
-            }
+                var instance = obj ?? Activator.CreateInstance(methodInfo.DeclaringType);
+                Response response = null;
+                try
+                {
+                    response = methodInfo.Invoke(instance, parameters) as Response;
+                }
+                catch (Exception ex)
+                {
+                    response = new ErrorResponse(ex.Message);
+                }
 
-            return response;
+                return response;
+            }
+            return null;
         }
 
         public static bool CompareByParams(this MethodInfo method, List<UrlParameter> urlParameters)
