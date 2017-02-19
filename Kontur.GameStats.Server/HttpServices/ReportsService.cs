@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GL.HttpServer.Attributes;
+using GL.HttpServer.Cache;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Context;
+using GL.HttpServer.Database;
+using GL.HttpServer.Extensions;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
 
@@ -32,21 +36,44 @@ namespace Kontur.GameStats.Server.HttpServices
         }
 
         [GetOperation("best-players", "/best-players[/<count>]")]
-        public JsonList<ShortPlayerStats> GetBestPlayers([Bind("[/{count}]")]int count)
+        public JsonList<ShortPlayerStatsDto> GetBestPlayers([Bind("[/{count}]")]int count)
         {
-            var model = new JsonList<ShortPlayerStats>();
-            model.Add(new ShortPlayerStats {Name = "Player1", KillToDeathRatio = 12.123123 });
-            model.Add(new ShortPlayerStats { Name = "Player11", KillToDeathRatio = 3.1123123432 });
+            var model = new JsonList<ShortPlayerStatsDto>();
+            model.Add(new ShortPlayerStatsDto() {Name = "Player1", KillToDeathRatio = 12.123123 });
+            model.Add(new ShortPlayerStatsDto() { Name = "Player11", KillToDeathRatio = 3.1123123432 });
             return model;
         }
 
         [GetOperation("popular-servers", "/popular-servers[/<count>]")]
-        public JsonList<ShortServerStats> GetPopularServers([Bind("[/{count}]")]int count)
+        public JsonList<ShortServerStatsDto> GetPopularServers([Bind("[/{count}]")]int count)
         {
-            var model = new JsonList<ShortServerStats>();
-            model.Add(new ShortServerStats() {Endpoint = "192.168.1.1-8080", Name = "MyServer1", AverageMatchesPerDay = 10.234234});
-            model.Add(new ShortServerStats() { Endpoint = "192.168.1.14-8080", Name = "MyServer14", AverageMatchesPerDay = 2392.354 });
-            return model;
+            using (var unit = new UnitOfWork(true))
+            {
+                var rowsCount = count == 0 ? 5 : (count > 50 ? 50 : count);
+                var servers = unit.Repository<Entities.Server>().FindAll();
+                var stats = new List<ShortServerStatsDto>();
+                foreach (var server in servers)
+                {
+                    var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(server.Endpoint);
+                    if (serverStats != null)
+                    {
+                        stats.Add(new ShortServerStatsDto()
+                        {
+                            Endpoint = server.Endpoint,
+                            Name = server.Info.Name,
+                            AverageMatchesPerDay = serverStats.MatchesPerDay.Average(a => a.Value)
+                        });
+                    }
+                }
+
+                var response = new JsonList<ShortServerStatsDto>();
+                foreach (var stat in stats)
+                {
+                    response.Add(stat);    
+                }
+
+                return response;
+            }
         }
     }
 }

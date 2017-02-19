@@ -3,6 +3,7 @@ using GL.HttpServer.Context;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using GL.HttpServer.Dto;
 using GL.HttpServer.Entities;
 
@@ -32,7 +33,8 @@ namespace GL.HttpServer.Extensions
             foreach (var item in list)
             {
                 var entity = item as IEntity;
-                jsonList.Add(entity.ToDto<T>());
+                if (entity != null)
+                    jsonList.Add(entity.ToDto<T>());
             }
 
             return jsonList;

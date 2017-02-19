@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GL.HttpServer.Entities;
 using GL.HttpServer.Managers;
+using GL.HttpServer.Types;
 using LiteDB;
 
 namespace GL.HttpServer.Database
@@ -71,7 +72,7 @@ namespace GL.HttpServer.Database
             {
                 return _repositories[typeof(TEntity)] as Repository<TEntity>;
             }
-            var repository = Activator.CreateInstance(typeof(Repository<TEntity>), this) as Repository<TEntity>;
+            var repository = InstanceActivator.CreateInstance(typeof(Repository<TEntity>), this) as Repository<TEntity>;
             _repositories.Add(typeof(TEntity), repository);
             return repository;
         }

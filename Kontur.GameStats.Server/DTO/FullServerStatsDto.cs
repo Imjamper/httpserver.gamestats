@@ -2,7 +2,7 @@
 
 namespace Kontur.GameStats.Server.DTO
 {
-    public class FullServerStatsDto : ShortServerStats
+    public class FullServerStatsDto : ShortServerStatsDto
     {
         public FullServerStatsDto()
         {

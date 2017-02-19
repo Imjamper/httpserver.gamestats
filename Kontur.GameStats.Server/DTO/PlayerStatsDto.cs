@@ -1,9 +1,14 @@
 ﻿using System;
+using Kontur.GameStats.Server.DTO;
 
-namespace Kontur.GameStats.Server.DTO
+namespace Kontur.GameStats.Server.Dto
 {
-    public class PlayerStats : ShortPlayerStats
+    public class PlayerStatsDto : ShortPlayerStatsDto
     {
+        public PlayerStatsDto()
+        {
+            
+        }
         public int TotalMatchesPlayed { get; set; }
         public int TotalMatchesWon { get; set; }
         public string FavoriteServer { get; set; }

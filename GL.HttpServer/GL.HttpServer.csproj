@@ -88,6 +88,8 @@
     <Compile Include="Attributes\HttpServiceAttribute.cs" />
     <Compile Include="Attributes\MapsToAttribute.cs" />
     <Compile Include="Attributes\PutOperationAttribute.cs" />
+    <Compile Include="Cache\ICacheInitialize.cs" />
+    <Compile Include="Cache\MemoryCache.cs" />
     <Compile Include="Context\EmptyResponse.cs" />
     <Compile Include="Context\ErrorResponse.cs" />
     <Compile Include="Context\JsonList.T.cs" />
@@ -105,7 +107,7 @@
     <Compile Include="Extensions\ReflectionExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="HttpServices\ComponentContainer.cs" />
+    <Compile Include="Types\ComponentContainer.cs" />
     <Compile Include="HttpServices\GetHttpHandler.cs" />
     <Compile Include="HttpServices\HttpHandler.cs" />
     <Compile Include="HttpServices\HttpMethodInfo.cs" />
@@ -113,6 +115,7 @@
     <Compile Include="HttpServices\IHttpHandler.cs" />
     <Compile Include="HttpServices\IHttpService.cs" />
     <Compile Include="HttpServices\PutHttpHandler.cs" />
+    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Managers\Repository.cs" />
     <Compile Include="Managers\IRepository.TEntity.cs" />
     <Compile Include="Entities\Entity.cs" />
@@ -123,6 +126,7 @@
     <Compile Include="ServerEnviroment.cs" />
     <Compile Include="ServerStarter.cs" />
     <Compile Include="HttpServer.cs" />
+    <Compile Include="Types\InstanceActivator.cs" />
     <Compile Include="Types\ParameterBindInfo.cs" />
     <Compile Include="Types\DateTimeParser.cs" />
     <Compile Include="Types\Endpoint.cs" />

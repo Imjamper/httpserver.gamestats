@@ -6,6 +6,7 @@ using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
 using GL.HttpServer.Types;
 using System.Reactive.Linq;
+using GL.HttpServer.Logging;
 
 namespace GL.HttpServer.HttpServices
 {
@@ -39,8 +40,9 @@ namespace GL.HttpServer.HttpServices
                             requestContext.Request.Parameters.AddRange(urlParameters);
                             return service.GetMethod(MethodType, methodName, urlParameters);
                         }
-                        return null;
                     }
+                    Logger.Info($"The method is not found. Invalid request. Request: {requestContext.Request.HttpMethod:G} {requestContext.Request.RawUrl}");
+                    requestContext.Respond(new EmptyResponse());
                     return null;
                 });
             });
@@ -48,7 +50,17 @@ namespace GL.HttpServer.HttpServices
 
         public virtual void ProcessRequest(RequestContext requestContext)
         {
-            GetMethod(requestContext).Where(method => method != null).Subscribe(m => m.Invoke(requestContext));
+            GetMethod(requestContext)
+                .Subscribe(m =>
+                {
+                    if (m == null)
+                    {
+                        Logger.Info($"The method is not found. Invalid request. Request: {requestContext.Request.HttpMethod:G} {requestContext.Request.RawUrl}");
+                        requestContext.Respond(new EmptyResponse());
+                        return;
+                    }
+                    m.Invoke(requestContext);
+                });
         }
     }
 }

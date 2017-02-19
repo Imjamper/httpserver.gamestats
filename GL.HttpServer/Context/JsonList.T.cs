@@ -6,10 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GL.HttpServer.Dto;
+using GL.HttpServer.Extensions;
 
 namespace GL.HttpServer.Context
 {
-    public class JsonList<T> : JsonResponse, IList<T>
+    public class JsonList<T> : JsonResponse, IList<T> where T : IDto, new()
     {
         private readonly List<T> _items = new List<T>();
         public JsonList() : base()
@@ -49,11 +51,6 @@ namespace GL.HttpServer.Context
             _items.RemoveAt(index);
         }
 
-        public void Add(T item)
-        {
-            _items.Add(item);
-        }
-
         public void Clear()
         {
             _items.Clear();
@@ -90,6 +87,11 @@ namespace GL.HttpServer.Context
             var bytes = Encoding.UTF8.GetBytes(json);
             Headers.Add("Content-Length", json.Length.ToString());
             stream.WriteAsync(bytes, 0, bytes.Length);
+        }
+
+        public void Add(T item)
+        {
+            _items.Add(item);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using GL.HttpServer.Context;
 using GL.HttpServer.HttpServices;
+using GL.HttpServer.Types;
 
 namespace GL.HttpServer
 {

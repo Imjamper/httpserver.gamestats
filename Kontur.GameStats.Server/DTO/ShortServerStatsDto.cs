@@ -2,7 +2,7 @@
 
 namespace Kontur.GameStats.Server.DTO
 {
-    public class ShortServerStats : JsonResponse
+    public class ShortServerStatsDto : JsonResponse
     {
         public double AverageMatchesPerDay { get; set; }
         public string Endpoint { get; set; }

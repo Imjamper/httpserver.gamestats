@@ -41,7 +41,7 @@ namespace GL.HttpServer.HttpServices
         public void Invoke(RequestContext requestContext)
         {
             var bytes = requestContext.Request.InputStream.ReadAll(requestContext.Request.ContentLength);
-            var values = new object[MethodInfo.GetParameters().Length];
+            var parametersValues = new object[MethodInfo.GetParameters().Length];
             var index = 0;
             foreach (var parameter in MethodInfo.GetParameters().ToList())
             {
@@ -57,10 +57,10 @@ namespace GL.HttpServer.HttpServices
                     if (urlParameter?.Value != null)
                         value = urlParameter.Value;
                 }
-                values[index] = value;
+                parametersValues[index] = value;
                 index++;
             }
-            var response = MethodInfo.Invoke(values);
+            var response = MethodInfo.Invoke(parametersValues);
             requestContext.Respond(response);
         }
     }

@@ -6,6 +6,7 @@ using GL.HttpServer.Context;
 using GL.HttpServer.Types;
 using System.Collections;
 using System.Diagnostics;
+using GL.HttpServer.Logging;
 using Serilog;
 
 namespace GL.HttpServer.Extensions
@@ -102,16 +103,20 @@ namespace GL.HttpServer.Extensions
         {
             if (methodInfo != null)
             {
-                var instance = obj ?? Activator.CreateInstance(methodInfo.DeclaringType);
+                var instance = obj ?? InstanceActivator.CreateInstance(methodInfo.DeclaringType);
                 Response response = null;
+                var stopWatch = new Stopwatch();
                 try
                 {
+                    stopWatch.Start();
                     response = methodInfo.Invoke(instance, parameters) as Response;
+                    stopWatch.Stop();
+                    Logger.Info($"Invoke method {methodInfo.Name}. Elapsed: {stopWatch.ElapsedMilliseconds} ms");
                 }
                 catch (Exception ex)
                 {
                     response = new ErrorResponse(ex.Message);
-                    Log.Error(ex, "HttpMethodInvokeException");
+                    Logger.Error(ex, "HttpMethodInvokeException");
                 }
 
                 return response;
@@ -137,5 +142,7 @@ namespace GL.HttpServer.Extensions
 
             return true;
         }
+
+        
     }
 }

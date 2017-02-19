@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GL.HttpServer.Attributes;
+using GL.HttpServer.Cache;
 using GL.HttpServer.Context;
 using GL.HttpServer.Database;
 using GL.HttpServer.Extensions;
@@ -55,6 +56,11 @@ namespace Kontur.GameStats.Server.HttpServices
                 match.TimeStamp = timestamp;
                 match.Results = body.ToEntity<MatchResult>();
                 unit.Repository<Match>().Add(match);
+                var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(endpoint.ToString());
+                if (serverStats != null)
+                    serverStats.Update(match);
+                else serverStats = new ServerStatsTempInfo(match);
+                MemoryCache.Global.AddOrUpdate(endpoint.ToString(), serverStats);
                 return new EmptyResponse(200);
             }
         }
@@ -121,46 +127,31 @@ namespace Kontur.GameStats.Server.HttpServices
             using (var unit = new UnitOfWork(true))
             {
                 var response = new FullServerStatsDto();
-                var server = unit.Repository<Entities.Server>().FindOne(a => a.Endpoint == endpoint.ToString());
-                if (server == null)
+
+                var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(endpoint.ToString());
+                if (serverStats == null)
                 {
                     response.StatusCode = 404;
                     return response;
                 }
-
+                var server = unit.Repository<Entities.Server>().FindOne(a => a.Endpoint == endpoint.ToString());
                 response.Endpoint = endpoint.ToString();
                 response.Name = server.Info.Name;
-                var matches = unit.Repository<Match>().Find(a => a.Server == endpoint.ToString());
-                response.TotalMatchesPlayed = matches.Count;
-                    
-                var byDay = matches.Where(a => a.TimeStamp != null).GroupBy(match => match.TimeStamp.Value.DayOfYear).ToList();
-                response.MaximumMatchesPerDay = byDay.Max(a => a.ToList().Count);
-                response.AverageMatchesPerDay = byDay.Average(a => a.ToList().Count);
 
-                response.MaximumPopulation = matches.Max(a => a.Results.ScoreBoard.Count);
-                response.AveragePopulation = matches.Average(a => a.Results.ScoreBoard.Count);
+                response.TotalMatchesPlayed = serverStats.TotalMatchesPlayed;
 
-                var maps = matches.Where(a => a.Results != null).Select(match => match.Results.Map).ToList();
-                var dictMaps = new Dictionary<string, int>();
-                foreach (var map in maps)
-                {
-                    if (dictMaps.ContainsKey(map))
-                        dictMaps[map]++;
-                    else dictMaps.Add(map, 1);
-                }
-                var orderMaps = dictMaps.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
+                response.MaximumMatchesPerDay = serverStats.MatchesPerDay.Max(a => a.Value);
+                response.AverageMatchesPerDay = serverStats.MatchesPerDay.Average(a => a.Value);
+
+                response.MaximumPopulation = serverStats.MaximumPopulation;
+                response.AveragePopulation = (double)serverStats.Population / serverStats.TotalMatchesPlayed;
+
+                var orderMaps = serverStats.Maps.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
                 response.Top5Maps.AddRange(orderMaps);
 
-                var gameModes = matches.Where(a => a.Results != null).Select(match => match.Results.GameMode).ToList();
-                var dictModes = new Dictionary<string, int>();
-                foreach (var mode in gameModes)
-                {
-                    if (dictModes.ContainsKey(mode))
-                        dictModes[mode]++;
-                    else dictModes.Add(mode, 1);
-                }
-                var orderModes = dictModes.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
+                var orderModes = serverStats.GameModes.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
                 response.Top5GameModes.AddRange(orderModes);
+               
                 return response;
             }
         }

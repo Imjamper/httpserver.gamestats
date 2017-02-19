@@ -1,5 +1,6 @@
 ﻿using GL.HttpServer.Attributes;
 using GL.HttpServer.HttpServices;
+using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.HttpServices
@@ -11,9 +12,9 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Получить статистику игрока
         /// </summary>
         [GetOperation("stats", "/<name>/stats")]
-        public PlayerStats GetPlayerStats(string name)
+        public PlayerStatsDto GetPlayerStats(string name)
         {
-            var model = new PlayerStats();
+            var model = new PlayerStatsDto();
             model.AverageMatchesPerDay = 0;
             model.FavoriteGameMode = "DM";
             return model;

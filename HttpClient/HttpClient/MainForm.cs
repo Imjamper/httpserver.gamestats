@@ -88,7 +88,8 @@ namespace HttpClient
             var response = e.Result as ClientResponse;
             Invoke(new MethodInvoker(() =>
             {
-                logstb.AppendText($"Get server stats: {response.StatusCode}");
+                response.Stopwatch.Stop();
+                logstb.AppendText($"Get server stats: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms");
                 if (!response.ErrorMessage.IsNullOrEmpty())
                     logstb.AppendText($"Error: {response.ErrorMessage}");
                 logstb.AppendText(response.JsonString);
@@ -124,7 +125,8 @@ namespace HttpClient
             var response = e.Result as ClientResponse;
             Invoke(new MethodInvoker(() =>
             {
-                logstb.AppendText($"Send match request: {response.StatusCode}" );
+                response.Stopwatch.Stop();
+                logstb.AppendText($"Send match request: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms" );
                 if (!response.ErrorMessage.IsNullOrEmpty())
                     logstb.AppendText($"Error: {response.ErrorMessage}");
                     logstb.AppendText(Environment.NewLine);
@@ -144,7 +146,8 @@ namespace HttpClient
             var response = e.Result as ClientResponse;
             Invoke(new MethodInvoker(() =>
             {
-                logstb.AppendText($"Advertise server request: {response.StatusCode}");
+                response.Stopwatch.Stop();
+                logstb.AppendText($"Advertise server request: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms");
                 if (!response.ErrorMessage.IsNullOrEmpty())
                     logstb.AppendText($"Error: {response.ErrorMessage}");
                 logstb.AppendText(Environment.NewLine);
@@ -216,6 +219,7 @@ namespace HttpClient
                 if (!json.IsNullOrEmpty())
                     httpContent = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = new ClientResponse();
+                response.Stopwatch.Start();
                 if (!String.IsNullOrEmpty(methodType))
                 {
                     try

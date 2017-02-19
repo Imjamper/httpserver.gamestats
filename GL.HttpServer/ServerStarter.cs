@@ -1,6 +1,7 @@
 ﻿using System;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Mapping;
+using GL.HttpServer.Types;
 using LiteDB;
 using Serilog;
 
@@ -18,15 +19,11 @@ namespace GL.HttpServer
         public void Start()
         {
             ServerEnviroment.Host = _config.Prefix;
-            ServerEnviroment.ConnectionString = $"{Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)}\\StatsServerDB";
-            ServerEnviroment.LoggerFolder = $"{AppDomain.CurrentDomain.BaseDirectory}\\logs";
+            ServerEnviroment.EnableLoggingInConsole = _config.EnableLogging;
+            ServerEnviroment.ConnectionString = $"{AppDomain.CurrentDomain.BaseDirectory}\\Database";
+            ServerEnviroment.LoggerFolder = $"{AppDomain.CurrentDomain.BaseDirectory}\\Logs";
             AutoProfileLoader.Start();
             ComponentContainer.Current.Initialize();
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            Log.Logger = new LoggerConfiguration()
-                .WriteTo.LiterateConsole()
-                .WriteTo.RollingFile($"{ServerEnviroment.LoggerFolder}\\log-{DateTime.Now.Date:yy-MM-dd}.txt")
-                .CreateLogger();
                         
             using (var server = new HttpServer(_config.Prefix))
             {
@@ -35,10 +32,6 @@ namespace GL.HttpServer
             }
         }
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var exception = e.ExceptionObject as Exception;
-            Log.Error(exception, "Unhandled exception");
-        }
+
     }
 }

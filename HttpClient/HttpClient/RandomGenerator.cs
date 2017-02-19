@@ -57,7 +57,7 @@ namespace HttpClient
         public static ServerDto GetServer()
         {
             var server = new ServerDto();
-            server.Endpoint = $"localhost-8081";
+            server.Endpoint = $"localhost-7777";
             var serverInfo = new ServerInfoDto();
             serverInfo.Name = $"GameServer{Random.Next(13)}";
             serverInfo.GameModes.AddRange(GetRandomModes());

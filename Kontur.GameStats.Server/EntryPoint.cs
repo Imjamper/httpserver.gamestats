@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Fclp;
+using Fclp.Internals.Parsing;
 using GL.HttpServer;
 
 namespace Kontur.GameStats.Server
@@ -8,21 +11,36 @@ namespace Kontur.GameStats.Server
     {
         public static void Main(string[] args)
         {
+            var helpCalled = args.Contains("help") || args.Contains("h");
+
             var commandLineParser = new FluentCommandLineParser<Configuration>();
 
             commandLineParser
                 .Setup(options => options.Prefix)
-                .As("prefix")
+                .As("--prefix")
                 .SetDefault("http://localhost:8080/")
-                .WithDescription("HTTP prefix to listen on");
+                .WithDescription("[--prefix <prefix>] HTTP prefix to listen on");
+
+            commandLineParser
+                .Setup(options => options.EnableLogging)
+                .As("--enableLogs")
+                .SetDefault(true)
+                .WithDescription("[--enableLogs <true/false>] Enable logs in console");
 
             commandLineParser
                 .SetupHelp("h", "help")
-                .WithHeader($"{AppDomain.CurrentDomain.FriendlyName} [--prefix <prefix>]")
-                .Callback(text => Console.WriteLine(text));
-
-            if (commandLineParser.Parse(args).HelpCalled)
+                .WithHeader("The available server arguments:")
+                .Callback(text =>
+                {
+                    Console.WriteLine(text);
+                });
+            commandLineParser.Parse(args);
+            if (helpCalled)
+            {
+                commandLineParser.HelpOption.ShowHelp(commandLineParser.Options);
+                Console.ReadLine();
                 return;
+            }
 
             new ServerStarter(commandLineParser.Object).Start();
         }

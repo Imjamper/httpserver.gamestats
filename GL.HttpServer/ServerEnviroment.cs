@@ -8,6 +8,8 @@ namespace GL.HttpServer
         private static string _loggerFolder;
         public static string Host { get; set; }
 
+        public static bool EnableLoggingInConsole { get; set; }
+
         public static string ConnectionString
         {
             get

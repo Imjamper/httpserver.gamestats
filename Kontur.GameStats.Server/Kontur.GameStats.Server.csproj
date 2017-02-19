@@ -65,8 +65,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheLoaders\ServerStatsCacheLoader.cs" />
     <Compile Include="Dto\MatchDto.cs" />
     <Compile Include="Dto\ServerInfoDto.cs" />
+    <Compile Include="Dto\ServerStatsTempInfo.cs" />
     <Compile Include="Entities\Match.cs" />
     <Compile Include="Entities\MatchResult.cs" />
     <Compile Include="Entities\PlayerScore.cs" />
@@ -75,14 +77,14 @@
     <Compile Include="HttpServices\ReportsService.cs" />
     <Compile Include="HttpServices\ServersService.cs" />
     <Compile Include="Dto\ServerDto.cs" />
-    <Compile Include="Dto\PlayerStats.cs" />
+    <Compile Include="Dto\PlayerStatsDto.cs" />
     <Compile Include="Dto\FullServerStatsDto.cs" />
     <Compile Include="Dto\MatchResultDto.cs" />
     <Compile Include="Dto\PlayerScoreDto.cs" />
     <Compile Include="Entities\ServerInfo.cs" />
     <Compile Include="EntryPoint.cs" />
-    <Compile Include="Dto\ShortPlayerStats.cs" />
-    <Compile Include="Dto\ShortServerInfo.cs" />
+    <Compile Include="Dto\ShortPlayerStatsDto.cs" />
+    <Compile Include="Dto\ShortServerStatsDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
