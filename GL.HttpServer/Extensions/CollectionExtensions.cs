@@ -39,5 +39,16 @@ namespace GL.HttpServer.Extensions
 
             return jsonList;
         }
+
+        public static JsonList<T> ToJsonList<T>(this IEnumerable<T> list) where T : IDto, new()
+        {
+            var jsonList = new JsonList<T>();
+            foreach (var item in list)
+            {
+               jsonList.Add(item);
+            }
+
+            return jsonList;
+        }
     }
 }

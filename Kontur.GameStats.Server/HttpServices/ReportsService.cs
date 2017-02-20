@@ -9,6 +9,7 @@ using GL.HttpServer.Database;
 using GL.HttpServer.Extensions;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
+using Kontur.GameStats.Server.DTO.CacheInfo;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
@@ -66,13 +67,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     }
                 }
 
-                var response = new JsonList<ShortServerStatsDto>();
-                foreach (var stat in stats)
-                {
-                    response.Add(stat);    
-                }
-
-                return response;
+                return stats.OrderByDescending(a => a.AverageMatchesPerDay).Take(rowsCount).ToJsonList();
             }
         }
     }

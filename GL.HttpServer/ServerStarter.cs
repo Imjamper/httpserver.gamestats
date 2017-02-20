@@ -22,6 +22,7 @@ namespace GL.HttpServer
             ServerEnviroment.EnableLoggingInConsole = _config.EnableLogging;
             ServerEnviroment.ConnectionString = $"{AppDomain.CurrentDomain.BaseDirectory}\\Database";
             ServerEnviroment.LoggerFolder = $"{AppDomain.CurrentDomain.BaseDirectory}\\Logs";
+            Logging.Logger.Initialize();
             AutoProfileLoader.Start();
             ComponentContainer.Current.Initialize();
                         

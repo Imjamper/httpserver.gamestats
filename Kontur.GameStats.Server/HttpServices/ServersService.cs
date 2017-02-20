@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Cache;
 using GL.HttpServer.Context;
@@ -10,6 +11,7 @@ using GL.HttpServer.HttpServices;
 using GL.HttpServer.Types;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
+using Kontur.GameStats.Server.DTO.CacheInfo;
 using Kontur.GameStats.Server.Entities;
 using Serilog;
 
@@ -56,11 +58,25 @@ namespace Kontur.GameStats.Server.HttpServices
                 match.TimeStamp = timestamp;
                 match.Results = body.ToEntity<MatchResult>();
                 unit.Repository<Match>().Add(match);
-                var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(endpoint.ToString());
-                if (serverStats != null)
-                    serverStats.Update(match);
-                else serverStats = new ServerStatsTempInfo(match);
-                MemoryCache.Global.AddOrUpdate(endpoint.ToString(), serverStats);
+                Task.Factory.StartNew(() =>
+                {
+                    var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(endpoint.ToString());
+                    if (serverStats != null)
+                        serverStats.Update(match);
+                    else serverStats = new ServerStatsTempInfo(match);
+                    MemoryCache.Global.AddOrUpdate(endpoint.ToString(), serverStats);
+
+                    var players = match.Results.ScoreBoard;
+                    foreach (var playerScore in players)
+                    {
+                        var playerStats = MemoryCache.Global.Get<PlayerStatsTempInfo>(playerScore.Name);
+                        if (playerStats != null)
+                            serverStats.Update(match);
+                        else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
+                        MemoryCache.Global.AddOrUpdate(playerScore.Name, playerStats);
+                    }
+                });
+
                 return new EmptyResponse(200);
             }
         }

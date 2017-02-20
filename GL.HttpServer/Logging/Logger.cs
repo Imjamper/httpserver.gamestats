@@ -11,11 +11,11 @@ namespace GL.HttpServer.Logging
     public class Logger
     {
         private static Serilog.Core.Logger _logger;
-        private static void Initialize()
+        public static void Initialize()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             var builder = new LoggerConfiguration();
-            builder
+            builder = builder
                 .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information)
                     .WriteTo.RollingFile(
                         $"{ServerEnviroment.LoggerFolder}\\Information\\info-{DateTime.Now:yy-MM-dd}.txt"))
@@ -23,7 +23,7 @@ namespace GL.HttpServer.Logging
                     .WriteTo.RollingFile($"{ServerEnviroment.LoggerFolder}\\Error\\error-{DateTime.Now:yy-MM-dd}.txt"));
             if (ServerEnviroment.EnableLoggingInConsole)
             {
-                builder.WriteTo.LiterateConsole();
+               builder = builder.WriteTo.LiterateConsole();
             }
             _logger = builder.CreateLogger();
         }

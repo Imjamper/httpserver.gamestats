@@ -65,10 +65,13 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheLoaders\PlayerStatsCacheLoader.cs" />
     <Compile Include="CacheLoaders\ServerStatsCacheLoader.cs" />
+    <Compile Include="Dto\CacheInfo\CountItem.cs" />
     <Compile Include="Dto\MatchDto.cs" />
+    <Compile Include="Dto\CacheInfo\PlayerStatsTempInfo.cs" />
     <Compile Include="Dto\ServerInfoDto.cs" />
-    <Compile Include="Dto\ServerStatsTempInfo.cs" />
+    <Compile Include="Dto\CacheInfo\ServerStatsTempInfo.cs" />
     <Compile Include="Entities\Match.cs" />
     <Compile Include="Entities\MatchResult.cs" />
     <Compile Include="Entities\PlayerScore.cs" />

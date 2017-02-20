@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Cache;
 using GL.HttpServer.Extensions;
@@ -78,8 +79,11 @@ namespace GL.HttpServer.Types
                 .Where(p => cacheLoaderInterface.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToList();
             foreach (var cacheLoaderType in cacheLoaderTypes)
             {
-                var loader = InstanceActivator.CreateInstance(cacheLoaderType) as ICacheLoader;
-                loader?.Execute();
+                Task.Factory.StartNew(() =>
+                {
+                    var loader = InstanceActivator.CreateInstance(cacheLoaderType) as ICacheLoader;
+                    loader?.Execute();
+                });
             }
         }
 

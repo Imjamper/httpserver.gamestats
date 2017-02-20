@@ -16,7 +16,7 @@ namespace GL.HttpServer.Types
     internal delegate object CreateObject();
     internal class InstanceActivator
     {
-        private static Dictionary<Type, CreateObject> _cacheCtor = new Dictionary<Type, CreateObject>();
+        private static Dictionary<Type, Func<object>> _cacheCtor = new Dictionary<Type, Func<object>>();
         public static object CreateInstance(Type type, params object[] parameters)
         {
             Type[] paramTypes = null;
@@ -26,7 +26,7 @@ namespace GL.HttpServer.Types
             }
             try
             {
-                CreateObject c;
+                Func<object> c;
                 if (_cacheCtor.TryGetValue(type, out c))
                 {
                     return c();
@@ -42,7 +42,7 @@ namespace GL.HttpServer.Types
             {
                 try
                 {
-                    CreateObject c = null;
+                    Func<object> c = null;
                     if (_cacheCtor.TryGetValue(type, out c))
                     {
                         return c();
@@ -51,14 +51,17 @@ namespace GL.HttpServer.Types
                     {
                         if (type.IsGenericType)
                         {
-                            return Activator.CreateInstance(type, parameters);
-                        }
-                        else
-                        {
+                            //if (paramTypes != null)
+                            //    _cacheCtor.Add(type, c = CreateClass(type, paramTypes));
+                            //else _cacheCtor.Add(type, c = CreateClass(type));
+                            //return c();
                             if (paramTypes != null)
-                                _cacheCtor.Add(type, c = CreateClass(type, paramTypes));
-                            else _cacheCtor.Add(type, c = CreateClass(type));
+                                return Activator.CreateInstance(type, parameters);
+                            return Activator.CreateInstance(type);
                         }
+                        if (paramTypes != null)
+                            _cacheCtor.Add(type, c = CreateClass(type, paramTypes));
+                        else _cacheCtor.Add(type, c = CreateClass(type));
                     }
                     else if (type.GetTypeInfo().IsInterface)
                     {
@@ -119,18 +122,18 @@ namespace GL.HttpServer.Types
             return listType.MakeGenericType(k, v);
         }
 
-        public static CreateObject CreateClass(Type type, Type[] paramTypes)
+        public static Func<object> CreateClass(Type type, Type[] paramTypes)
         {
-            var dynamicMethod = new DynamicMethod("_", type, (Type[])null);
+            var dynamicMethod = new DynamicMethod("_", type, paramTypes);
             var il = dynamicMethod.GetILGenerator();
 
             il.Emit(OpCodes.Newobj, type.GetConstructor(paramTypes));
             il.Emit(OpCodes.Ret);
 
-            return (CreateObject)dynamicMethod.CreateDelegate(typeof(CreateObject));
+            return (Func<object>)dynamicMethod.CreateDelegate(typeof(Func<>).MakeGenericType(type));
         }
 
-        public static CreateObject CreateClass(Type type)
+        public static Func<object> CreateClass(Type type)
         {
             var dynamicMethod = new DynamicMethod("_", type, null);
             var il = dynamicMethod.GetILGenerator();
@@ -138,10 +141,10 @@ namespace GL.HttpServer.Types
             il.Emit(OpCodes.Newobj, type.GetConstructor(Type.EmptyTypes));
             il.Emit(OpCodes.Ret);
 
-            return (CreateObject)dynamicMethod.CreateDelegate(typeof(CreateObject));
+            return (Func<object>)dynamicMethod.CreateDelegate(typeof(Func<>).MakeGenericType(type));
         }
 
-        public static CreateObject CreateStruct(Type type, Type[] paramTypes = null)
+        public static Func<object> CreateStruct(Type type, Type[] paramTypes = null)
         {
             var dynamicMethod = new DynamicMethod("_", typeof(object), paramTypes);
             var il = dynamicMethod.GetILGenerator();
@@ -153,7 +156,7 @@ namespace GL.HttpServer.Types
             il.Emit(OpCodes.Box, type);
             il.Emit(OpCodes.Ret);
 
-            return (CreateObject)dynamicMethod.CreateDelegate(typeof(CreateObject));
+            return (Func<object>)dynamicMethod.CreateDelegate(typeof(Func<>).MakeGenericType(type));
         }
 
         #endregion
