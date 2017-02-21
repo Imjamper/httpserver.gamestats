@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using GL.HttpServer.Database;
 
 namespace GL.HttpServer
 {
@@ -19,7 +20,10 @@ namespace GL.HttpServer
             set
             {
                 if (!Directory.Exists(value))
+                {
                     Directory.CreateDirectory(value);
+                    LiteDb.EnsureDbCreate();
+                }
                 _connectionString = value;
             }
         }

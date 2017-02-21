@@ -1,4 +1,5 @@
 ﻿using System;
+using GL.HttpServer.Database;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Mapping;
 using GL.HttpServer.Types;
@@ -20,9 +21,10 @@ namespace GL.HttpServer
         {
             ServerEnviroment.Host = _config.Prefix;
             ServerEnviroment.EnableLoggingInConsole = _config.EnableLogging;
-            ServerEnviroment.ConnectionString = $"{AppDomain.CurrentDomain.BaseDirectory}\\Database";
+            ServerEnviroment.ConnectionString = $"{AppDomain.CurrentDomain.BaseDirectory}Database";
             ServerEnviroment.LoggerFolder = $"{AppDomain.CurrentDomain.BaseDirectory}\\Logs";
             Logging.Logger.Initialize();
+            LiteDb.EnsureDbCreate();
             AutoProfileLoader.Start();
             ComponentContainer.Current.Initialize();
                         

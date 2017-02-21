@@ -60,20 +60,20 @@ namespace Kontur.GameStats.Server.HttpServices
                 unit.Repository<Match>().Add(match);
                 Task.Factory.StartNew(() =>
                 {
-                    var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(endpoint.ToString());
+                    var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(endpoint.ToString());
                     if (serverStats != null)
                         serverStats.Update(match);
                     else serverStats = new ServerStatsTempInfo(match);
-                    MemoryCache.Global.AddOrUpdate(endpoint.ToString(), serverStats);
+                    MemoryCache.Cache<ServerStatsTempInfo>().AddOrUpdate(endpoint.ToString(), serverStats);
 
                     var players = match.Results.ScoreBoard;
                     foreach (var playerScore in players)
                     {
-                        var playerStats = MemoryCache.Global.Get<PlayerStatsTempInfo>(playerScore.Name);
+                        var playerStats = MemoryCache.Cache<PlayerStatsTempInfo>().Get(playerScore.Name);
                         if (playerStats != null)
                             serverStats.Update(match);
                         else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
-                        MemoryCache.Global.AddOrUpdate(playerScore.Name, playerStats);
+                        MemoryCache.Cache<PlayerStatsTempInfo>().AddOrUpdate(playerScore.Name, playerStats);
                     }
                 });
 
@@ -144,7 +144,7 @@ namespace Kontur.GameStats.Server.HttpServices
             {
                 var response = new FullServerStatsDto();
 
-                var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(endpoint.ToString());
+                var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(endpoint.ToString());
                 if (serverStats == null)
                 {
                     response.StatusCode = 404;

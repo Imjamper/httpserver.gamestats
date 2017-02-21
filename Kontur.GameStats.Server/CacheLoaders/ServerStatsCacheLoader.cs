@@ -20,7 +20,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
                 foreach (var server in servers)
                 {
                     ServerStatsTempInfo serverStats;
-                    if (!MemoryCache.Global.TryGetValue(server.Endpoint, out serverStats))
+                    if (!MemoryCache.Cache<ServerStatsTempInfo>().TryGetValue(server.Endpoint, out serverStats))
                     {
                         serverStats = new ServerStatsTempInfo();
                     }
@@ -29,7 +29,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
                     {
                         serverStats.Update(match);
                     }
-                    MemoryCache.Global.AddOrUpdate(server.Endpoint, serverStats);
+                    MemoryCache.Cache<ServerStatsTempInfo>().AddOrUpdate(server.Endpoint, serverStats);
                 }
             }
         }

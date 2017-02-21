@@ -7,7 +7,12 @@ using System.Threading.Tasks;
 
 namespace GL.HttpServer.Cache
 {
-    public class MemoryCache : IDisposable
+    public interface IMemoryCache : IDisposable
+    {
+        Type CacheType { get; }
+    }
+
+    public class MemoryCache<T> : IMemoryCache
     {
 
         public MemoryCache()
@@ -15,12 +20,11 @@ namespace GL.HttpServer.Cache
             
         }
 
-        private static Lazy<MemoryCache> _global = new Lazy<MemoryCache>();
-        private Dictionary<string, object> _cache = new Dictionary<string, object>();
-        private ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
-        private bool _disposed = false;
+        public Type CacheType => typeof(T);
 
-        public static MemoryCache Global => _global.Value;
+        private readonly Dictionary<string, T> _cache = new Dictionary<string, T>();
+        private readonly ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
+        private bool _disposed = false;
 
         public void Dispose()
         {
@@ -55,7 +59,7 @@ namespace GL.HttpServer.Cache
             }
         }
 
-        public void AddOrUpdate(string key, object cacheObject)
+        public void AddOrUpdate(string key, T cacheObject)
         {
             Task.Factory.StartNew(() =>
             {
@@ -76,9 +80,9 @@ namespace GL.HttpServer.Cache
             });
         }
 
-        public object this[string key] => Get<object>(key);
+        public object this[string key] => Get(key);
 
-        public T Get<T>(string key) where T: class 
+        public T Get(string key) 
         {
             if (_disposed)
                 return default(T);
@@ -86,12 +90,12 @@ namespace GL.HttpServer.Cache
             _locker.EnterReadLock();
             try
             {
-                object rv;
+                T rv;
                 if (_cache.TryGetValue(key, out rv))
                 {
-                    return rv as T;
+                    return rv;
                 }
-                return null;
+                return default(T);
             }
             finally
             {
@@ -99,7 +103,23 @@ namespace GL.HttpServer.Cache
             }
         }
 
-        public bool TryGetValue<T>(string key, out T value) where T:class 
+        public List<T> GetAll()
+        {
+            if (_disposed)
+                return new List<T>();
+
+            _locker.EnterReadLock();
+            try
+            {
+                return _cache.Select(k => k.Key).Cast<T>().ToList();
+            }
+            finally
+            {
+                _locker.ExitReadLock();
+            }
+        }
+
+        public bool TryGetValue(string key, out T value)
         {
             if (_disposed)
             {
@@ -110,10 +130,10 @@ namespace GL.HttpServer.Cache
             _locker.EnterReadLock();
             try
             {
-                object rv;
+                T rv;
                 if (_cache.TryGetValue(key, out rv))
                 {
-                    value = rv as T;
+                    value = rv;
                     return true;
                 }
                 value = default(T);
@@ -156,6 +176,24 @@ namespace GL.HttpServer.Cache
             {
                 _locker.ExitReadLock();
             }
+        }
+    }
+
+    public class MemoryCache
+    {
+        private static readonly Lazy<Dictionary<Type, IMemoryCache>> LazyCaches = new Lazy<Dictionary<Type, IMemoryCache>>();
+        private static readonly Dictionary<Type, IMemoryCache> Caches = LazyCaches.Value;
+
+        public static MemoryCache<T> Cache<T>()
+        {
+            IMemoryCache cache;
+            if (Caches.TryGetValue(typeof(T), out cache))
+            {
+                return cache as MemoryCache<T>;
+            }
+            cache = new MemoryCache<T>();
+            Caches.Add(typeof(T), cache);
+            return (MemoryCache<T>) cache;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
                         foreach (var player in players)
                         {
                             PlayerStatsTempInfo playerStats;
-                            if (MemoryCache.Global.TryGetValue(player.Name, out playerStats))
+                            if (MemoryCache.Cache<PlayerStatsTempInfo>().TryGetValue(player.Name, out playerStats))
                             {
                                 playerStats.Update(match);
                             }
@@ -38,7 +38,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
                             {
                                 playerStats = new PlayerStatsTempInfo(player.Name, match);
                             }
-                            MemoryCache.Global.AddOrUpdate(player.Name, playerStats);
+                            MemoryCache.Cache<PlayerStatsTempInfo>().AddOrUpdate(player.Name, playerStats);
                         }
                     }
                 }

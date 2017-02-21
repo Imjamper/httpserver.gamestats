@@ -19,7 +19,7 @@ namespace Kontur.GameStats.Server.HttpServices
         {
             PlayerStatsTempInfo playerStats;
             var model = new PlayerStatsDto();
-            if (MemoryCache.Global.TryGetValue(name, out playerStats))
+            if (MemoryCache.Cache<PlayerStatsTempInfo>().TryGetValue(name, out playerStats))
             {
                 model.Name = name;
                 model.AverageScoreboardPercent = playerStats.Score / playerStats.TotalMatchesPlayed;

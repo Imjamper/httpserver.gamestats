@@ -39,9 +39,19 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("best-players", "/best-players[/<count>]")]
         public JsonList<ShortPlayerStatsDto> GetBestPlayers([Bind("[/{count}]")]int count)
         {
+            var rowsCount = count == 0 ? 5 : (count > 50 ? 50 : count);
             var model = new JsonList<ShortPlayerStatsDto>();
-            model.Add(new ShortPlayerStatsDto() {Name = "Player1", KillToDeathRatio = 12.123123 });
-            model.Add(new ShortPlayerStatsDto() { Name = "Player11", KillToDeathRatio = 3.1123123432 });
+            var playerStats = MemoryCache.Cache<PlayerStatsTempInfo>().GetAll();
+            if (playerStats != null)
+            {
+                foreach (var playerStat in playerStats)
+                {
+                    model.Add(new ShortPlayerStatsDto { Name = playerStat.Name, KillToDeathRatio = (double)playerStat.Kills / playerStat.Deaths });
+                }
+
+                return model.OrderByDescending(a => a.KillToDeathRatio).Take(rowsCount).ToJsonList();
+            }
+            model.StatusCode = 404;
             return model;
         }
 
@@ -55,7 +65,7 @@ namespace Kontur.GameStats.Server.HttpServices
                 var stats = new List<ShortServerStatsDto>();
                 foreach (var server in servers)
                 {
-                    var serverStats = MemoryCache.Global.Get<ServerStatsTempInfo>(server.Endpoint);
+                    var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(server.Endpoint);
                     if (serverStats != null)
                     {
                         stats.Add(new ShortServerStatsDto()
