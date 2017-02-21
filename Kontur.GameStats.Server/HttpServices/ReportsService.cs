@@ -7,7 +7,9 @@ using GL.HttpServer.HttpServices;
 using GL.HttpServer.Context;
 using GL.HttpServer.Database;
 using GL.HttpServer.Extensions;
+using Kontur.GameStats.Server.CacheLoaders;
 using Kontur.GameStats.Server.Dto;
+using Kontur.GameStats.Server.Dto.CacheInfo;
 using Kontur.GameStats.Server.DTO;
 using Kontur.GameStats.Server.DTO.CacheInfo;
 
@@ -19,21 +21,18 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("recent-matches", "/recent-matches[/<count>]")]
         public JsonList<MatchDto> GetRecentMatches([Bind("[/{count}]")]int count)
         {
-            var model1 = new JsonList<MatchDto>();
-            var model = new MatchDto();
-            model.Server = "192.168.1.1-8080";
-            model.TimeStamp = DateTime.Now;
-            var model12 = new MatchResultDto();
-            model12.Map = "DM-HelloWorld122";
-            model12.GameMode = "Single";
-            model12.FragLimit = 20;
-            model12.TimeLimit = 20;
-            model12.TimeElapsed = 12.345678;
-            model12.ScoreBoard.Add(new PlayerScoreDto { Name = "Player16", Deaths = 2, Kills = 10, Frags = 14 });
-            model12.ScoreBoard.Add(new PlayerScoreDto() { Name = "Player22", Deaths = 21, Kills = 4, Frags = 3 });
-            model.Results = model12;
-            model1.Add(model);
-            return model1;
+            var rowsCount = count == 0 ? 5 : (count > 50 ? 50 : count);
+            var model = new JsonList<MatchDto>();
+            var recentMatches = MemoryCache.Cache<RecentMatchesTempInfo>().Get(RecentMatchesCacheLoader.RecentMatchesUid);
+            if (recentMatches != null && recentMatches.Count > 0)
+            {
+                model = recentMatches.Take(rowsCount);
+            }
+            else
+            {
+                model.StatusCode = 404;
+            }
+            return model;
         }
 
         [GetOperation("best-players", "/best-players[/<count>]")]

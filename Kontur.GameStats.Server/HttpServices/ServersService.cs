@@ -9,7 +9,9 @@ using GL.HttpServer.Database;
 using GL.HttpServer.Extensions;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Types;
+using Kontur.GameStats.Server.CacheLoaders;
 using Kontur.GameStats.Server.Dto;
+using Kontur.GameStats.Server.Dto.CacheInfo;
 using Kontur.GameStats.Server.DTO;
 using Kontur.GameStats.Server.DTO.CacheInfo;
 using Kontur.GameStats.Server.Entities;
@@ -74,6 +76,16 @@ namespace Kontur.GameStats.Server.HttpServices
                             serverStats.Update(match);
                         else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
                         MemoryCache.Cache<PlayerStatsTempInfo>().AddOrUpdate(playerScore.Name, playerStats);
+                    }
+
+                    var recentMatches = MemoryCache.Cache<RecentMatchesTempInfo>().Get(RecentMatchesCacheLoader.RecentMatchesUid);
+                    if (recentMatches != null && recentMatches.Count > 0)
+                        recentMatches.Add(match);
+                    else
+                    {
+                        recentMatches = new RecentMatchesTempInfo();
+                        recentMatches.Add(match);
+                        MemoryCache.Cache<RecentMatchesTempInfo>().AddOrUpdate(RecentMatchesCacheLoader.RecentMatchesUid, recentMatches);
                     }
                 });
 

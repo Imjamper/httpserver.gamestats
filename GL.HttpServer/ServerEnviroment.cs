@@ -22,9 +22,10 @@ namespace GL.HttpServer
                 if (!Directory.Exists(value))
                 {
                     Directory.CreateDirectory(value);
-                    LiteDb.EnsureDbCreate();
+                    
                 }
                 _connectionString = value;
+                LiteDb.EnsureDbCreate();
             }
         }
 

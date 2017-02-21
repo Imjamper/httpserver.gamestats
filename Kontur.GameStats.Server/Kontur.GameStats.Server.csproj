@@ -66,8 +66,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CacheLoaders\PlayerStatsCacheLoader.cs" />
+    <Compile Include="CacheLoaders\RecentMatchesCacheLoader.cs" />
     <Compile Include="CacheLoaders\ServerStatsCacheLoader.cs" />
     <Compile Include="Dto\CacheInfo\CountItem.cs" />
+    <Compile Include="Dto\CacheInfo\RecentMatchesTempInfo.cs" />
     <Compile Include="Dto\MatchDto.cs" />
     <Compile Include="Dto\CacheInfo\PlayerStatsTempInfo.cs" />
     <Compile Include="Dto\ServerInfoDto.cs" />

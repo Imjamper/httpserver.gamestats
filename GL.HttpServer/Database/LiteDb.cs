@@ -15,7 +15,7 @@ namespace GL.HttpServer.Database
     {
         private static LiteDb _readWrite;
         private static LiteDb _read;
-        private static readonly string ConnectionString = $"{ServerEnviroment.ConnectionString}\\LiteDb.db";
+        private static readonly string ConnectionString = Path.Combine($"{ServerEnviroment.ConnectionString}", "LiteDb.db");
 
         public LiteDb(string connectionString, BsonMapper mapper = null) : base(connectionString, mapper)
         {
@@ -28,6 +28,7 @@ namespace GL.HttpServer.Database
 
         public LiteDb(IDiskService diskService, BsonMapper mapper = null, string password = null, TimeSpan? timeout = null, int cacheSize = 5000, Logger log = null) : base(diskService, mapper, password, timeout, cacheSize, log)
         {
+            var coll = GetCollection("someType");
         }
 
         public LiteDb() : base(ConnectionString)
@@ -37,21 +38,12 @@ namespace GL.HttpServer.Database
 
         public LiteDb(bool readOnly) : base(new FileDiskService(ConnectionString, new FileOptions {FileMode = FileMode.ReadOnly}), null, null, TimeSpan.FromMilliseconds(600), 10000)
         {
+            
         }
 
         public static void EnsureDbCreate()
         {
-            if (!File.Exists(ConnectionString))
-            {
-                if (!ReadWrite.CollectionExists("InitCollection"))
-                {
-                    var initCollection = ReadWrite.GetCollection("InitCollection");
-                    var initDocument = new BsonDocument();
-                    initDocument["someData"] = "someValue";
-                    initCollection.Insert(initDocument);
-                    ReadWrite.DropCollection("InitCollection");
-                }
-            }
+            if (!File.Exists(ConnectionString)) using (new LiteEngine(ConnectionString)) { }
         }
 
         public static LiteDb ReadWrite => _readWrite ?? (_readWrite = new LiteDb(new FileDiskService(ConnectionString, new FileOptions { FileMode = FileMode.Shared }), null, null, TimeSpan.FromMilliseconds(600), 10000));

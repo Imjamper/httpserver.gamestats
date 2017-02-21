@@ -111,7 +111,7 @@ namespace GL.HttpServer.Cache
             _locker.EnterReadLock();
             try
             {
-                return _cache.Select(k => k.Key).Cast<T>().ToList();
+                return _cache.Select(k => k.Value).ToList();
             }
             finally
             {

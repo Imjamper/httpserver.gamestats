@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,16 +12,17 @@ namespace GL.HttpServer.Logging
     public class Logger
     {
         private static Serilog.Core.Logger _logger;
-        public static void Initialize()
+        private static void Initialize()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             var builder = new LoggerConfiguration();
             builder = builder
                 .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information)
                     .WriteTo.RollingFile(
-                        $"{ServerEnviroment.LoggerFolder}\\Information\\info-{DateTime.Now:yy-MM-dd}.txt"))
+                        Path.Combine($"{ServerEnviroment.LoggerFolder}", "Information", $"info-{DateTime.Now:yy-MM-dd}.txt")))
                 .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error)
-                    .WriteTo.RollingFile($"{ServerEnviroment.LoggerFolder}\\Error\\error-{DateTime.Now:yy-MM-dd}.txt"));
+                    .WriteTo.RollingFile(
+                        Path.Combine($"{ServerEnviroment.LoggerFolder}", "Error", $"error-{DateTime.Now:yy-MM-dd}.txt")));
             if (ServerEnviroment.EnableLoggingInConsole)
             {
                builder = builder.WriteTo.LiterateConsole();
