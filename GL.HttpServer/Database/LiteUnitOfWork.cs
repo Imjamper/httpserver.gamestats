@@ -14,7 +14,7 @@ namespace GL.HttpServer.Database
 
         public LiteUnitOfWork(bool readOnly = false)
         {
-            _database = readOnly ? LiteDb.Read : LiteDb.ReadWrite;
+            _database = /*readOnly ? LiteDb.Read : */LiteDb.ReadWrite;
         }
 
         public void Dispose()
