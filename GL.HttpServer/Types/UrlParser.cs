@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using GL.HttpServer.Context;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Extensions;
 
@@ -76,6 +78,25 @@ namespace GL.HttpServer.Types
                 }
             }
             return null;
+        }
+
+        public static bool CompareByParams(MethodInfo method, List<UrlParameter> urlParameters)
+        {
+            var methodParameters =
+                method.GetParameters().Where(p => !typeof(JsonResponse).IsAssignableFrom(p.ParameterType)).ToList();
+            if (urlParameters.Count != methodParameters.Count)
+                return false;
+
+            for (var index = 0; index <= methodParameters.Count - 1; index++)
+            {
+                var methodParameter = methodParameters.ElementAt(index);
+                var urlParameter = urlParameters.ElementAtOrDefault(index);
+                if (methodParameter == null || urlParameter == null ||
+                    methodParameter.ParameterType != urlParameter.Type)
+                    return false;
+            }
+
+            return true;
         }
     }
 }

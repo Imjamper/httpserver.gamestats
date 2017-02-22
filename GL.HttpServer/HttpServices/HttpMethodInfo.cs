@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -6,6 +8,7 @@ using System.Reactive.Linq;
 using GL.HttpServer.Context;
 using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
+using GL.HttpServer.Logging;
 using Newtonsoft.Json;
 using GL.HttpServer.Types;
 
@@ -59,8 +62,33 @@ namespace GL.HttpServer.HttpServices
                 parametersValues[index] = value;
                 index++;
             }
-            var response = MethodInfo.Invoke(parametersValues);
+            var response = GetResponse(parametersValues);
             requestContext.Respond(response);
+        }
+
+        public Response GetResponse(object[] parameters, object obj = null)
+        {
+            if (MethodInfo != null)
+            {
+                var instance = obj ?? InstanceActivator.CreateInstance(MethodInfo.DeclaringType);
+                Response response = null;
+                var stopWatch = new Stopwatch();
+                try
+                {
+                    stopWatch.Start();
+                    response = MethodInfo.Invoke(instance, parameters) as Response;
+                    stopWatch.Stop();
+                    Logger.Info($"Invoke method {MethodInfo.Name}. Elapsed: {stopWatch.ElapsedMilliseconds} ms");
+                }
+                catch (Exception ex)
+                {
+                    response = new ErrorResponse(ex.Message);
+                    Logger.Error(ex, "HttpMethodInvokeException");
+                }
+
+                return response;
+            }
+            return null;
         }
     }
 }

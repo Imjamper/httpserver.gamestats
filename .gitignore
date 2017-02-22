@@ -7,6 +7,5 @@ obj/
 .gitk*
 *AssemblyTitle.cs
 .nuget/NuGet.exe
-packages/
 *.backup
 .vs/

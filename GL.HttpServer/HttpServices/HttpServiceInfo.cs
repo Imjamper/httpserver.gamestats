@@ -45,7 +45,7 @@ namespace GL.HttpServer.HttpServices
 
         public HttpMethodInfo GetMethod(MethodType methodType, string methodName, List<UrlParameter> urlParameters)
         {
-            return _methods.FirstOrDefault(a => a.MethodInfo.CompareByParams(urlParameters) && a.MethodType == methodType && a.Name == methodName);
+            return _methods.FirstOrDefault(a => UrlParser.CompareByParams(a.MethodInfo, urlParameters) && a.MethodType == methodType && a.Name == methodName);
         }
 
         public List<HttpMethodInfo> GetMethods(MethodType methodType, string methodName)

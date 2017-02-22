@@ -88,11 +88,15 @@ namespace HttpClient
             var response = e.Result as ClientResponse;
             Invoke(new MethodInvoker(() =>
             {
-                response.Stopwatch.Stop();
-                logstb.AppendText($"Get server stats: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms");
-                if (!response.ErrorMessage.IsNullOrEmpty())
-                    logstb.AppendText($"Error: {response.ErrorMessage}");
-                logstb.AppendText(response.JsonString);
+                if (response != null)
+                {
+                    response.Stopwatch.Stop();
+                    logstb.AppendText($"Get server stats: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms");
+                    if (!response.ErrorMessage.IsNullOrEmpty())
+                        logstb.AppendText($"  Error: {response.ErrorMessage}");
+                    if (!String.IsNullOrEmpty(response.JsonString))
+                        logstb.AppendText(response.JsonString);
+                }
                 logstb.AppendText(Environment.NewLine);
             }));
         }
@@ -125,11 +129,14 @@ namespace HttpClient
             var response = e.Result as ClientResponse;
             Invoke(new MethodInvoker(() =>
             {
-                response.Stopwatch.Stop();
-                logstb.AppendText($"Send match request: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms" );
-                if (!response.ErrorMessage.IsNullOrEmpty())
-                    logstb.AppendText($"Error: {response.ErrorMessage}");
-                    logstb.AppendText(Environment.NewLine);
+                if (response != null)
+                {
+                    response.Stopwatch.Stop();
+                    logstb.AppendText($"Send match request: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms" );
+                    if (!response.ErrorMessage.IsNullOrEmpty())
+                        logstb.AppendText($"  Error: {response.ErrorMessage}");
+                }
+                logstb.AppendText(Environment.NewLine);
             }));
         }
 
@@ -149,7 +156,7 @@ namespace HttpClient
                 response.Stopwatch.Stop();
                 logstb.AppendText($"Advertise server request: {response.StatusCode}. Elapsed: {response.Stopwatch.ElapsedMilliseconds} ms");
                 if (!response.ErrorMessage.IsNullOrEmpty())
-                    logstb.AppendText($"Error: {response.ErrorMessage}");
+                    logstb.AppendText($"  Error: {response.ErrorMessage}");
                 logstb.AppendText(Environment.NewLine);
                 _timer.Start();
                 _reportsTimer.Start();

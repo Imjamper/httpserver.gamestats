@@ -97,49 +97,9 @@ namespace GL.HttpServer.Extensions
             return false;
         }
 
-        public static Response Invoke(this MethodInfo methodInfo, object[] parameters, object obj = null)
-        {
-            if (methodInfo != null)
-            {
-                var instance = obj ?? InstanceActivator.CreateInstance(methodInfo.DeclaringType);
-                Response response = null;
-                var stopWatch = new Stopwatch();
-                try
-                {
-                    stopWatch.Start();
-                    response = methodInfo.Invoke(instance, parameters) as Response;
-                    stopWatch.Stop();
-                    Logger.Info($"Invoke method {methodInfo.Name}. Elapsed: {stopWatch.ElapsedMilliseconds} ms");
-                }
-                catch (Exception ex)
-                {
-                    response = new ErrorResponse(ex.Message);
-                    Logger.Error(ex, "HttpMethodInvokeException");
-                }
+        
 
-                return response;
-            }
-            return null;
-        }
-
-        public static bool CompareByParams(this MethodInfo method, List<UrlParameter> urlParameters)
-        {
-            var methodParameters =
-                method.GetParameters().Where(p => !typeof(JsonResponse).IsAssignableFrom(p.ParameterType)).ToList();
-            if (urlParameters.Count != methodParameters.Count)
-                return false;
-
-            for (var index = 0; index <= methodParameters.Count - 1; index++)
-            {
-                var methodParameter = methodParameters.ElementAt(index);
-                var urlParameter = urlParameters.ElementAtOrDefault(index);
-                if (methodParameter == null || urlParameter == null ||
-                    methodParameter.ParameterType != urlParameter.Type)
-                    return false;
-            }
-
-            return true;
-        }
+        
 
         
     }
