@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using GL.HttpServer.Entities;
-using GL.HttpServer.Managers;
+using GL.HttpServer.Repository;
 using GL.HttpServer.Types;
 using LiteDB;
 
@@ -13,14 +9,10 @@ namespace GL.HttpServer.Database
 {
     public class LiteUnitOfWork : ILiteUnitOfWork
     {
-        private LiteDatabase _database;
+        private readonly LiteDatabase _database;
         private Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
-        public LiteUnitOfWork()
-        {
-            _database = LiteDb.ReadWrite;
-        }
 
-        public LiteUnitOfWork(bool readOnly)
+        public LiteUnitOfWork(bool readOnly = false)
         {
             _database = readOnly ? LiteDb.Read : LiteDb.ReadWrite;
         }
@@ -90,7 +82,7 @@ namespace GL.HttpServer.Database
 
     public class UnitOfWork : LiteUnitOfWork
     {
-        public UnitOfWork() : base()
+        public UnitOfWork()
         {
 
         }

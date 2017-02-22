@@ -6,14 +6,6 @@ namespace GL.HttpServer.Types
 {
     public class Endpoint
     {
-        public Endpoint()
-        {
-        }
-
-        public Endpoint(string endpoint)
-        {
-        }
-
         public string Host { get; set; }
 
         public int Port { get; set; }
@@ -28,7 +20,7 @@ namespace GL.HttpServer.Types
 
             Uri url;
             IPAddress ip;
-            if (Uri.TryCreate(string.Format("http://{0}", endpointstring.Replace('-', ':')), UriKind.Absolute, out url))
+            if (Uri.TryCreate($"http://{endpointstring.Replace('-', ':')}", UriKind.Absolute, out url))
                 if (IPAddress.TryParse(url.Host, out ip))
                 {
                     endpoint = new Endpoint {Host = ip.ToString(), Port = url.Port};

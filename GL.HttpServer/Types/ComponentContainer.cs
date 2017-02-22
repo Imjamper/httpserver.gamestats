@@ -16,22 +16,7 @@ namespace GL.HttpServer.Types
         private readonly List<KnownTypeParser> _urlParsers = new List<KnownTypeParser>();
         private static ComponentContainer _currentContainer;
 
-        public ComponentContainer()
-        {
-        }
-
-        public static ComponentContainer Current
-        {
-            get
-            {
-                if (_currentContainer == null)
-                {
-                    _currentContainer = new ComponentContainer();
-                }
-                    
-                return _currentContainer;
-            }
-        }
+        public static ComponentContainer Current => _currentContainer ?? (_currentContainer = new ComponentContainer());
 
         public void Initialize()
         {
@@ -82,7 +67,7 @@ namespace GL.HttpServer.Types
                 Task.Factory.StartNew(() =>
                 {
                     var loader = InstanceActivator.CreateInstance(cacheLoaderType) as ICacheLoader;
-                    loader?.Execute();
+                    loader?.Load();
                 });
             }
         }

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using GL.HttpServer.Managers;
 using LiteDB;
-using Serilog;
 using Logger = GL.HttpServer.Logging.Logger;
 
 namespace GL.HttpServer.Types

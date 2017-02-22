@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace GL.HttpServer.Types
+﻿namespace GL.HttpServer.Types
 {
     public class IntegerParser : KnownTypeParser<int?>
     {

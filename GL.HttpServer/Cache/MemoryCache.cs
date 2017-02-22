@@ -1,30 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace GL.HttpServer.Cache
 {
-    public interface IMemoryCache : IDisposable
-    {
-        Type CacheType { get; }
-    }
-
     public class MemoryCache<T> : IMemoryCache
     {
-
-        public MemoryCache()
-        {
-            
-        }
-
         public Type CacheType => typeof(T);
 
         private readonly Dictionary<string, T> _cache = new Dictionary<string, T>();
         private readonly ReaderWriterLockSlim _locker = new ReaderWriterLockSlim();
-        private bool _disposed = false;
+        private bool _disposed;
 
         public void Dispose()
         {
@@ -59,9 +47,9 @@ namespace GL.HttpServer.Cache
             }
         }
 
-        public void AddOrUpdate(string key, T cacheObject)
+        public Task PutAsync(string key, T cacheObject)
         {
-            Task.Factory.StartNew(() =>
+            return Task.Factory.StartNew(() =>
             {
                 if (_disposed) return;
 

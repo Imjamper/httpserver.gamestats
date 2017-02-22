@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GL.HttpServer.Cache;
+﻿using GL.HttpServer.Cache;
 using GL.HttpServer.Database;
-using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO.CacheInfo;
 using Kontur.GameStats.Server.Entities;
 
@@ -14,7 +7,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
 {
     public class PlayerStatsCacheLoader : ICacheLoader
     {
-        public void Execute()
+        public void Load()
         {
             using (var unit = new UnitOfWork(true))
             {
@@ -38,7 +31,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
                             {
                                 playerStats = new PlayerStatsTempInfo(player.Name, match);
                             }
-                            MemoryCache.Cache<PlayerStatsTempInfo>().AddOrUpdate(player.Name, playerStats);
+                            MemoryCache.Cache<PlayerStatsTempInfo>().PutAsync(player.Name, playerStats);
                         }
                     }
                 }

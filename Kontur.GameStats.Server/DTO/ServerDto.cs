@@ -1,7 +1,5 @@
 ﻿using GL.HttpServer.Context;
 using Kontur.GameStats.Server.DTO;
-using Kontur.GameStats.Server.Entities;
-using LiteDB;
 
 namespace Kontur.GameStats.Server.Dto
 {

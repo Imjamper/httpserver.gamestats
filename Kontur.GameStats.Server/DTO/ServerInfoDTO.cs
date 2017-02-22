@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using GL.HttpServer.Context;
-using GL.HttpServer.Entities;
 
 namespace Kontur.GameStats.Server.DTO
 {

@@ -1,5 +1,4 @@
 ﻿using System;
-using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.Dto
 {

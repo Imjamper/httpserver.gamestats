@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 using LiteDB;
 using FileMode = LiteDB.FileMode;
 using FileOptions = LiteDB.FileOptions;
@@ -28,7 +23,6 @@ namespace GL.HttpServer.Database
 
         public LiteDb(IDiskService diskService, BsonMapper mapper = null, string password = null, TimeSpan? timeout = null, int cacheSize = 5000, Logger log = null) : base(diskService, mapper, password, timeout, cacheSize, log)
         {
-            var coll = GetCollection("someType");
         }
 
         public LiteDb() : base(ConnectionString)
@@ -36,14 +30,9 @@ namespace GL.HttpServer.Database
             
         }
 
-        public LiteDb(bool readOnly) : base(new FileDiskService(ConnectionString, new FileOptions {FileMode = FileMode.ReadOnly}), null, null, TimeSpan.FromMilliseconds(600), 10000)
-        {
-            
-        }
-
         public static void EnsureDbCreate()
         {
-            if (!File.Exists(ConnectionString)) using (new LiteEngine(ConnectionString)) { }
+            if (!File.Exists(ConnectionString)) using (new LiteEngine(new FileDiskService(ConnectionString, new FileOptions { FileMode = FileMode.Shared }), null, TimeSpan.FromMilliseconds(600), 10000)) { }
         }
 
         public static LiteDb ReadWrite => _readWrite ?? (_readWrite = new LiteDb(new FileDiskService(ConnectionString, new FileOptions { FileMode = FileMode.Shared }), null, null, TimeSpan.FromMilliseconds(600), 10000));

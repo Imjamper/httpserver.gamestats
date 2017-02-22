@@ -1,23 +1,15 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using GL.HttpServer.Dto;
-using GL.HttpServer.Extensions;
 
 namespace GL.HttpServer.Context
 {
     public class JsonList<T> : JsonResponse, IList<T> where T : IDto, new()
     {
         private readonly List<T> _items = new List<T>();
-        public JsonList() : base()
-        {
-
-        }
 
         public int Count => _items.Count;
 
@@ -39,6 +31,11 @@ namespace GL.HttpServer.Context
         public int IndexOf(T item)
         {
            return _items.IndexOf(item);
+        }
+
+        public void Add(T item)
+        {
+            _items.Add(item);
         }
 
         public void Insert(int index, T item)
@@ -87,11 +84,6 @@ namespace GL.HttpServer.Context
             var bytes = Encoding.UTF8.GetBytes(json);
             Headers.Add("Content-Length", json.Length.ToString());
             stream.WriteAsync(bytes, 0, bytes.Length);
-        }
-
-        public void Add(T item)
-        {
-            _items.Add(item);
         }
     }
 }

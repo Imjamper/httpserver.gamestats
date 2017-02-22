@@ -4,10 +4,8 @@ using System.Linq;
 using System.Reflection;
 using GL.HttpServer.Context;
 using GL.HttpServer.Types;
-using System.Collections;
 using System.Diagnostics;
 using GL.HttpServer.Logging;
-using Serilog;
 
 namespace GL.HttpServer.Extensions
 {

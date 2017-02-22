@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AutoMapper;
-using AutoMapper.Configuration;
 
 namespace GL.HttpServer.Mapping
 {

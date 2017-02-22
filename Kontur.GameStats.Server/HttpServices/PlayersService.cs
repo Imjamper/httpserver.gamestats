@@ -3,7 +3,6 @@ using GL.HttpServer.Attributes;
 using GL.HttpServer.Cache;
 using GL.HttpServer.HttpServices;
 using Kontur.GameStats.Server.Dto;
-using Kontur.GameStats.Server.DTO;
 using Kontur.GameStats.Server.DTO.CacheInfo;
 
 namespace Kontur.GameStats.Server.HttpServices

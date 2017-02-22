@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
-using GL.HttpServer.Database;
 using GL.HttpServer.Entities;
 using LiteDB;
 
-namespace GL.HttpServer.Managers
+namespace GL.HttpServer.Repository
 {
     public interface IRepository<TEntity> where TEntity : IEntity
     {

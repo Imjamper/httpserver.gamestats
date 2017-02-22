@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Entities;
 using Kontur.GameStats.Server.Dto;
-using Kontur.GameStats.Server.DTO;
 
 namespace Kontur.GameStats.Server.Entities
 {

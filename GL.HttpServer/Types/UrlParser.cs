@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using GL.HttpServer.HttpServices;
 using GL.HttpServer.Extensions;
-using GL.HttpServer.Attributes;
-using GL.HttpServer.Enums;
 
 namespace GL.HttpServer.Types
 {

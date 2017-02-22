@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GL.HttpServer.Dto
+﻿namespace GL.HttpServer.Dto
 {
+    /// <summary>
+    /// Интерфейс для DTO объектов 
+    /// </summary>
     public interface IDto
     {
         

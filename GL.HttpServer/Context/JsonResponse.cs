@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.IO;
-using System.Threading.Tasks;
 using GL.HttpServer.Dto;
 using Newtonsoft.Json;
 
 namespace GL.HttpServer.Context
 {
+    /// <summary>
+    /// Ответ содержащий Json
+    /// </summary>
     public class JsonResponse : Response, IDto
     {
         public JsonResponse(string json)

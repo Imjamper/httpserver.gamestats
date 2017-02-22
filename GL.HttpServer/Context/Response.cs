@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using AutoMapper;
-using GL.HttpServer.Entities;
-using LiteDB;
 using Newtonsoft.Json;
 
 namespace GL.HttpServer.Context
 {
+    /// <summary>
+    /// Абстрактный класc для HttpResponse
+    /// </summary>
     public abstract class Response
     {
         protected Response()

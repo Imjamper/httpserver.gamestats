@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GL.HttpServer.Attributes;
@@ -15,7 +14,6 @@ using Kontur.GameStats.Server.Dto.CacheInfo;
 using Kontur.GameStats.Server.DTO;
 using Kontur.GameStats.Server.DTO.CacheInfo;
 using Kontur.GameStats.Server.Entities;
-using Serilog;
 
 namespace Kontur.GameStats.Server.HttpServices
 {
@@ -66,7 +64,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     if (serverStats != null)
                         serverStats.Update(match);
                     else serverStats = new ServerStatsTempInfo(match);
-                    MemoryCache.Cache<ServerStatsTempInfo>().AddOrUpdate(endpoint.ToString(), serverStats);
+                    MemoryCache.Cache<ServerStatsTempInfo>().PutAsync(endpoint.ToString(), serverStats);
 
                     var players = match.Results.ScoreBoard;
                     foreach (var playerScore in players)
@@ -75,7 +73,7 @@ namespace Kontur.GameStats.Server.HttpServices
                         if (playerStats != null)
                             serverStats.Update(match);
                         else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
-                        MemoryCache.Cache<PlayerStatsTempInfo>().AddOrUpdate(playerScore.Name, playerStats);
+                        MemoryCache.Cache<PlayerStatsTempInfo>().PutAsync(playerScore.Name, playerStats);
                     }
 
                     var recentMatches = MemoryCache.Cache<RecentMatchesTempInfo>().Get(RecentMatchesCacheLoader.RecentMatchesUid);
@@ -85,7 +83,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     {
                         recentMatches = new RecentMatchesTempInfo();
                         recentMatches.Add(match);
-                        MemoryCache.Cache<RecentMatchesTempInfo>().AddOrUpdate(RecentMatchesCacheLoader.RecentMatchesUid, recentMatches);
+                        MemoryCache.Cache<RecentMatchesTempInfo>().PutAsync(RecentMatchesCacheLoader.RecentMatchesUid, recentMatches);
                     }
                 });
 
@@ -163,8 +161,11 @@ namespace Kontur.GameStats.Server.HttpServices
                     return response;
                 }
                 var server = unit.Repository<Entities.Server>().FindOne(a => a.Endpoint == endpoint.ToString());
-                response.Endpoint = endpoint.ToString();
-                response.Name = server.Info.Name;
+                if (server != null)
+                {
+                    response.Endpoint = endpoint.ToString();
+                    response.Name = server.Info.Name;
+                }
 
                 response.TotalMatchesPlayed = serverStats.TotalMatchesPlayed;
 
