@@ -15,13 +15,13 @@ namespace Kontur.GameStats.Server
 
             commandLineParser
                 .Setup(options => options.Prefix)
-                .As("--prefix")
-                .SetDefault("http://localhost:8080/")
+                .As("prefix")
+                .SetDefault("http://+:8080/")
                 .WithDescription("[--prefix <prefix>] HTTP prefix to listen on");
 
             commandLineParser
                 .Setup(options => options.EnableLogging)
-                .As("--enableLogs")
+                .As("enableLogs")
                 .SetDefault(true)
                 .WithDescription("[--enableLogs <true/false>] Enable logs in console");
 
