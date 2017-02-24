@@ -12,9 +12,9 @@ namespace GL.HttpServer.Database
         private readonly LiteDatabase _database;
         private Dictionary<Type, object> _repositories = new Dictionary<Type, object>();
 
-        public LiteUnitOfWork(bool readOnly = false)
+        public LiteUnitOfWork()
         {
-            _database = /*readOnly ? LiteDb.Read : */LiteDb.ReadWrite;
+            _database = LiteDb.ReadWrite;
         }
 
         public void Dispose()
@@ -82,14 +82,5 @@ namespace GL.HttpServer.Database
 
     public class UnitOfWork : LiteUnitOfWork
     {
-        public UnitOfWork()
-        {
-
-        }
-
-        public UnitOfWork(bool readOnly) : base(readOnly)
-        {
-
-        }
     }
 }

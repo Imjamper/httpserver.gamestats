@@ -1,11 +1,14 @@
-﻿namespace HttpClient
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace HttpClient
 {
     partial class MainForm
     {
         /// <summary>
         /// Required designer variable.
         /// </summary>
-        private System.ComponentModel.IContainer components = null;
+        private IContainer components = null;
 
         /// <summary>
         /// Clean up any resources being used.
@@ -118,12 +121,12 @@
 
         #endregion
 
-        private System.Windows.Forms.Button startbtn;
-        private System.Windows.Forms.TextBox bodytb;
-        private System.Windows.Forms.ComboBox methodTypecb;
-        private System.Windows.Forms.ComboBox urlcb;
-        private System.Windows.Forms.TextBox logstb;
-        private System.Windows.Forms.Button runautobt;
+        private Button startbtn;
+        private TextBox bodytb;
+        private ComboBox methodTypecb;
+        private ComboBox urlcb;
+        private TextBox logstb;
+        private Button runautobt;
     }
 }
 

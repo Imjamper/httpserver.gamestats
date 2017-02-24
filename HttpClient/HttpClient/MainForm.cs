@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Drawing.Printing;
-using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Net.Http;
 using System.Timers;
-using System.Web;
+using System.Windows.Forms;
 using GL.HttpServer.Extensions;
 using Kontur.GameStats.Server.Dto;
 using Newtonsoft.Json;
@@ -25,8 +18,8 @@ namespace HttpClient
         private readonly BackgroundWorker _sendMatch = new BackgroundWorker();
         private readonly BackgroundWorker _reportsWorker = new BackgroundWorker();
         private static bool _isRunning;
-        private System.Timers.Timer _timer;
-        private System.Timers.Timer _reportsTimer;
+        private Timer _timer;
+        private Timer _reportsTimer;
         private static ServerDto _serverDto;
         public MainForm()
         {
@@ -101,14 +94,14 @@ namespace HttpClient
             }));
         }
 
-        private void _timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void _timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (_sendMatch.IsBusy) return;
             var match = RandomGenerator.GetMatch();
             _sendMatch.RunWorkerAsync(match);
         }
 
-        private void _reportTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        private void _reportTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
             if (_reportsWorker.IsBusy) return;
             _reportsWorker.RunWorkerAsync();
@@ -187,28 +180,28 @@ namespace HttpClient
                             using (var r = await client.PutAsync(new Uri(url, UriKind.Absolute), httpContent))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
-                                result += "StatusCode: " + r.StatusCode.ToString();
+                                result += "StatusCode: " + r.StatusCode;
                                 return result;
                             };
                         case "GET":
                             using (var r = await client.GetAsync(new Uri(url, UriKind.Absolute)))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
-                                result += "StatusCode: " + r.StatusCode.ToString();
+                                result += "StatusCode: " + r.StatusCode;
                                 return result;
                             };
                         case "POST":
                             using (var r = await client.PostAsync(new Uri(url, UriKind.Absolute), httpContent))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
-                                result += "StatusCode: " + r.StatusCode.ToString();
+                                result += "StatusCode: " + r.StatusCode;
                                 return result;
                             };
                         case "DELETE":
                             using (var r = await client.DeleteAsync(new Uri(url, UriKind.Absolute)))
                             {
                                 string result = await r.Content.ReadAsStringAsync();
-                                result += "StatusCode: " + r.StatusCode.ToString();
+                                result += "StatusCode: " + r.StatusCode;
                                 return result;
                             };
                         default: return null;

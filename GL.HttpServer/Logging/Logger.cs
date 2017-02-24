@@ -36,14 +36,21 @@ namespace GL.HttpServer.Logging
         {
             if (_logger == null)
                 Initialize();
-             else _logger.Information(message);
+            _logger?.Information(message);
         }
 
         public static void Error(Exception exception, string message)
         {
             if (_logger == null)
                 Initialize();
-            else _logger.Error(exception, message);
+            _logger?.Error(exception, message);
+        }
+
+        public static void Error(Exception exception)
+        {
+            if (_logger == null)
+                Initialize();
+            _logger?.Error(exception, exception.Message);
         }
     }
 }

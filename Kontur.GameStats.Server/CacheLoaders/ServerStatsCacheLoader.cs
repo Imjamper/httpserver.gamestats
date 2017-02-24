@@ -9,7 +9,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
     {
         public void Load()
         {
-            using (var unit = new UnitOfWork(true))
+            using (var unit = new UnitOfWork())
             {
                 var servers = unit.Repository<Entities.Server>().FindAll();
                 if (servers == null)

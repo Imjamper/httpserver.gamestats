@@ -97,7 +97,7 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("info", "/<endpoint>/info")]
         public ServerInfoDto GetServerInfo(Endpoint endpoint)
         {
-            using (var unit = new UnitOfWork(true))
+            using (var unit = new UnitOfWork())
             {
                 var response = new ServerInfoDto();
                 var existServer = unit.Repository<Entities.Server>().FindOne(a => a.Endpoint == endpoint.ToString());
@@ -116,7 +116,7 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("info", "/info")]
         public JsonList<ServerDto> GetAllServersInfo()
         {
-            using (var unit = new UnitOfWork(true))
+            using (var unit = new UnitOfWork())
             {
                 var allServers = unit.Repository<Entities.Server>().FindAll();
                 var model = allServers.ToJsonList<ServerDto>();
@@ -130,7 +130,7 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("matches", "/<endpoint>/matches/<timestamp>")]
         public MatchResultDto GetMatchInfo(Endpoint endpoint, DateTime timestamp)
         {
-            using (var unit = new UnitOfWork(true))
+            using (var unit = new UnitOfWork())
             {
                 var response = new MatchResultDto();
                 var match = unit.Repository<Match>()
@@ -150,7 +150,7 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("stats", "/<endpoint>/stats")]
         public FullServerStatsDto GetServerStats(Endpoint endpoint)
         {
-            using (var unit = new UnitOfWork(true))
+            using (var unit = new UnitOfWork())
             {
                 var response = new FullServerStatsDto();
 

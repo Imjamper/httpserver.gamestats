@@ -1,15 +1,12 @@
 ﻿using System;
 using System.IO;
 using LiteDB;
-using FileMode = LiteDB.FileMode;
-using FileOptions = LiteDB.FileOptions;
 
 namespace GL.HttpServer.Database
 {
     public class LiteDb : LiteDatabase
     {
         private static LiteDb _readWrite;
-        private static LiteDb _read;
         private static readonly string ConnectionString = Path.Combine($"{ServerEnviroment.ConnectionString}", "LiteDb.db");
 
         public LiteDb(string connectionString, BsonMapper mapper = null) : base(connectionString, mapper)
@@ -35,8 +32,6 @@ namespace GL.HttpServer.Database
             if (!File.Exists(ConnectionString)) using (new LiteEngine(ConnectionString)) { }
         }
 
-        public static LiteDb ReadWrite => _readWrite ?? (_readWrite = new LiteDb(new FileDiskService(ConnectionString, new FileOptions { FileMode = FileMode.Shared }), null, null, TimeSpan.FromMilliseconds(600), 10000));
-
-        public static LiteDb Read => _read ?? (_read = new LiteDb(new FileDiskService(ConnectionString, new FileOptions { FileMode = FileMode.ReadOnly}), null, null, TimeSpan.FromMilliseconds(600), 10000));
+        public static LiteDb ReadWrite => _readWrite ?? (_readWrite = new LiteDb(ConnectionString));
     }
 }

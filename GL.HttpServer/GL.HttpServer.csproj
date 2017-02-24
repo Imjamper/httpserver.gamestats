@@ -103,6 +103,7 @@
     <Compile Include="Database\LiteUnitOfWork.cs" />
     <Compile Include="Dto\IDto.cs" />
     <Compile Include="Enums\MethodType.cs" />
+    <Compile Include="Exceptions\MethodNotFoundException.cs" />
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\EntityExtensions.cs" />
     <Compile Include="Extensions\ReflectionExtensions.cs" />

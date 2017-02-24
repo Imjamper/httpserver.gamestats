@@ -11,7 +11,7 @@ namespace Kontur.GameStats.Server.CacheLoaders
         public const string RecentMatchesUid = "f887dc1d-fa9e-4db4-b858-9afc45ad65b3";
         public void Load()
         {
-            using (var unit = new UnitOfWork(true))
+            using (var unit = new UnitOfWork())
             {
                 var matches = unit.Repository<Match>().FindAll();
                 var byTimestamp = matches.OrderByDescending(a => a.TimeStamp).Take(50).ToList();

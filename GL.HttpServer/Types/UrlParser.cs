@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using GL.HttpServer.Context;
@@ -68,13 +69,18 @@ namespace GL.HttpServer.Types
         private static object TryBind(ref string url, ParameterBindInfo bindInfo, KnownTypeParser parser)
         {
             var bindSegments = bindInfo.MaskSegments;
-            var value = url.Extract(bindSegments[0], bindSegments[1]).FirstOrDefault();
-            if (!value.IsNullOrEmpty())
+            if (bindSegments.Count == 2)
             {
-                if (parser.CanParse(value))
+                var startSegment = bindSegments[0];
+                var endSegment = bindSegments[1];
+                var value = url.Extract(startSegment, endSegment).FirstOrDefault();
+                if (!value.IsNullOrEmpty())
                 {
-                    url = url.Exclude(String.Concat(bindSegments[0], value, bindSegments[1]));
-                    return parser.ParseObject(value);
+                    if (parser.CanParse(value))
+                    {
+                        url = url.Exclude(String.Concat(startSegment, value, endSegment));
+                        return parser.ParseObject(value);
+                    }
                 }
             }
             return null;
@@ -91,8 +97,7 @@ namespace GL.HttpServer.Types
             {
                 var methodParameter = methodParameters.ElementAt(index);
                 var urlParameter = urlParameters.ElementAtOrDefault(index);
-                if (methodParameter == null || urlParameter == null ||
-                    methodParameter.ParameterType != urlParameter.Type)
+                if (methodParameter == null || urlParameter == null || methodParameter.ParameterType != urlParameter.Type)
                     return false;
             }
 

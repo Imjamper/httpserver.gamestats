@@ -13,6 +13,10 @@ namespace GL.HttpServer.HttpServices
     {
         private readonly List<HttpMethodInfo> _methods = new List<HttpMethodInfo>();
 
+        public HttpServiceInfo()
+        {
+        }
+
         public HttpServiceInfo(string name, List<MethodInfo> methods)
         {
             Name = name;
@@ -33,10 +37,6 @@ namespace GL.HttpServer.HttpServices
                 _methods.Add(methodInfo);
                 MethodNames.Add(httpAttribute.Name);
             }
-        }
-
-        public HttpServiceInfo()
-        {
         }
 
         public string Name { get; set; }

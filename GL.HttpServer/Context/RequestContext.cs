@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Text;
 using GL.HttpServer.Enums;
@@ -8,15 +9,15 @@ namespace GL.HttpServer.Context
 {
     public class RequestContext
     {
-        private readonly HttpListenerResponse listenerResponse;
+        private readonly HttpListenerResponse _listenerResponse;
 
         public RequestContext(HttpListenerRequest request, HttpListenerResponse response)
         {
-            listenerResponse = response;
+            _listenerResponse = response;
             Request = MapRequest(request);
         }
 
-        public Request Request { get; private set; }
+        public Request Request { get; }
 
         private Request MapRequest(HttpListenerRequest request)
         {
@@ -25,7 +26,8 @@ namespace GL.HttpServer.Context
                 Headers = request.Headers.ToDictionary(),
                 HttpMethod = request.HttpMethod.FromString(),
                 InputStream = request.InputStream,
-                RawUrl = request.RawUrl
+                RawUrl = request.RawUrl,
+                UnescapedUrl = Uri.UnescapeDataString(request.RawUrl)
             };
             return mapRequest;
         }
@@ -33,13 +35,13 @@ namespace GL.HttpServer.Context
         public void Respond(Response response)
         {
             foreach (var header in response.Headers.Where(r => r.Key != "Content-Type"))
-                listenerResponse.AddHeader(header.Key, header.Value);
+                _listenerResponse.AddHeader(header.Key, header.Value);
 
-            listenerResponse.ContentType = response.Headers["Content-Type"];
-            listenerResponse.StatusCode = response.StatusCode;
-            listenerResponse.ContentEncoding = Encoding.UTF8;
+            _listenerResponse.ContentType = response.Headers["Content-Type"];
+            _listenerResponse.StatusCode = response.StatusCode;
+            _listenerResponse.ContentEncoding = Encoding.UTF8;
 
-            using (var output = listenerResponse.OutputStream)
+            using (var output = _listenerResponse.OutputStream)
             {
                 response.WriteStream(output);
             }

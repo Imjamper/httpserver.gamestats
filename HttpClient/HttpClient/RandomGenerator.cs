@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GL.HttpServer.Attributes;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
-using Newtonsoft.Json;
 using static System.Int32;
 
 namespace HttpClient

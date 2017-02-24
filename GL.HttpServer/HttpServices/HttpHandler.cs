@@ -6,6 +6,7 @@ using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
 using GL.HttpServer.Types;
 using System.Reactive.Linq;
+using GL.HttpServer.Exceptions;
 using GL.HttpServer.Logging;
 
 namespace GL.HttpServer.HttpServices
@@ -27,22 +28,19 @@ namespace GL.HttpServer.HttpServices
             {
                 return Task.Run(() =>
                 {
-                    var serviceName = requestContext.Request.RawUrl.GetServiceName();
+                    var serviceName = requestContext.Request.GetServiceName();
                     var service = ComponentContainer.GetService(serviceName);
                     if (service != null)
                     {
-                        var url = Uri.UnescapeDataString(requestContext.Request.RawUrl);
+                        var url = requestContext.Request.UnescapedUrl;
                         var methodName = service.MethodNames.FirstOrDefault(a => url.Exclude(serviceName).Contains(a));
                         if (!string.IsNullOrEmpty(methodName))
                         {
                             var matchMethods = service.GetMethods(MethodType, methodName);
-                            var urlParameters = UrlParser.Parse(url, methodName, matchMethods, serviceName);
-                            requestContext.Request.Parameters.AddRange(urlParameters);
-                            return service.GetMethod(MethodType, methodName, urlParameters);
+                            requestContext.Request.Parameters.AddRange(UrlParser.Parse(url, methodName, matchMethods, serviceName));
+                            return service.GetMethod(MethodType, methodName, requestContext.Request.Parameters);
                         }
                     }
-                    Logger.Info($"The method is not found. Invalid request. Request: {requestContext.Request.HttpMethod:G} {requestContext.Request.RawUrl}");
-                    requestContext.Respond(new EmptyResponse());
                     return null;
                 });
             });
@@ -55,7 +53,7 @@ namespace GL.HttpServer.HttpServices
                 {
                     if (m == null)
                     {
-                        Logger.Info($"The method is not found. Invalid request. Request: {requestContext.Request.HttpMethod:G} {requestContext.Request.RawUrl}");
+                        Logger.Error(new MethodNotFoundException(requestContext));
                         requestContext.Respond(new EmptyResponse());
                         return;
                     }

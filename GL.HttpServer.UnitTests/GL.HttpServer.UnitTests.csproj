@@ -65,9 +65,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Cache\MemoryCacheTests.cs" />
-    <Compile Include="Database\UnitOfWorkTests.cs" />
-    <Compile Include="Entities\TestEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Types\UrlParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

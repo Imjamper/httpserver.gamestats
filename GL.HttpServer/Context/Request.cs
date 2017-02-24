@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GL.HttpServer.Enums;
@@ -17,6 +18,7 @@ namespace GL.HttpServer.Context
         public IDictionary<string, IEnumerable<string>> Headers { get; set; }
         public Stream InputStream { get; set; }
         public string RawUrl { get; set; }
+        public string UnescapedUrl { get; set; }
         public List<UrlParameter> Parameters { get; set; }
 
         public int ContentLength
@@ -33,6 +35,13 @@ namespace GL.HttpServer.Context
                 }
                 return length;
             }
+        }
+
+        public string GetServiceName()
+        {
+            return RawUrl.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+                .ToList()
+                .FirstOrDefault();
         }
     }
 }

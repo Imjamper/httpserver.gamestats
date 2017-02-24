@@ -56,7 +56,7 @@ namespace Kontur.GameStats.Server.HttpServices
         [GetOperation("popular-servers", "/popular-servers[/<count>]")]
         public JsonList<ShortServerStatsDto> GetPopularServers([Bind("[/{count}]")]int count)
         {
-            using (var unit = new UnitOfWork(true))
+            using (var unit = new UnitOfWork())
             {
                 var rowsCount = count == 0 ? 5 : (count > 50 ? 50 : count);
                 var servers = unit.Repository<Entities.Server>().FindAll();
