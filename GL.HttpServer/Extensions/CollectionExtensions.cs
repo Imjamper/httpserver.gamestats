@@ -42,7 +42,7 @@ namespace GL.HttpServer.Extensions
         public static JsonList<T> ToJsonList<T>(this IEnumerable<T> list) where T : IDto, new()
         {
             var jsonList = new JsonList<T>();
-            foreach (var item in list)
+            foreach (var item in list.ToList())
             {
                jsonList.Add(item);
             }
