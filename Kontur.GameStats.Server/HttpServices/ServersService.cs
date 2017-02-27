@@ -49,13 +49,13 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Запись информации о завершенном матче
         /// </summary>
         [PutOperation("matches", "/<endpoint>/matches/<timestamp>")]
-        public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTime? timestamp, MatchResultDto body)
+        public EmptyResponse PutMatchInfo(Endpoint endpoint, DateTimeOffset? timestamp, MatchResultDto body)
         {
             using (var unit = new UnitOfWork())
             {
                 var match = new Match();
                 match.Server = endpoint.ToString();
-                match.TimeStamp = timestamp;
+                match.TimeStamp = new DateOffset(timestamp.Value);
                 match.Results = body.ToEntity<MatchResult>();
                 unit.Repository<Match>().Add(match);
                 Task.Factory.StartNew(() =>
@@ -71,7 +71,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     {
                         var playerStats = MemoryCache.Cache<PlayerStatsTempInfo>().Get(playerScore.Name);
                         if (playerStats != null)
-                            serverStats.Update(match);
+                            playerStats.Update(match);
                         else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
                         MemoryCache.Cache<PlayerStatsTempInfo>().PutAsync(playerScore.Name, playerStats);
                     }
@@ -128,13 +128,13 @@ namespace Kontur.GameStats.Server.HttpServices
         ///     Получение информации о завершенном матче
         /// </summary>
         [GetOperation("matches", "/<endpoint>/matches/<timestamp>")]
-        public MatchResultDto GetMatchInfo(Endpoint endpoint, DateTime timestamp)
+        public MatchResultDto GetMatchInfo(Endpoint endpoint, DateTimeOffset timestamp)
         {
             using (var unit = new UnitOfWork())
             {
                 var response = new MatchResultDto();
                 var match = unit.Repository<Match>()
-                    .FindOne(a => a.Server == endpoint.ToString() && a.TimeStamp == timestamp);
+                    .FindOne(a => a.Server == endpoint.ToString() && a.TimeStamp.Value.UtcTicks == timestamp.UtcTicks);
                 if (match?.Results != null)
                 {
                     return match.Results.ToDto<MatchResultDto>();

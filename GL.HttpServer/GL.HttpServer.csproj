@@ -128,6 +128,7 @@
     <Compile Include="ServerEnviroment.cs" />
     <Compile Include="ServerStarter.cs" />
     <Compile Include="HttpServer.cs" />
+    <Compile Include="Types\DateOffset.cs" />
     <Compile Include="Types\InstanceActivator.cs" />
     <Compile Include="Types\ParameterBindInfo.cs" />
     <Compile Include="Types\DateTimeParser.cs" />

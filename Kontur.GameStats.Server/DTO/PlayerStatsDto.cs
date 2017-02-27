@@ -16,6 +16,6 @@ namespace Kontur.GameStats.Server.Dto
         public double AverageScoreboardPercent { get; set; }
         public int MaximumMatchesPerDay { get; set; }
         public double AverageMatchesPerDay { get; set; }
-        public DateTime? LastMatchPlayed { get; set; }
+        public DateTimeOffset? LastMatchPlayed { get; set; }
     }
 }

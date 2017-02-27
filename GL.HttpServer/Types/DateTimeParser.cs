@@ -1,21 +1,22 @@
 ﻿using System;
+using System.Globalization;
 
 namespace GL.HttpServer.Types
 {
-    public class DateTimeParser : KnownTypeParser<DateTime?>
+    public class DateTimeParser : KnownTypeParser<DateTimeOffset?>
     {
         public override bool CanParse(string input)
         {
-            DateTime date;
-            if (DateTime.TryParse(input, out date))
+            DateTimeOffset date;
+            if (DateTimeOffset.TryParseExact(input, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date))
                 return true;
             return false;
         }
 
-        public override DateTime? Parse(string input)
+        public override DateTimeOffset? Parse(string input)
         {
-            DateTime date;
-            if (DateTime.TryParse(input, out date))
+            DateTimeOffset date;
+            if (DateTimeOffset.TryParseExact(input, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out date))
                 return date;
             return null;
         }

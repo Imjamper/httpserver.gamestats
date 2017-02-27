@@ -11,6 +11,8 @@ namespace GL.HttpServer
 
         public static bool EnableLoggingInConsole { get; set; }
 
+        public static bool InMemoryDatabase { get; set; }
+
         public static string ConnectionString
         {
             get

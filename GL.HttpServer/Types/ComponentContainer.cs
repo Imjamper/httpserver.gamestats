@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Cache;
@@ -18,10 +19,13 @@ namespace GL.HttpServer.Types
 
         public static ComponentContainer Current => _currentContainer ?? (_currentContainer = new ComponentContainer());
 
-        public void Initialize()
+        public void Initialize(params Assembly[] assemblies)
         {
+            var domainAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            if (assemblies != null && assemblies.Length > 0)
+                domainAssemblies.AddRange(assemblies);
             var httpServiceType = typeof(IHttpService);
-            var services = AppDomain.CurrentDomain.GetAssemblies()
+            var services = domainAssemblies
                 .SelectMany(a => a.GetTypes())
                 .Where(p => httpServiceType.IsAssignableFrom(p) && p.IsClass).ToList();
             if (services.Any())
@@ -37,7 +41,7 @@ namespace GL.HttpServer.Types
 
             var httpHandlerType = typeof(IHttpHandler);
 
-            var handlerTypes = AppDomain.CurrentDomain.GetAssemblies()
+            var handlerTypes = domainAssemblies
                 .SelectMany(a => a.GetTypes())
                 .Where(p => httpHandlerType.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToList();
             foreach (var handlerType in handlerTypes)

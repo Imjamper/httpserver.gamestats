@@ -37,8 +37,12 @@ namespace GL.HttpServer.HttpServices
                         if (!string.IsNullOrEmpty(methodName))
                         {
                             var matchMethods = service.GetMethods(MethodType, methodName);
-                            requestContext.Request.Parameters.AddRange(UrlParser.Parse(url, methodName, matchMethods, serviceName));
-                            return service.GetMethod(MethodType, methodName, requestContext.Request.Parameters);
+                            if (matchMethods != null && matchMethods.Count > 0)
+                            {
+                                requestContext.Request.Parameters.AddRange(UrlParser.Parse(url, methodName, matchMethods, serviceName));
+                                return matchMethods.FirstOrDefault(a => UrlParser.CompareByParams(a.MethodInfo, requestContext.Request.Parameters));
+                            }
+                            return null;
                         }
                     }
                     return null;

@@ -55,7 +55,7 @@ namespace GL.HttpServer.HttpServices
                 }
                 else
                 {
-                    var urlParameter = requestContext.Request.Parameters.FirstOrDefault(p => p.Type == parameter.ParameterType);
+                    var urlParameter = requestContext.Request.Parameters.FirstOrDefault(p => p.Type.IsAssignableFrom(parameter.ParameterType));
                     if (urlParameter?.Value != null)
                         value = urlParameter.Value;
                 }

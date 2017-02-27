@@ -8,9 +8,12 @@ namespace GL.HttpServer.Mapping
 {
     public static class AutoProfileLoader
     {
-        public static void Start()
+        public static void Start(params Assembly[] assemblies)
         {
-            RegisterProfiles(AppDomain.CurrentDomain.GetAssemblies());
+            var domainAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            if (assemblies != null && assemblies.Length > 0)
+                domainAssemblies.AddRange(assemblies);
+            RegisterProfiles(domainAssemblies);
         }
         
         public static void RegisterProfiles(IEnumerable<Assembly> assemblies)

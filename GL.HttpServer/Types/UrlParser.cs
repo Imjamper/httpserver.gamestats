@@ -97,7 +97,7 @@ namespace GL.HttpServer.Types
             {
                 var methodParameter = methodParameters.ElementAt(index);
                 var urlParameter = urlParameters.ElementAtOrDefault(index);
-                if (methodParameter == null || urlParameter == null || methodParameter.ParameterType != urlParameter.Type)
+                if (methodParameter == null || urlParameter == null || !urlParameter.Type.IsAssignableFrom(methodParameter.ParameterType))
                     return false;
             }
 

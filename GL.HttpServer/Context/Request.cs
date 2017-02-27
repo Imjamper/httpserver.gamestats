@@ -39,7 +39,7 @@ namespace GL.HttpServer.Context
 
         public string GetServiceName()
         {
-            return RawUrl.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
+            return UnescapedUrl.Split("/".ToCharArray(), StringSplitOptions.RemoveEmptyEntries)
                 .ToList()
                 .FirstOrDefault();
         }

@@ -66,7 +66,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(server.Endpoint);
                     if (serverStats != null)
                     {
-                        stats.Add(new ShortServerStatsDto()
+                        stats.Add(new ShortServerStatsDto
                         {
                             Endpoint = server.Endpoint,
                             Name = server.Info.Name,

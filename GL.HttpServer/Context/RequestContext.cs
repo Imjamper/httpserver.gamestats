@@ -11,6 +11,11 @@ namespace GL.HttpServer.Context
     {
         private readonly HttpListenerResponse _listenerResponse;
 
+        public RequestContext(Request request)
+        {
+            Request = request;
+        }
+
         public RequestContext(HttpListenerRequest request, HttpListenerResponse response)
         {
             _listenerResponse = response;

@@ -30,7 +30,7 @@ namespace Kontur.GameStats.Server.DTO.CacheInfo
         public List<CountItem> Servers { get; set; }
         public List<CountItem> GameModes { get; set; }
         public double Score { get; set; }
-        public DateTime? LastMatchPlayed { get; set; }
+        public DateTimeOffset? LastMatchPlayed { get; set; }
         public Dictionary<string, int> MatchesPerDay { get; set; }
         public int Kills { get; set; }
         public int Deaths { get; set; }
@@ -61,9 +61,9 @@ namespace Kontur.GameStats.Server.DTO.CacheInfo
 
                 Score += GetPlayerMatchScore(match.Results.ScoreBoard);
                 if (LastMatchPlayed == null)
-                    LastMatchPlayed = match.TimeStamp;
-                else if (LastMatchPlayed < match.TimeStamp)
-                    LastMatchPlayed = match.TimeStamp;
+                    LastMatchPlayed = match.TimeStamp.Value;
+                else if (LastMatchPlayed < match.TimeStamp.Value)
+                    LastMatchPlayed = match.TimeStamp.Value;
 
                 if (MatchesPerDay.ContainsKey(match.TimeStamp.Value.ToString("yyyy-MM-dd")))
                 {

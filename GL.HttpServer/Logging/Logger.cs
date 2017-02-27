@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using GL.HttpServer.Extensions;
 using Serilog;
 using Serilog.Events;
 
@@ -12,18 +13,21 @@ namespace GL.HttpServer.Logging
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             var builder = new LoggerConfiguration();
-            builder = builder
+            if (!ServerEnviroment.LoggerFolder.IsNullOrEmpty())
+            {
+                builder = builder
                 .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information)
                     .WriteTo.RollingFile(
                         Path.Combine($"{ServerEnviroment.LoggerFolder}", "Information", $"info-{DateTime.Now:yy-MM-dd}.txt")))
                 .WriteTo.Logger(l => l.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error)
                     .WriteTo.RollingFile(
                         Path.Combine($"{ServerEnviroment.LoggerFolder}", "Error", $"error-{DateTime.Now:yy-MM-dd}.txt")));
-            if (ServerEnviroment.EnableLoggingInConsole)
-            {
-               builder = builder.WriteTo.LiterateConsole();
+                if (ServerEnviroment.EnableLoggingInConsole)
+                {
+                    builder = builder.WriteTo.LiterateConsole();
+                }
+                _logger = builder.CreateLogger();
             }
-            _logger = builder.CreateLogger();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

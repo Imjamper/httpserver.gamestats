@@ -21,6 +21,7 @@ namespace HttpClient
         private Timer _timer;
         private Timer _reportsTimer;
         private static ServerDto _serverDto;
+        public const string UtcFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'";
         public MainForm()
         {
             InitializeComponent();
@@ -111,7 +112,7 @@ namespace HttpClient
         {
             var match = e.Argument as MatchDto;
             var date = DateTime.Now.ToUniversalTime()
-                         .ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff'Z'");
+                         .ToString(UtcFormat);
             var url = $"http://localhost:8080/servers/{_serverDto.Endpoint}/matches/{date}";
             var result = DownloadPage(url, JsonConvert.SerializeObject(match.Results), "PUT");
             e.Result = result;
