@@ -1,13 +1,15 @@
 ﻿using System;
 using GL.HttpServer.Context;
 using GL.HttpServer.Types;
+using LiteDB;
 
 namespace Kontur.GameStats.Server.Dto
 {
     public class MatchDto : JsonResponse
     {
         public string Server { get; set; }
-        public DateOffset TimeStamp { get; set; }
+        [BsonIndex]
+        public DateTimeOffset TimeStamp { get; set; }
         public MatchResultDto Results { get; set; }
     }
 }

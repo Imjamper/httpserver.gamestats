@@ -29,11 +29,11 @@ namespace Kontur.GameStats.Server.DTO.CacheInfo
         public void Update(Match match)
         {
             TotalMatchesPlayed++;
-            if (MatchesPerDay.ContainsKey(match.TimeStamp.Value.ToString("yyyy-MM-dd")))
+            if (MatchesPerDay.ContainsKey(match.TimeStamp.ToString("yyyy-MM-dd")))
             {
-                MatchesPerDay[match.TimeStamp.Value.ToString("yyyy-MM-dd")]++;
+                MatchesPerDay[match.TimeStamp.ToString("yyyy-MM-dd")]++;
             }
-            else MatchesPerDay.Add(match.TimeStamp.Value.ToString("yyyy-MM-dd"), 1);
+            else MatchesPerDay.Add(match.TimeStamp.ToString("yyyy-MM-dd"), 1);
             if (GameModes.ContainsKey(match.Results.GameMode))
             {
                 GameModes[match.Results.GameMode]++;

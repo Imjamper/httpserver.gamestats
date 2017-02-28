@@ -1,41 +1,30 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http;
 using System.Text;
 using GL.HttpServer;
 using GL.HttpServer.Enums;
-using GL.HttpServer.Mapping;
 using GL.HttpServer.Types;
 using HttpClient;
 using Kontur.GameStats.Server.Dto;
+using Kontur.GameStats.Server.HttpServices;
 using Kontur.GameStats.Server.UnitTests.TestModels;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using NUnit.Framework.Internal.Commands;
 
 namespace Kontur.GameStats.Server.UnitTests.HttpServices
 {
-    public class ServiceTest
+    public class ServiceTests
     {
         public const string UtcFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffff'Z'";
         private HttpServer _httpServer;
         private string _port;
         private ServerDto _serverInfo;
 
-        public ServerDto GameServer => _serverInfo;
+        public ServerDto GameServer => _serverInfo ?? (_serverInfo = RandomGenerator.GetServer());
 
-        [SetUp]
+        [OneTimeSetUp]
         public void StartHttpServer()
         {
-            if (_serverInfo == null)
-            {
-                _serverInfo = RandomGenerator.GetServer();
-            }
-            if (_httpServer != null)
-            {
-                _httpServer.Dispose();
-                _httpServer = null;
-            }
             if (_httpServer == null)
             {
                 _httpServer = new HttpServer();
@@ -47,9 +36,8 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
                 {
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc
                 };
-                AutoProfileLoader.Start();
 
-                ComponentContainer.Current.Initialize();
+                ComponentContainer.Current.Initialize(typeof(ServersService).Assembly);
 
                 _httpServer.Start($"http://+:{_port}/");
             }

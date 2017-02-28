@@ -32,7 +32,6 @@ namespace GL.HttpServer
                     {
                         DateTimeZoneHandling = DateTimeZoneHandling.Utc
                     };
-                    AutoProfileLoader.Start();
                     ComponentContainer.Current.Initialize();
 
                     server.Start(_config.Prefix);

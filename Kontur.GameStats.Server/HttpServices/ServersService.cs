@@ -55,7 +55,7 @@ namespace Kontur.GameStats.Server.HttpServices
             {
                 var match = new Match();
                 match.Server = endpoint.ToString();
-                match.TimeStamp = new DateOffset(timestamp.Value);
+                match.TimeStamp = timestamp.Value;
                 match.Results = body.ToEntity<MatchResult>();
                 unit.Repository<Match>().Add(match);
                 Task.Factory.StartNew(() =>
@@ -134,7 +134,7 @@ namespace Kontur.GameStats.Server.HttpServices
             {
                 var response = new MatchResultDto();
                 var match = unit.Repository<Match>()
-                    .FindOne(a => a.Server == endpoint.ToString() && a.TimeStamp.Value.UtcTicks == timestamp.UtcTicks);
+                    .FindOne(a => a.Server == endpoint.ToString() && a.TimeStamp == timestamp);
                 if (match?.Results != null)
                 {
                     return match.Results.ToDto<MatchResultDto>();

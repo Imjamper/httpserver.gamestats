@@ -7,6 +7,7 @@ using GL.HttpServer.Attributes;
 using GL.HttpServer.Cache;
 using GL.HttpServer.Extensions;
 using GL.HttpServer.HttpServices;
+using GL.HttpServer.Mapping;
 
 namespace GL.HttpServer.Types
 {
@@ -23,7 +24,14 @@ namespace GL.HttpServer.Types
         {
             var domainAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
             if (assemblies != null && assemblies.Length > 0)
-                domainAssemblies.AddRange(assemblies);
+            {
+                foreach (var assembly in assemblies)
+                {
+                    if (domainAssemblies.All(a => a.FullName != assembly.FullName))
+                        domainAssemblies.Add(assembly);
+                }
+            }
+            AutoProfileLoader.Start(domainAssemblies.ToArray());
             var httpServiceType = typeof(IHttpService);
             var services = domainAssemblies
                 .SelectMany(a => a.GetTypes())

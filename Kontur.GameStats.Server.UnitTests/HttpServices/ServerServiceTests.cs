@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GL.HttpServer.Enums;
+using GL.HttpServer.Types;
 using HttpClient;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
@@ -11,7 +12,7 @@ using NUnit.Framework;
 namespace Kontur.GameStats.Server.UnitTests.HttpServices
 {
     [TestFixture]
-    public class ServerServiceTests : ServiceTest
+    public class ServerServiceTests : ServiceTests
     {
         [Test, Order(1)]
         public void PutServerInfo_PutNewServerInfo_GetSameServerInfo()
@@ -30,28 +31,29 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             Assert.AreEqual(getServerInfo.Name, GameServer.Info.Name);
         }
 
-
         [Test, Order(2)]
         public void PutMatchInfo_PutNewMatch_GetSameMatchInfo()
         {
             var match = RandomGenerator.GetMatch();
-            if (match.TimeStamp != null)
-            {
-                var date = match.TimeStamp.Value.UtcDateTime.ToString("o");
-                var putMatchResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date}", match.Results, MethodType.PUT);
+            var putResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/info", GameServer.Info, MethodType.PUT);
+
+            Assert.AreEqual(putResponse.StatusCode, "OK");
+            Assert.IsNull(putResponse.ErrorMessage);
+
+            var date = match.TimeStamp.UtcDateTime.ToString(DateTimeParser.UtcFormat);
+            var putMatchResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date}", match.Results, MethodType.PUT);
             
-                Assert.AreEqual(putMatchResponse.StatusCode, "OK");
-                Assert.IsNull(putMatchResponse.ErrorMessage);
+            Assert.AreEqual(putMatchResponse.StatusCode, "OK");
+            Assert.IsNull(putMatchResponse.ErrorMessage);
 
-                var getResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date}", null, MethodType.GET);
-                var getMatchInfo = JsonConvert.DeserializeObject<MatchResultDto>(getResponse.JsonString);
+            var getResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date}", null, MethodType.GET);
+            var getMatchInfo = JsonConvert.DeserializeObject<MatchResultDto>(getResponse.JsonString);
 
-                Assert.AreEqual(getResponse.StatusCode, "OK");
-                Assert.IsNull(getResponse.ErrorMessage);
-                Assert.NotNull(getMatchInfo);
-                Assert.AreEqual(match.Results.ScoreBoard.Count, getMatchInfo.ScoreBoard.Count);
-                Assert.AreEqual(match.Results.TimeLimit, getMatchInfo.TimeLimit);
-            }
+            Assert.AreEqual(getResponse.StatusCode, "OK");
+            Assert.IsNull(getResponse.ErrorMessage);
+            Assert.NotNull(getMatchInfo);
+            Assert.AreEqual(match.Results.ScoreBoard.Count, getMatchInfo.ScoreBoard.Count);
+            Assert.AreEqual(match.Results.TimeLimit, getMatchInfo.TimeLimit);
         }
 
         [Test, Order(3)]
@@ -76,31 +78,27 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             Assert.AreEqual(getResponse.StatusCode, "OK");
             Assert.IsNull(getResponse.ErrorMessage);
             Assert.NotNull(getServerInfos);
-            Assert.AreEqual(getServerInfos.Count, 2);
+            Assert.IsTrue(getServerInfos.Any(a => a.Endpoint == testServer1.Endpoint && a.Info.Name == testServer1.Info.Name));
+            Assert.IsTrue(getServerInfos.Any(a => a.Endpoint == testServer2.Endpoint && a.Info.Name == testServer2.Info.Name));
         }
 
         [Test, Order(4)]
         public void GetServerStats_PutMatches_GetValidStats()
         {
             var match1 = RandomGenerator.GetMatch();
-            if (match1.TimeStamp != null)
-            {
-                var date1 = match1.TimeStamp.Value.ToString(UtcFormat);
-                var putMatchResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date1}", match1.Results, MethodType.PUT);
+            var date1 = match1.TimeStamp.UtcDateTime.ToString(UtcFormat);
+            var serverForStats = RandomGenerator.GetServer("localhost-6767", "TestServerForStats");
+            var putMatchResponse = ExecuteUrl($"servers/{serverForStats.Endpoint}/matches/{date1}", match1.Results, MethodType.PUT);
 
-                Assert.AreEqual(putMatchResponse.StatusCode, "OK");
-                Assert.IsNull(putMatchResponse.ErrorMessage);
-            }
+            Assert.AreEqual(putMatchResponse.StatusCode, "OK");
+            Assert.IsNull(putMatchResponse.ErrorMessage);
 
             var match2 = RandomGenerator.GetMatch();
-            if (match2.TimeStamp != null)
-            {
-                var date2 = match2.TimeStamp.Value.ToString(UtcFormat);
-                var putMatch1Response = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date2}", match2.Results, MethodType.PUT);
+            var date2 = match2.TimeStamp.UtcDateTime.ToString(UtcFormat);
+            var putMatch1Response = ExecuteUrl($"servers/{serverForStats.Endpoint}/matches/{date2}", match2.Results, MethodType.PUT);
 
-                Assert.AreEqual(putMatch1Response.StatusCode, "OK");
-                Assert.IsNull(putMatch1Response.ErrorMessage);
-            }
+            Assert.AreEqual(putMatch1Response.StatusCode, "OK");
+            Assert.IsNull(putMatch1Response.ErrorMessage);
 
             var averagePopulation = (match1.Results.ScoreBoard.Count + match2.Results.ScoreBoard.Count) / (double)2;
             var maximumPopulation = Math.Max(match1.Results.ScoreBoard.Count, match2.Results.ScoreBoard.Count);
@@ -124,7 +122,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             var orderMaps = maps.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
             var orderModes = gameModes.OrderByDescending(a => a.Value).Select(a => a.Key).Take(5);
             
-            var getResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/stats", null, MethodType.GET);
+            var getResponse = ExecuteUrl($"servers/{serverForStats.Endpoint}/stats", null, MethodType.GET);
             var getFullServerStats = JsonConvert.DeserializeObject<FullServerStatsDto>(getResponse.JsonString);
 
             Assert.AreEqual(getResponse.StatusCode, "OK");

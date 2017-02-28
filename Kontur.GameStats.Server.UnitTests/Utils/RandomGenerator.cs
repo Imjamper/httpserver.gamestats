@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GL.HttpServer.Types;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
 using static System.Int32;
@@ -65,7 +64,7 @@ namespace HttpClient
         public static MatchDto GetMatch()
         {
             var match = new MatchDto();
-            match.TimeStamp = new DateOffset(DateTime.UtcNow);
+            match.TimeStamp = DateTimeOffset.UtcNow;
             var matchInfo = new MatchResultDto();
             matchInfo.FragLimit = Random.Next(50);
             matchInfo.GameMode = GetRandomMode();
