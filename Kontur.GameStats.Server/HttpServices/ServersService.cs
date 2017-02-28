@@ -53,41 +53,46 @@ namespace Kontur.GameStats.Server.HttpServices
         {
             using (var unit = new UnitOfWork())
             {
-                var match = new Match();
-                match.Server = endpoint.ToString();
-                match.TimeStamp = timestamp.Value;
-                match.Results = body.ToEntity<MatchResult>();
-                unit.Repository<Match>().Add(match);
-                Task.Factory.StartNew(() =>
+                var server = unit.Repository<Entities.Server>().FindOne(a => a.Endpoint == endpoint.ToString());
+                if (server != null)
                 {
-                    var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(endpoint.ToString());
-                    if (serverStats != null)
-                        serverStats.Update(match);
-                    else serverStats = new ServerStatsTempInfo(match);
-                    MemoryCache.Cache<ServerStatsTempInfo>().PutAsync(endpoint.ToString(), serverStats);
-
-                    var players = match.Results.ScoreBoard;
-                    foreach (var playerScore in players)
+                    var match = new Match();
+                    match.Server = endpoint.ToString();
+                    match.TimeStamp = timestamp.Value;
+                    match.Results = body.ToEntity<MatchResult>();
+                    unit.Repository<Match>().Add(match);
+                    Task.Factory.StartNew(() =>
                     {
-                        var playerStats = MemoryCache.Cache<PlayerStatsTempInfo>().Get(playerScore.Name);
-                        if (playerStats != null)
-                            playerStats.Update(match);
-                        else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
-                        MemoryCache.Cache<PlayerStatsTempInfo>().PutAsync(playerScore.Name, playerStats);
-                    }
+                        var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(endpoint.ToString());
+                        if (serverStats != null)
+                            serverStats.Update(match);
+                        else serverStats = new ServerStatsTempInfo(match);
+                        MemoryCache.Cache<ServerStatsTempInfo>().PutAsync(endpoint.ToString(), serverStats);
 
-                    var recentMatches = MemoryCache.Cache<RecentMatchesTempInfo>().Get(RecentMatchesCacheLoader.RecentMatchesUid);
-                    if (recentMatches != null && recentMatches.Count > 0)
-                        recentMatches.Add(match);
-                    else
-                    {
-                        recentMatches = new RecentMatchesTempInfo();
-                        recentMatches.Add(match);
-                        MemoryCache.Cache<RecentMatchesTempInfo>().PutAsync(RecentMatchesCacheLoader.RecentMatchesUid, recentMatches);
-                    }
-                });
+                        var players = match.Results.ScoreBoard;
+                        foreach (var playerScore in players)
+                        {
+                            var playerStats = MemoryCache.Cache<PlayerStatsTempInfo>().Get(playerScore.Name);
+                            if (playerStats != null)
+                                playerStats.Update(match);
+                            else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
+                            MemoryCache.Cache<PlayerStatsTempInfo>().PutAsync(playerScore.Name, playerStats);
+                        }
 
-                return new EmptyResponse(200);
+                        var recentMatches = MemoryCache.Cache<RecentMatchesTempInfo>().Get(RecentMatchesCacheLoader.RecentMatchesUid);
+                        if (recentMatches != null && recentMatches.Count > 0)
+                            recentMatches.Add(match);
+                        else
+                        {
+                            recentMatches = new RecentMatchesTempInfo();
+                            recentMatches.Add(match);
+                            MemoryCache.Cache<RecentMatchesTempInfo>().PutAsync(RecentMatchesCacheLoader.RecentMatchesUid, recentMatches);
+                        }
+                    });
+
+                    return new EmptyResponse(200);
+                }
+                return new EmptyResponse();
             }
         }
 

@@ -74,11 +74,10 @@
     <Compile Include="HttpServices\HttpHandlerTests.cs" />
     <Compile Include="HttpServices\ReportsServiceTests.cs" />
     <Compile Include="HttpServices\ServerServiceTests.cs" />
-    <Compile Include="HttpServices\ServiceTest.cs" />
+    <Compile Include="HttpServices\ServiceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestModels\ClientResponse.cs" />
     <Compile Include="TestModels\TestService.cs" />
-    <Compile Include="Utils\RandomGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

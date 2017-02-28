@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using GL.HttpServer.Enums;
-using GL.HttpServer.Types;
-using HttpClient;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
 using Newtonsoft.Json;
@@ -34,19 +31,14 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
         [Test, Order(2)]
         public void PutMatchInfo_PutNewMatch_GetSameMatchInfo()
         {
-            var match = RandomGenerator.GetMatch();
             var putResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/info", GameServer.Info, MethodType.PUT);
 
             Assert.AreEqual(putResponse.StatusCode, "OK");
             Assert.IsNull(putResponse.ErrorMessage);
 
-            var date = match.TimeStamp.UtcDateTime.ToString(DateTimeParser.UtcFormat);
-            var putMatchResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date}", match.Results, MethodType.PUT);
-            
-            Assert.AreEqual(putMatchResponse.StatusCode, "OK");
-            Assert.IsNull(putMatchResponse.ErrorMessage);
+            var match = PutMatchInfo();
 
-            var getResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{date}", null, MethodType.GET);
+            var getResponse = ExecuteUrl($"servers/{GameServer.Endpoint}/matches/{match.TimeStamp.UtcDateTime:yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ff'Z'}", null, MethodType.GET);
             var getMatchInfo = JsonConvert.DeserializeObject<MatchResultDto>(getResponse.JsonString);
 
             Assert.AreEqual(getResponse.StatusCode, "OK");
@@ -59,15 +51,15 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
         [Test, Order(3)]
         public void GetAllServersInfo_PutServersInfo_GetSameServersInfos()
         {
-            var testServer1 = RandomGenerator.GetServer("localhost-8111", "TestServer1");
-            var testServer2 = RandomGenerator.GetServer("localhost-8222", "TestServer2");
+            var testServerOne = GetServer("localhost-8111", "TestServer8111");
+            var testServerTwo = GetServer("localhost-8222", "TestServer8222");
 
-            var putResponse1 = ExecuteUrl($"servers/{testServer1.Endpoint}/info", testServer1.Info, MethodType.PUT);
+            var putResponse1 = ExecuteUrl($"servers/{testServerOne.Endpoint}/info", testServerOne.Info, MethodType.PUT);
 
             Assert.AreEqual(putResponse1.StatusCode, "OK");
             Assert.IsNull(putResponse1.ErrorMessage);
 
-            var putResponse2 = ExecuteUrl($"servers/{testServer2.Endpoint}/info", testServer2.Info, MethodType.PUT);
+            var putResponse2 = ExecuteUrl($"servers/{testServerTwo.Endpoint}/info", testServerTwo.Info, MethodType.PUT);
 
             Assert.AreEqual(putResponse2.StatusCode, "OK");
             Assert.IsNull(putResponse2.ErrorMessage);
@@ -78,31 +70,18 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             Assert.AreEqual(getResponse.StatusCode, "OK");
             Assert.IsNull(getResponse.ErrorMessage);
             Assert.NotNull(getServerInfos);
-            Assert.IsTrue(getServerInfos.Any(a => a.Endpoint == testServer1.Endpoint && a.Info.Name == testServer1.Info.Name));
-            Assert.IsTrue(getServerInfos.Any(a => a.Endpoint == testServer2.Endpoint && a.Info.Name == testServer2.Info.Name));
+            Assert.IsTrue(getServerInfos.Any(a => a.Endpoint == testServerOne.Endpoint && a.Info.Name == testServerOne.Info.Name));
+            Assert.IsTrue(getServerInfos.Any(a => a.Endpoint == testServerTwo.Endpoint && a.Info.Name == testServerTwo.Info.Name));
         }
 
         [Test, Order(4)]
         public void GetServerStats_PutMatches_GetValidStats()
         {
-            var match1 = RandomGenerator.GetMatch();
-            var date1 = match1.TimeStamp.UtcDateTime.ToString(UtcFormat);
-            var serverForStats = RandomGenerator.GetServer("localhost-6767", "TestServerForStats");
-            var putMatchResponse = ExecuteUrl($"servers/{serverForStats.Endpoint}/matches/{date1}", match1.Results, MethodType.PUT);
+            var serverForStats = GetServer("localhost-6767", "TestServerForStats");
+            var matches = PutMatchesInfo(3, serverForStats);
 
-            Assert.AreEqual(putMatchResponse.StatusCode, "OK");
-            Assert.IsNull(putMatchResponse.ErrorMessage);
-
-            var match2 = RandomGenerator.GetMatch();
-            var date2 = match2.TimeStamp.UtcDateTime.ToString(UtcFormat);
-            var putMatch1Response = ExecuteUrl($"servers/{serverForStats.Endpoint}/matches/{date2}", match2.Results, MethodType.PUT);
-
-            Assert.AreEqual(putMatch1Response.StatusCode, "OK");
-            Assert.IsNull(putMatch1Response.ErrorMessage);
-
-            var averagePopulation = (match1.Results.ScoreBoard.Count + match2.Results.ScoreBoard.Count) / (double)2;
-            var maximumPopulation = Math.Max(match1.Results.ScoreBoard.Count, match2.Results.ScoreBoard.Count);
-            var matches = new List<MatchDto> {match1, match2};
+            var averagePopulation = matches.Sum(a => a.Results.ScoreBoard.Count) / (double)3;
+            var maximumPopulation = matches.Max(a => a.Results.ScoreBoard.Count);
             var gameModes = new Dictionary<string, int>();
             var maps = new Dictionary<string, int>();
             foreach (var match in matches)
@@ -128,13 +107,23 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             Assert.AreEqual(getResponse.StatusCode, "OK");
             Assert.IsNull(getResponse.ErrorMessage);
             Assert.NotNull(getFullServerStats);
-            Assert.AreEqual(getFullServerStats.TotalMatchesPlayed, 2);
+            Assert.AreEqual(getFullServerStats.TotalMatchesPlayed, matches.Count);
             Assert.AreEqual(getFullServerStats.AveragePopulation, averagePopulation);
             Assert.AreEqual(getFullServerStats.MaximumPopulation, maximumPopulation);
-            Assert.AreEqual(getFullServerStats.MaximumMatchesPerDay, 2);
-            Assert.AreEqual(getFullServerStats.AverageMatchesPerDay, 2);
+            Assert.AreEqual(getFullServerStats.MaximumMatchesPerDay, matches.Count);
+            Assert.AreEqual(getFullServerStats.AverageMatchesPerDay, matches.Count);
             Assert.AreEqual(getFullServerStats.Top5GameModes, orderModes);
             Assert.AreEqual(getFullServerStats.Top5Maps, orderMaps);
+        }
+
+        [Test, Order(5)]
+        public void PutMatchInfo_PutMatchNoAdvertised_ReturnNotFound()
+        {   
+            var match = GetMatch();
+            var noAdvertiseServer = GetServer("localhost-9999", "NoAdvertisedServer");
+            var date = match.TimeStamp.UtcDateTime.ToString(UtcFormat);
+            var putMatchResponse = ExecuteUrl($"servers/{noAdvertiseServer.Endpoint}/matches/{date}", match.Results, MethodType.PUT);
+            Assert.AreEqual(putMatchResponse.StatusCode, "NotFound");
         }
     }
 }

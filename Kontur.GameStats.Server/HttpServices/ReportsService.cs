@@ -44,7 +44,8 @@ namespace Kontur.GameStats.Server.HttpServices
             {
                 foreach (var playerStat in playerStats)
                 {
-                    model.Add(new ShortPlayerStatsDto { Name = playerStat.Name, KillToDeathRatio = (double)playerStat.Kills / playerStat.Deaths });
+                    if (playerStat.Deaths > 0 && playerStat.TotalMatchesPlayed >= 10)
+                        model.Add(new ShortPlayerStatsDto { Name = playerStat.Name, KillToDeathRatio = (double)playerStat.Kills / playerStat.Deaths });
                 }
 
                 return model.OrderByDescending(a => a.KillToDeathRatio).Take(rowsCount).ToJsonList();

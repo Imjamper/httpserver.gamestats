@@ -175,12 +175,16 @@ namespace GL.HttpServer.Cache
         public static MemoryCache<T> Cache<T>()
         {
             IMemoryCache cache;
-            if (Caches.TryGetValue(typeof(T), out cache))
+            lock (Caches)
             {
-                return cache as MemoryCache<T>;
+                if (Caches.TryGetValue(typeof(T), out cache))
+                {
+                    return cache as MemoryCache<T>;
+                }
+                cache = new MemoryCache<T>();
+                Caches.Add(typeof(T), cache);
             }
-            cache = new MemoryCache<T>();
-            Caches.Add(typeof(T), cache);
+            
             return (MemoryCache<T>) cache;
         }
     }
