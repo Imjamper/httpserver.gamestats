@@ -1,5 +1,6 @@
 ﻿using System;
 using GL.HttpServer;
+using GL.HttpServer.Database;
 using GL.HttpServer.Types;
 using Kontur.GameStats.Server.HttpServices;
 using Newtonsoft.Json;
@@ -39,6 +40,13 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
 
                 _httpServer.Start($"http://+:{_port}/");
             }
+        }
+
+        [OneTimeTearDown]
+        public void StopHttpServer()
+        {
+            _httpServer.Dispose();
+            LiteDb.RefreshDb();
         }
 
         public string GetPort()

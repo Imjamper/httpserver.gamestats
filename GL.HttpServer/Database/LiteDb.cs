@@ -31,6 +31,18 @@ namespace GL.HttpServer.Database
             if (!File.Exists(ConnectionString)) using (new LiteEngine(ConnectionString)) { }
         }
 
+        public static void RefreshDb()
+        {
+            if (ServerEnviroment.InMemoryDatabase)
+            {
+                lock (_readWrite)
+                {
+                    _readWrite.Dispose();
+                    _readWrite = new LiteDb(new MemoryStream());
+                }
+            }
+        }
+
         public static LiteDb ReadWrite => _readWrite ?? (_readWrite = ServerEnviroment.InMemoryDatabase ? new LiteDb(new MemoryStream()) : new LiteDb(ConnectionString));
     }
 }

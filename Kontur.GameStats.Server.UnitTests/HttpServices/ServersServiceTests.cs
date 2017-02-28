@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using GL.HttpServer.Database;
 using GL.HttpServer.Enums;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
+using Kontur.GameStats.Server.Entities;
 using Newtonsoft.Json;
 using NUnit.Framework;
 
@@ -124,6 +127,23 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             var date = match.TimeStamp.UtcDateTime.ToString(UtcFormat);
             var putMatchResponse = ExecuteUrl($"servers/{noAdvertiseServer.Endpoint}/matches/{date}", match.Results, MethodType.PUT);
             Assert.AreEqual(putMatchResponse.StatusCode, "BadRequest");
+        }
+
+        [Test, Order(6)]
+        public void PutMatchInfo_PutMatchesManyThreads_GetAllMatchesInCache()
+        {
+            LiteDb.RefreshDb();
+            PutMatchesInfo(100, null, true);
+            using (var unit = new UnitOfWork())
+            {
+                var matches = unit.Repository<Match>().FindAll();
+                Assert.AreEqual(matches.Count, 100);
+                foreach (var match in matches)
+                {
+                    Assert.NotNull(match.Results);
+                    Assert.IsNotEmpty(match.Results.GameMode);
+                }
+            }
         }
     }
 }
