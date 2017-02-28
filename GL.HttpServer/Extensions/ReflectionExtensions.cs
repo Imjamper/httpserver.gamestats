@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using GL.HttpServer.Context;
-using GL.HttpServer.Types;
-using System.Diagnostics;
-using GL.HttpServer.Logging;
 
 namespace GL.HttpServer.Extensions
 {

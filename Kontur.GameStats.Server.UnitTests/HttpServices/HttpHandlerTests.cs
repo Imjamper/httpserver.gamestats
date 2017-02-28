@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using GL.HttpServer.Context;
 using GL.HttpServer.Enums;
-using GL.HttpServer.Exceptions;
 using GL.HttpServer.Types;
 using NUnit.Framework;
 

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
-using System.Net;
-using System.Runtime.InteropServices;
 using GL.HttpServer.Logging;
-using GL.HttpServer.Mapping;
 using GL.HttpServer.Types;
 using Newtonsoft.Json;
 
