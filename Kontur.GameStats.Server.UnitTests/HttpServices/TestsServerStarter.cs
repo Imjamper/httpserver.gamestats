@@ -8,6 +8,7 @@ using NUnit.Framework;
 namespace Kontur.GameStats.Server.UnitTests.HttpServices
 {
     [SetUpFixture]
+    [Explicit]
     public class TestsServerStarter
     {
         public const string UtcFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ff'Z'";

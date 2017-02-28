@@ -2,6 +2,7 @@ _ReSharper*
 bin/
 *.swp
 obj/
+TestResults/
 *.user
 *.suo
 .gitk*
