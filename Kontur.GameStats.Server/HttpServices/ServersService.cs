@@ -89,7 +89,7 @@ namespace Kontur.GameStats.Server.HttpServices
                     }
                     return new EmptyResponse(200);
                 }
-                return new EmptyResponse();
+                return new EmptyResponse(400);
             }
         }
 

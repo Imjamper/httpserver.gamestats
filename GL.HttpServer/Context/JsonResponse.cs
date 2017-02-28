@@ -23,10 +23,13 @@ namespace GL.HttpServer.Context
 
         protected virtual void WriteJson(Stream stream)
         {
-            var json = JsonConvert.SerializeObject(this);
-            var bytes = Encoding.UTF8.GetBytes(json);
-            Headers.Add("Content-Length", json.Length.ToString());
-            stream.WriteAsync(bytes, 0, bytes.Length);
+            if (StatusCode != 400 && StatusCode != 404)
+            {
+                var json = JsonConvert.SerializeObject(this);
+                var bytes = Encoding.UTF8.GetBytes(json);
+                Headers.Add("Content-Length", json.Length.ToString());
+                stream.WriteAsync(bytes, 0, bytes.Length);
+            }
         }
     }
 }

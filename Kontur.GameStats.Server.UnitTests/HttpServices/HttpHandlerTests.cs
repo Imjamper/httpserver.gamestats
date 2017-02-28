@@ -2,6 +2,7 @@
 using System.Reactive.Linq;
 using GL.HttpServer.Context;
 using GL.HttpServer.Enums;
+using GL.HttpServer.Exceptions;
 using GL.HttpServer.Types;
 using NUnit.Framework;
 
@@ -46,6 +47,24 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             var method = putHandler.GetMethod(requestContext).Wait();
             Assert.AreEqual(requestContext.Request.Parameters.Count, 1);
             Assert.IsNotNull(method);
+        }
+
+        [Test]
+        public void ProcessRequest_NewBadRequest_GetMethodNotFoundException()
+        {
+            ComponentContainer.Current.Initialize();
+            var putHandler = ComponentContainer.Current.GetHandlers().FirstOrDefault(a => a.MethodType == MethodType.PUT);
+
+            Assert.IsNotNull(putHandler);
+
+            var request = new Request
+            {
+                HttpMethod = MethodType.PUT,
+                UnescapedUrl = "/test/localhost-9999/SomethingInvalidUrl"
+            };
+            var requestContext = new RequestContext(request);
+            var method = putHandler.GetMethod(requestContext).Wait();
+            Assert.IsNull(method);
         }
     }
 }

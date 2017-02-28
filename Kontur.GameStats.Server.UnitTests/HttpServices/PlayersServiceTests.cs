@@ -15,7 +15,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
     [TestFixture]
     public class PlayersServiceTests : ServiceTests
     {
-        [Test]
+        [Test, Order(1)]
         public void GetPlayerStats_PutMatches_GetValidPlayerStats()
         {
             var playerStatsServer = GetServer("localhost-6756", "PlayerStatsServer");

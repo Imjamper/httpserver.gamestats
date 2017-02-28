@@ -123,7 +123,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             var noAdvertiseServer = GetServer("localhost-9999", "NoAdvertisedServer");
             var date = match.TimeStamp.UtcDateTime.ToString(UtcFormat);
             var putMatchResponse = ExecuteUrl($"servers/{noAdvertiseServer.Endpoint}/matches/{date}", match.Results, MethodType.PUT);
-            Assert.AreEqual(putMatchResponse.StatusCode, "NotFound");
+            Assert.AreEqual(putMatchResponse.StatusCode, "BadRequest");
         }
     }
 }

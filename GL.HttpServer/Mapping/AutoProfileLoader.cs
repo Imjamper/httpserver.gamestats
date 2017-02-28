@@ -12,7 +12,13 @@ namespace GL.HttpServer.Mapping
         {
             var domainAssemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
             if (assemblies != null && assemblies.Length > 0)
-                domainAssemblies.AddRange(assemblies);
+            {
+                foreach (var assembly in assemblies)
+                {
+                    if (domainAssemblies.All(a => a.FullName != assembly.FullName))
+                        domainAssemblies.Add(assembly);
+                }
+            }
             RegisterProfiles(domainAssemblies);
         }
         
