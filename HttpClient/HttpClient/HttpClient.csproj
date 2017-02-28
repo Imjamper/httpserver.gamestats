@@ -36,13 +36,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GL.HttpServer">
-      <HintPath>..\..\Kontur.GameStats.Server\bin\Debug\GL.HttpServer.dll</HintPath>
+      <HintPath>..\..\Kontur.GameStats.Server\bin\Release\GL.HttpServer.dll</HintPath>
     </Reference>
     <Reference Include="Kontur.GameStats.Server">
-      <HintPath>..\..\Kontur.GameStats.Server\bin\Debug\Kontur.GameStats.Server.exe</HintPath>
+      <HintPath>..\..\Kontur.GameStats.Server\bin\Release\Kontur.GameStats.Server.exe</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Kontur.GameStats.Server\bin\Debug\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
