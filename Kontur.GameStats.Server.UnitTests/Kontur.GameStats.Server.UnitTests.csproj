@@ -72,8 +72,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="HttpServices\HttpHandlerTests.cs" />
+    <Compile Include="HttpServices\PlayersServiceTests.cs" />
     <Compile Include="HttpServices\ReportsServiceTests.cs" />
-    <Compile Include="HttpServices\ServerServiceTests.cs" />
+    <Compile Include="HttpServices\ServersServiceTests.cs" />
     <Compile Include="HttpServices\ServiceTests.cs" />
     <Compile Include="HttpServices\TestsServerStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

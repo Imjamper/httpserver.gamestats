@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Kontur.GameStats.Server.UnitTests.HttpServices
 {
     [TestFixture]
-    public class ServerServiceTests : ServiceTests
+    public class ServersServiceTests : ServiceTests
     {
         [Test, Order(1)]
         public void PutServerInfo_PutNewServerInfo_GetSameServerInfo()

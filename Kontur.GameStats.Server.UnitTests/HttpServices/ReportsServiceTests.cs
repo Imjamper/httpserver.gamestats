@@ -19,7 +19,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
         public void RecentMatches_PutNewMatches_GetSameMatchesInfo()
         {
             var matches = PutMatchesInfo(5, null, true);
-            var matchesJson = JsonConvert.SerializeObject(matches.OrderByDescending(a=>a.TimeStamp));
+            var matchesJson = JsonConvert.SerializeObject(matches.OrderByDescending(a => a.TimeStamp));
             var response = ExecuteUrl("reports/recent-matches[/5]", null, MethodType.GET);
 
             var getRecentMatches = JsonConvert.DeserializeObject<List<MatchDto>>(response.JsonString);
@@ -78,19 +78,11 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             var getResponse = ExecuteUrl("reports/best-players[/50]", null, MethodType.GET);
 
             var getBestPlayers = JsonConvert.DeserializeObject<List<ShortPlayerStatsDto>>(getResponse.JsonString);
-
-            Assert.AreEqual(getBestPlayers.Count, playerStatsInfo.Count);
-            foreach (var shortPlayerStatsDto in getBestPlayers)
-            {
-                var index = getBestPlayers.IndexOf(shortPlayerStatsDto);
-                var inputPlayer = playerStatsInfo.ElementAtOrDefault(index);
-                if (inputPlayer != null)
-                {
-                    Assert.IsNotNull(inputPlayer);
-                    Assert.AreEqual(shortPlayerStatsDto.Name, inputPlayer.Name);
-                    Assert.AreEqual(shortPlayerStatsDto.KillToDeathRatio, inputPlayer.KillToDeathRatio);
-                }
-            }
+            var bestPlayerGet = getBestPlayers.FirstOrDefault(a => a.Name == "BestTestPlayer");
+            var bestPlayerTemp = playerStatsInfo.FirstOrDefault(a => a.Name == "BestTestPlayer");
+            Assert.NotNull(bestPlayerTemp);
+            Assert.NotNull(bestPlayerGet);
+            Assert.AreEqual(bestPlayerTemp.KillToDeathRatio, bestPlayerGet.KillToDeathRatio);
         }
 
         [Test, Order(3)]
