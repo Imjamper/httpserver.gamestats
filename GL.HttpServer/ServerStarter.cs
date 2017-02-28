@@ -30,7 +30,9 @@ namespace GL.HttpServer
                     ServerEnviroment.LoggerFolder = Path.Combine($"{AppDomain.CurrentDomain.BaseDirectory}", "Logs");
                     JsonConvert.DefaultSettings = () => new JsonSerializerSettings
                     {
-                        DateTimeZoneHandling = DateTimeZoneHandling.Utc
+                        DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                        DateFormatString = DateTimeParser.UtcFormat,
+                        DateFormatHandling = DateFormatHandling.IsoDateFormat
                     };
                     ComponentContainer.Current.Initialize();
 

@@ -75,6 +75,7 @@
     <Compile Include="HttpServices\ReportsServiceTests.cs" />
     <Compile Include="HttpServices\ServerServiceTests.cs" />
     <Compile Include="HttpServices\ServiceTests.cs" />
+    <Compile Include="HttpServices\TestsServerStarter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestModels\ClientResponse.cs" />
     <Compile Include="TestModels\TestService.cs" />

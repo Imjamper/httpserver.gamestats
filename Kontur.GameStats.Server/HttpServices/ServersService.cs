@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GL.HttpServer.Attributes;
 using GL.HttpServer.Cache;
@@ -61,35 +62,31 @@ namespace Kontur.GameStats.Server.HttpServices
                     match.TimeStamp = timestamp.Value;
                     match.Results = body.ToEntity<MatchResult>();
                     unit.Repository<Match>().Add(match);
-                    Task.Factory.StartNew(() =>
+                    var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(endpoint.ToString());
+                    if (serverStats != null)
+                        serverStats.Update(match);
+                    else serverStats = new ServerStatsTempInfo(match);
+                    MemoryCache.Cache<ServerStatsTempInfo>().PutAsync(endpoint.ToString(), serverStats);
+
+                    var players = match.Results.ScoreBoard;
+                    foreach (var playerScore in players)
                     {
-                        var serverStats = MemoryCache.Cache<ServerStatsTempInfo>().Get(endpoint.ToString());
-                        if (serverStats != null)
-                            serverStats.Update(match);
-                        else serverStats = new ServerStatsTempInfo(match);
-                        MemoryCache.Cache<ServerStatsTempInfo>().PutAsync(endpoint.ToString(), serverStats);
+                        var playerStats = MemoryCache.Cache<PlayerStatsTempInfo>().Get(playerScore.Name);
+                        if (playerStats != null)
+                            playerStats.Update(match);
+                        else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
+                        MemoryCache.Cache<PlayerStatsTempInfo>().PutAsync(playerScore.Name, playerStats);
+                    }
 
-                        var players = match.Results.ScoreBoard;
-                        foreach (var playerScore in players)
-                        {
-                            var playerStats = MemoryCache.Cache<PlayerStatsTempInfo>().Get(playerScore.Name);
-                            if (playerStats != null)
-                                playerStats.Update(match);
-                            else playerStats = new PlayerStatsTempInfo(playerScore.Name, match);
-                            MemoryCache.Cache<PlayerStatsTempInfo>().PutAsync(playerScore.Name, playerStats);
-                        }
-
-                        var recentMatches = MemoryCache.Cache<RecentMatchesTempInfo>().Get(RecentMatchesCacheLoader.RecentMatchesUid);
-                        if (recentMatches != null && recentMatches.Count > 0)
-                            recentMatches.Add(match);
-                        else
-                        {
-                            recentMatches = new RecentMatchesTempInfo();
-                            recentMatches.Add(match);
-                            MemoryCache.Cache<RecentMatchesTempInfo>().PutAsync(RecentMatchesCacheLoader.RecentMatchesUid, recentMatches);
-                        }
-                    });
-
+                    var recentMatches = MemoryCache.Cache<RecentMatchesTempInfo>().Get(RecentMatchesCacheLoader.RecentMatchesUid);
+                    if (recentMatches != null && recentMatches.Count > 0)
+                        recentMatches.Add(match);
+                    else
+                    {
+                        recentMatches = new RecentMatchesTempInfo();
+                        recentMatches.Add(match);
+                        MemoryCache.Cache<RecentMatchesTempInfo>().PutAsync(RecentMatchesCacheLoader.RecentMatchesUid, recentMatches);
+                    }
                     return new EmptyResponse(200);
                 }
                 return new EmptyResponse();

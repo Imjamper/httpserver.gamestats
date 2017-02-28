@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using GL.HttpServer.Enums;
 using GL.HttpServer.Extensions;
 using Newtonsoft.Json;
@@ -19,13 +18,13 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
         [Test, Order(1)]
         public void RecentMatches_PutNewMatches_GetSameMatchesInfo()
         {
-            var matches = PutMatchesInfo(4);
-            var matchesJson = JsonConvert.SerializeObject(matches);
-            var response = ExecuteUrl("reports/recent-matches[/4]", null, MethodType.GET);
+            var matches = PutMatchesInfo(5, null, true);
+            var matchesJson = JsonConvert.SerializeObject(matches.OrderByDescending(a=>a.TimeStamp));
+            var response = ExecuteUrl("reports/recent-matches[/5]", null, MethodType.GET);
 
             var getRecentMatches = JsonConvert.DeserializeObject<List<MatchDto>>(response.JsonString);
 
-            Assert.AreEqual(getRecentMatches.Count, 4);
+            Assert.AreEqual(getRecentMatches.Count, 5);
             Assert.AreEqual(response.JsonString, matchesJson);
         }
 
@@ -37,7 +36,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             var advertisePut = ExecuteUrl($"servers/{serverBestPlayers.Endpoint}/info", serverBestPlayers.Info, MethodType.PUT);
             Assert.AreEqual(advertisePut.StatusCode, "OK");
             Assert.IsNull(advertisePut.ErrorMessage);
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 50; i++)
             {
                 var match = new MatchDto();
                 match.Results = new MatchResultDto();

@@ -15,12 +15,10 @@ namespace GL.HttpServer.Database
 
         public LiteDb(string connectionString, BsonMapper mapper = null) : base(connectionString, mapper)
         {
-            //Mapper.RegisterType(value => new BsonValue(value.Value.UtcDateTime.ToString("o")), bson => new DateOffset(DateTimeOffset.ParseExact(bson.AsString, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)));
         }
 
         public LiteDb(Stream stream, BsonMapper mapper = null, string password = null) : base(stream, mapper, password)
         {
-            //Mapper.RegisterType(value => new BsonValue(value.Value.UtcDateTime.ToString("o")), bson => new DateOffset(DateTimeOffset.ParseExact(bson.AsString, "o", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)));
         }
 
         public LiteDb(IDiskService diskService, BsonMapper mapper = null, string password = null, TimeSpan? timeout = null, int cacheSize = 5000, Logger log = null) : base(diskService, mapper, password, timeout, cacheSize, log)

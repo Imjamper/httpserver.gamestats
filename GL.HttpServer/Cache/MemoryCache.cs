@@ -53,7 +53,7 @@ namespace GL.HttpServer.Cache
             {
                 if (_disposed) return;
 
-                _locker.EnterUpgradeableReadLock();
+                _locker.EnterWriteLock();
                 try
                 {
                     if (!_cache.ContainsKey(key))
@@ -63,7 +63,7 @@ namespace GL.HttpServer.Cache
                 }
                 finally
                 {
-                    _locker.ExitUpgradeableReadLock();
+                    _locker.ExitWriteLock();
                 }
             });
         }
@@ -169,23 +169,21 @@ namespace GL.HttpServer.Cache
 
     public class MemoryCache
     {
-        private static readonly Lazy<Dictionary<Type, IMemoryCache>> LazyCaches = new Lazy<Dictionary<Type, IMemoryCache>>();
-        private static readonly Dictionary<Type, IMemoryCache> Caches = LazyCaches.Value;
+        private static readonly Dictionary<Type, IMemoryCache> Caches = new Dictionary<Type, IMemoryCache>();
 
         public static MemoryCache<T> Cache<T>()
         {
-            IMemoryCache cache;
             lock (Caches)
             {
+                IMemoryCache cache;
                 if (Caches.TryGetValue(typeof(T), out cache))
                 {
                     return cache as MemoryCache<T>;
                 }
                 cache = new MemoryCache<T>();
                 Caches.Add(typeof(T), cache);
+                return (MemoryCache<T>)cache;
             }
-            
-            return (MemoryCache<T>) cache;
         }
     }
 }

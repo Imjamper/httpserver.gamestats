@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using GL.HttpServer;
 using GL.HttpServer.Enums;
-using GL.HttpServer.Types;
 using Kontur.GameStats.Server.Dto;
 using Kontur.GameStats.Server.DTO;
-using Kontur.GameStats.Server.HttpServices;
 using Kontur.GameStats.Server.UnitTests.TestModels;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -18,39 +15,17 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
     public class ServiceTests
     {
         public const string UtcFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'ff'Z'";
-        private HttpServer _httpServer;
-        private string _port;
+        
         private ServerDto _serverInfo;
 
         public ServerDto GameServer => _serverInfo ?? (_serverInfo = GetServer());
-
-        [OneTimeSetUp]
-        public void StartHttpServer()
-        {
-            if (_httpServer == null)
-            {
-                _httpServer = new HttpServer();
-                _port = GetPort();
-                ServerEnviroment.Host = $"http://+:{_port}/";
-                ServerEnviroment.EnableLoggingInConsole = false;
-                ServerEnviroment.InMemoryDatabase = true;
-                JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-                {
-                    DateTimeZoneHandling = DateTimeZoneHandling.Utc
-                };
-
-                ComponentContainer.Current.Initialize(typeof(ServersService).Assembly);
-
-                _httpServer.Start($"http://+:{_port}/");
-            }
-        }
 
         public List<MatchDto> PutMatchesInfo(int count = 5, ServerDto server = null, bool advertise = false)
         {
             var matches = new List<MatchDto>();
             if (server == null)
             {
-                server = _serverInfo;
+                server = GameServer;
             }
             if (advertise)
             {
@@ -61,6 +36,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
             for (int i = 0; i < count; i++)
             {
                 var match = GetMatch();
+                match.Server = server.Endpoint;
                 var date = match.TimeStamp.UtcDateTime.ToString(UtcFormat);
                 var putMatchResponse = ExecuteUrl($"servers/{server.Endpoint}/matches/{date}", match.Results, MethodType.PUT);
                 Assert.AreEqual(putMatchResponse.StatusCode, "OK");
@@ -78,7 +54,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
 
         public ClientResponse ExecuteUrl(string path, object json, MethodType methodType)
         {
-            var url = $"http://localhost:{_port}/{path}";
+            var url = $"http://localhost:{TestsServerStarter.Port}/{path}";
             using (var client = new HttpClient())
             {
                 HttpContent httpContent = null;
@@ -242,11 +218,6 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
         public string GetRandomMap()
         {
             return _maps.ElementAt(_random.Next(_modes.Count));
-        }
-
-        public string GetPort()
-        {
-            return _random.Next(65535).ToString();
         }
 
         public PlayerScoreDto GetRandomPlayerScore()

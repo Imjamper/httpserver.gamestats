@@ -78,7 +78,7 @@ namespace Kontur.GameStats.Server.UnitTests.HttpServices
         public void GetServerStats_PutMatches_GetValidStats()
         {
             var serverForStats = GetServer("localhost-6767", "TestServerForStats");
-            var matches = PutMatchesInfo(3, serverForStats);
+            var matches = PutMatchesInfo(3, serverForStats, true);
 
             var averagePopulation = matches.Sum(a => a.Results.ScoreBoard.Count) / (double)3;
             var maximumPopulation = matches.Max(a => a.Results.ScoreBoard.Count);
